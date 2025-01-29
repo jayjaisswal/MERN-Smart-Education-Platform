@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   additionDetail: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,  //means the field will store an ObjectId, which is a unique identifier for documents in MongoDB.
     required: true,
     ref: "Profile",
   },
