@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mailSender = require("../utils/mailSender");
 
 const OTPSchema = new mongoose.Schema({
   email: {
@@ -22,6 +23,8 @@ const OTPSchema = new mongoose.Schema({
 // a function to send mail
 async function sendVerificationEmail(email, otp) {
   try {
+
+    // send mail using mailSender function defined in utils
     const mailResponse = await mailSender(
       email,
       "Verification Email From CodingCombo",
@@ -34,9 +37,11 @@ async function sendVerificationEmail(email, otp) {
   }
 }
 
+
+// this is premiddleware that is used to send the mail before doc. save
 OTPSchema.pre("save", async function (next) {
   await sendVerificationEmail(this.email, this.otp);
-  next();
+  next(); // we go to the next middleware
 });
 
 module.exports = mongoose.model("OTP", OTPSchema);
