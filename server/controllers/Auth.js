@@ -1,6 +1,9 @@
 const User = require("../models/User");
 const OTP = require("../models/OTP");
 const otpGenerator = require("otp-generator");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 // send OTP steps
 exports.sendOTP = async (req, res) => {
@@ -67,7 +70,7 @@ exports.signUp = async (req, res) => {
       email,
       password,
       confirmPassword,
-      phoneNumber,
+      contactNumber,
       // address,
       otp,
       accountType,
@@ -111,7 +114,15 @@ exports.signUp = async (req, res) => {
     console.log(recentOtp);
 
     // validate otp
-    if (recentOtp !== otp) {
+    if (recentOtp.length == 0) {
+      //OTP not found
+      return res.status(400).json({
+        success: false,
+        message: "OTP Not Found",
+      });
+    }
+    // invalid otp
+    else if (recentOtp !== otp) {
       return res.status(403).json({
         success: false,
         message: "Invalid OTP",
@@ -122,6 +133,30 @@ exports.signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // entry create in DB
+    const profileDetails = await Profile.create({
+      gender: null,
+      dateOfBirth: null,
+      about: null,
+      contactNumber: null,
+    });
+
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      contactNumber,
+      password: hashedPassword,
+      accountType,
+      additionDetail: profileDetails,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
+    });
+
+    // return response
+    return res.status(200).json({
+      success: true,
+      message: "User is registered Successfully",
+      user: user,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -131,3 +166,127 @@ exports.signUp = async (req, res) => {
     });
   }
 };
+
+// Login
+exports.login = async (req, res) => {
+  try {
+    // get data from req. body
+    const [email, password] = req.body;
+
+    // all field must be filled
+    if (!email || !password) {
+      return res.status(403).json({
+        success: false,
+        message: "All field are required, please fill all details",
+      });
+    }
+
+    // check user is exist or not
+    const user = await User.findOne({ email }).populate("additionalDetails");
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User is not registered, Please signup first",
+      });
+    }
+
+    // generate JWT, after password match
+    if (await bcrypt.compare(password, user.password)) {
+      const payload = {
+        email: user.email,
+        id: user._id,
+        role: user.role,
+      };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "2h",
+      });
+      user.token = token;
+      user.password = undefined;
+
+      // create cookie and send response
+      const options = {
+        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+      };
+      res.cookie("token", token, options).status(200).json({
+        success: true,
+        token,
+        user,
+        message: "Loggged in Successfully",
+      });
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "password is incorrect",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Login Failure, please try again",
+    });
+  }
+};
+
+// change Password
+// exports.changePassword = async (req, res) => {
+//   try {
+//     // get data from req. body
+//     const { oldPassword, newPassword, confirmPassword } = req.body;
+//     // validation
+//     if (!oldPassword || !newPassword || !confirmPassword) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Please fill all fields",
+//       });
+//     }
+//     if (await bcrypt.compare(oldPassword, req.user.password)) {
+//       if (newPassword !== confirmPassword) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Passwords do not match",
+//         });
+//       }
+//     } else {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Old password is incorrect",
+//       });
+//     }
+
+//     // update password in db
+//     const user = await User.findByIdAndUpdate(req.user._id, {
+//       $set: {
+//         password: await bcrypt.hash(newPassword, 10),
+//       },
+//       new: true,
+//     });
+//     // send mail -- password is updated
+//     const mailOptions = {
+//       from: "kumarprince13833@gmail.com",
+//       to: req.user.email,
+//       subject: "Password Updated",
+//       text: "Your password has been updated",
+//     };
+//     transport.sendMail(mailOptions, (error, info) => {
+//       if (error) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Error sending mail",
+//         });
+//       }
+//     });
+//     // send response
+//     res.status(200).json({
+//       success: true,
+//       message: "Password updated successfully",
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Password not updated please try again",
+//     });
+//   }
+// };
