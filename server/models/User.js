@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   additionDetail: {
-    type: mongoose.Schema.Types.ObjectId,  //means the field will store an ObjectId, which is a unique identifier for documents in MongoDB.
+    type: mongoose.Schema.Types.ObjectId, //means the field will store an ObjectId, which is a unique identifier for documents in MongoDB.
     required: true,
     ref: "Profile",
   },
@@ -39,6 +39,12 @@ const userSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
+  },
+  token: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
   },
   courseProgress: [
     {
