@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// send OTP steps
+// send OTP steps...................................................................................................
 exports.sendOTP = async (req, res) => {
   try {
     // step 1 fetch email from request body
@@ -60,7 +60,7 @@ exports.sendOTP = async (req, res) => {
   }
 };
 
-// signup
+// signup...................................................................................................
 exports.signUp = async (req, res) => {
   // step 1 fetch data from req. body
   try {
@@ -110,7 +110,7 @@ exports.signUp = async (req, res) => {
     }
 
     // find the most recent otp Stored for the User
-    const recentOtp = OTP.find({ email }).sort({ createdAt: -1 }.limit(1));
+    const recentOtp =await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
     console.log(recentOtp);
 
     // validate otp
@@ -147,7 +147,7 @@ exports.signUp = async (req, res) => {
       contactNumber,
       password: hashedPassword,
       accountType,
-      additionDetail: profileDetails,
+      additionDetail: profileDetails._id,
       image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     });
 
@@ -167,7 +167,7 @@ exports.signUp = async (req, res) => {
   }
 };
 
-// Login
+// Login...................................................................................................
 exports.login = async (req, res) => {
   try {
     // get data from req. body
@@ -229,7 +229,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// change Password
+// change Password...................................................................................................
 // exports.changePassword = async (req, res) => {
 //   try {
 //     // get data from req. body
