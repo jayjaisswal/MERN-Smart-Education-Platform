@@ -114,3 +114,5 @@ exports.getUserDetails = async (req, res) => {
     });
   }
 };
+
+//updateDisplayPicture

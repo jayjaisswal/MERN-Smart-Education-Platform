@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const mailSender = require("../utils/mailSender");
+const emailTemplate = require("../mail/templates/emailVerificationTemplate");
 
 const OTPSchema = new mongoose.Schema({
   email: {
@@ -16,7 +17,7 @@ const OTPSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
     required: true,
-    expires: 5 * 60, // 5 minutes
+    expires: 5 * 60, // // The document will be automatically deleted after 5 minutes of its creation time
   },
 });
 
@@ -28,7 +29,7 @@ async function sendVerificationEmail(email, otp) {
     const mailResponse = await mailSender(
       email,
       "Verification Email From CodingCombo",
-      otp
+      emailTemplate(otp)
     );
     console.log("Email sent Successfully ", mailResponse);
   } catch (error) {
@@ -40,8 +41,14 @@ async function sendVerificationEmail(email, otp) {
 
 // this is premiddleware that is used to send the mail before doc. save
 OTPSchema.pre("save", async function (next) {
-  await sendVerificationEmail(this.email, this.otp);
-  next(); // we go to the next middleware
+  console.log("New document saved to database");
+
+  // Only send an email when a new document is created
+	if (this.isNew) {
+    await sendVerificationEmail(this.email, this.otp);
+  }
+    next(); // we go to the next middleware
 });
 
 module.exports = mongoose.model("OTP", OTPSchema);
+module.exports = OTP;
