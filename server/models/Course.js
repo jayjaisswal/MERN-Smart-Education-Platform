@@ -26,10 +26,10 @@ const CourseSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  ratingAndReview: [
+  ratingAndreviews: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "RAtingAndReview",
+      ref: "RatingAndReview",
     },
   ],
   price: {
@@ -52,7 +52,7 @@ const CourseSchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
-  instructor: {
+  instructions: {
 		type: [String],
 	},
 	status: {
