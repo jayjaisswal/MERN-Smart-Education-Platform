@@ -71,3 +71,83 @@ exports.createRating = async (req, res) => {
     });
   }
 };
+
+// 2 get Average Rating
+exports.getAverageRating = async (req, res) => {
+  try{
+    // get course id
+    const courseId = req.body.courseId;
+    // calculate avg rating
+
+    const result = await RatingAndReview.aggregate([
+      {
+        $match :{  // courseId jo string me hai ushko objectId me change kr rha hai
+          course: new mongoose.Type.ObjectId(courseId),
+        },
+      },
+      {
+        $group: {
+          _id:null, // used to group all the particular courseId
+          averageRating: {$avg: "$rating"},
+        }
+      }
+    ])
+    // return rating
+    if(result.length > 0){
+      return res.status(200).json({
+        message: "Average Rating found successfully",
+        success: true,
+        averageRating: result[0].averageRating
+        });
+    }
+
+    // if no rating/review exist
+    return res.status(200).json({
+      message: "No Rating/Review found till now",
+      success: true,
+      averageRating: 0,
+    })
+
+
+  }catch{
+    console.log(error);
+    res.status(500).json({
+      message: error.message,
+      success: false,
+      });
+
+  }
+}
+
+// get AllRating and Reviews
+exports.getAllRating = async (req, res) => {
+  try{
+    const allReviews = await RatingAndReview.find({})
+                      .sort({rating:"desc"})
+                      .populate({
+                        path:"user",
+                        select:"firstName, lastName, email, image",
+                      })
+                      .populate({
+                        path:"course",
+                        select:"courseName",
+                      })
+                      .exec();
+          return res.status(200).json({
+            message: "All Rating and Reviews fetched successfully",
+            success: true,
+            data: allReviews
+          })
+    }
+  catch{
+    console.log(error);
+    res.status(500).json({
+      message: error.message,
+      success: false,
+      });
+
+  }
+}
+
+
+
