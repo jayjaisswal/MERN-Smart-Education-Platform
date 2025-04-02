@@ -1,10 +1,10 @@
-const express = require("mongoose");
+const mongoose = require("mongoose");
 
 require("dotenv").config();
 
-exports.connectDb = () => {
+exports.connect = () => {
   mongoose
-    .connectdb(process.env.MONGODB_URL)
+    .connect(process.env.MONGODB_URL)
     .then(() => {
       console.log("DATABASE connected Successfully");
     })

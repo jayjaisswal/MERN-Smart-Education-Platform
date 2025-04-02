@@ -3,6 +3,7 @@ const Tags = require("../models/Category");
 const User = require("../models/User");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
 
+  
 // createCourse Handler function
 exports.createCourse = async (req, res) => {
   try {
@@ -127,7 +128,7 @@ exports.createCourse = async (req, res) => {
 
 // getAllCourses handler function
 
-exports.showAllCourse = async (req, res) => {
+exports.getAllCourses = async (req, res) => {
   try {
     // get all courses from the database
     const allCourse = await Course.find(

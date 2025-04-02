@@ -4,9 +4,15 @@ const otpGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const mailSender = require("../utils/mailSender");
+const {passwordUpdate} = require("../mail/templates/passwordUpdate");
+require("dotenv").config();
 
+ 
+  
+  
 // send OTP steps...................................................................................................
-exports.sendOTP = async (req, res) => {
+exports.sendotp = async (req, res) => {
   try {
     // step 1 fetch email from request body
     const { email } = req.body;
@@ -61,7 +67,7 @@ exports.sendOTP = async (req, res) => {
 };
 
 // signup...................................................................................................
-exports.signUp = async (req, res) => {
+exports.signup = async (req, res) => {
   // step 1 fetch data from req. body
   try {
     const [

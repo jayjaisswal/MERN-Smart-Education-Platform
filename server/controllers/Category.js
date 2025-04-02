@@ -2,6 +2,8 @@ const Tags = require("../models/Category");
 
 // create Tag handler function
 
+  
+  
 exports.createCategory = async (req, res) => {
   try {
     // fetch data
