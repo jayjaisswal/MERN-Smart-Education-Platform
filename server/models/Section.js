@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const SectionSchema = new mongoose.Schema({
+// Define the Section schema
+const sectionSchema = new mongoose.Schema({
   sectionName: {
     type: String,
   },
@@ -11,13 +12,7 @@ const SectionSchema = new mongoose.Schema({
       ref: "SubSection",
     },
   ],
-
-  description: {
-    type: String,
-  },
-  videoUrl: {
-    type: String,
-  },
 });
 
-module.exports = mongoose.model("Section", SectionSchema);
+// Export the Section model
+module.exports = mongoose.model("Section", sectionSchema);

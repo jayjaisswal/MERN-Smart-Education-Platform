@@ -80,7 +80,7 @@ exports.resetPassword = async (req, res) => {
     }
 
     // hash pasword
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // password update
     await User.findOneAndUpdate(
@@ -92,14 +92,14 @@ exports.resetPassword = async (req, res) => {
     );
 
     res.status(200).json({
-        success: true,
-        message: "Password reset successfully",
-    })
+      success: true,
+      message: "Password reset successfully",
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-        success: false,
-        message: "Password reset failed",
-        });
+      success: false,
+      message: "Password reset failed",
+    });
   }
 };

@@ -2,48 +2,56 @@ const Section = require("../models/Section");
 const Course = require("../models/Course");
 
 // create section handler......................................................................
+// CREATE a new section
 exports.createSection = async (req, res) => {
   try {
-    // fetch Data
+    // Extract the required properties from the request body
     const { sectionName, courseId } = req.body;
-    // validate Data
+
+    // Validate the input
     if (!sectionName || !courseId) {
       return res.status(400).json({
         success: false,
-        message: "Please fill all fields",
+        message: "Missing required properties",
       });
     }
-    // create Section
-    const newSection = await Section.create({
-      sectionName,
-    });
-    // Update Course with Section ObjectId
-    const updatedCourseDetail = await Course.findByIdAndUpdate(
+
+    // Create a new section with the given name
+    const newSection = await Section.create({ sectionName });
+
+    // Add the new section to the course's content array
+    const updatedCourse = await Course.findByIdAndUpdate(
       courseId,
       {
         $push: {
-          sections: newSection._id,
+          courseContent: newSection._id,
         },
       },
       { new: true }
-    );
+    )
+      .populate({
+        path: "courseContent",
+        populate: {
+          path: "subSection",
+        },
+      })
+      .exec();
 
-    // TODO: use Populate to replace section and sub-section both in the UpdatedCourseDetails
-    // return Response
-    return res.status(200).json({
+    // Return the updated course object in the response
+    res.status(200).json({
       success: true,
-      message: "Section created Successfully",
-      updatedCourseDetail,
+      message: "Section created successfully",
+      updatedCourse,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
+    // Handle errors
+    res.status(500).json({
       success: false,
-      message: `${error.message},while creating Section`,
+      message: "Internal server error",
+      error: error.message,
     });
   }
 };
-
 // updatesection section handler.................................................................
 
 exports.updateSection = async (req, res) => {

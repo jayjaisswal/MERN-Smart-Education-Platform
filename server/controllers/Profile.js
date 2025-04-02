@@ -7,50 +7,103 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader");
   
 // update Profile
 // as we have already created the profile in the Auth controller (signup controller as additional details), we are just updating it here
+// exports.updateProfile = async (req, res) => {
+//   try {
+//     // get data
+//     const { dateOfBirth = "", about = "", contactNumber, gender } = req.body;
+
+//     // get userId
+//     const id = req.user.id;
+
+//     // validation
+//     if (!contactNumber || !gender || !id) {
+//       return res.status(400).json({
+//         message: "Please fill all the fields",
+//         status: false,
+//       });
+//     }
+
+//     // find Profile
+//     const userDetails = await User.findById(id)
+//     console.log("User Details:", userDetails);
+
+
+//     if (!userDetails) {
+//       return res.status(404).json({
+//         message: "User not found",
+//         status: false,
+//       });
+//     }
+//     // get id of profile via additionalDetails from user
+//     const profileId = userDetails.additionalDetails;
+    
+
+//     console.log("profileId", profileId);
+
+//     if (!profileId) {
+//       return res.status(404).json({
+//         message: "Profile not found",
+//         status: false,
+//       });
+//     }
+
+    
+
+//     // get the profileDetails using profileId
+//     const profileDetails = await Profile.findById(profileId);
+//     console.log("profileDetails", profileDetails);
+
+//     // Update profile
+//     profileDetails.dateOfBirth = dateOfBirth;
+//     profileDetails.about = about;
+//     profileDetails.contactNumber = contactNumber;
+//     profileDetails.gender = gender;
+//     // save the profile
+//     await profileDetails.save();
+
+//     // return response
+//     return res.status(200).json({
+//       message: "Profile updated successfully",
+//       status: true,
+//       profileDetails,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       message: `ProfileUpdate Error: ${error.message}`,
+//       status: false,
+//     });
+//   }
+// };
+
+// Method for updating a profile
 exports.updateProfile = async (req, res) => {
   try {
-    // get data
-    const { dateOfBirth = "", about = "", contactNumber, gender } = req.body;
-
-    // get userId
+    const { dateOfBirth = "", about = "", contactNumber } = req.body;
     const id = req.user.id;
 
-    // validation
-    if (!contactNumber || !gender || !id) {
-      return res.status(400).json({
-        message: "Please fill all the fields",
-        status: false,
-      });
-    }
-
-    // find Profile
+    // Find the profile by id
     const userDetails = await User.findById(id);
+    const profile = await Profile.findById(userDetails.additionalDetails);
 
-    // get id of profile via additionalDetails from user
-    const profileId = userDetails.additionDetail;
+    // Update the profile fields
+    profile.dateOfBirth = dateOfBirth;
+    profile.about = about;
+    profile.contactNumber = contactNumber;
 
-    // get the profileDetails using profileId
-    const profileDetails = await Profile.findById(profileId);
+    // Save the updated profile
+    await profile.save();
 
-    // Update profile
-    profileDetails.dateOfBirth = dateOfBirth;
-    profileDetails.about = about;
-    profileDetails.contactNumber = contactNumber;
-    profileDetails.gender = gender;
-    // save the profile
-    await profileDetails.save();
-
-    // return response
-    return res.status(200).json({
+    return res.json({
+      success: true,
       message: "Profile updated successfully",
-      status: true,
-      profileDetails,
+      profile,
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      message: error.message,
-      status: false,
+      success: false,
+      error: error.message,
     });
   }
 };
@@ -100,7 +153,7 @@ exports.getAllUserDetails = async (req, res) => {
 
     // get user details
     const userDetails = await User.findById(id)
-      .populate("additionalDetail")
+      .populate("additionalDetails")
       .exec();
 
     // return response
@@ -143,7 +196,7 @@ exports.updateDisplayPicture = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message:`Error : ${error.message}`,
     });
   }
 };

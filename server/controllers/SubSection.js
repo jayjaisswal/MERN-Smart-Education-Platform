@@ -52,12 +52,15 @@ const Section = require("../models/Section");
 const SubSection = require("../models/Subsection");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
 
+
 // Create a new sub-section for a given section
 exports.createSubSection = async (req, res) => {
     try {
       // Extract necessary information from the request body
       const { sectionId, title, description } = req.body
-      const video = req.files.video
+      const video = req.files.videoFile;
+      console.log("Uploaded Files:", req.files);
+
   
       // Check if all necessary fields are provided
       if (!sectionId || !title || !description || !video) {
