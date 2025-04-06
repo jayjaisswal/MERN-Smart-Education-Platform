@@ -3,7 +3,8 @@ import { FaArrowAltCircleRight } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import HighlightText from '../components/core/Homepage/HighlightText';
 import CTAButton from '../components/core/Homepage/Button';
-import Banner from '../assets/Images/vdobb.mp4'
+import Banner from '../assets/Images/vdo.mp4'
+import CodeBlocks from '../components/core/Homepage/CodeBlocks';
 const Home = () => {
     return (
         <div>
@@ -44,9 +45,80 @@ const Home = () => {
 
                     {/* code section 1 */}
                     <div>
-                        <CodeBlocks></CodeBlocks>
+                        <CodeBlocks
+                        position={"lg:flex-row"}
+                        heading={
+                            <div className='text-4xl font-semibold'>
+                                Unlock Your
+                                <HighlightText text={"Coding Potential"}/>
+                                With our Online Courses
+                            </div>
+                        }
+                        subHeading={
+                            "our courses are designed and taught by industry experts who have years of experience in coding and are passionate about sharing their knowledge with you."
+                        }
+                        ctabtn1 = {
+                           {
+                            btntext: "Try it Yourself",
+                            linkto: "/signup",
+                            active: true,
+                           }
+                        }
+                        ctabtn2 = {
+                           {
+                            btntext: "Learn More",
+                            linkto: "/login",
+                            active: false,
+                           }
+                        }
+
+                        codeblock={
+                           `function hello() {\n  console.log("Hello, Jay!");\n}`
+                        }
+                        codeColor={"text-yellow-500"}
+                        
+                        ></CodeBlocks>
                     </div>
+                    {/* code section 2 */}
+                    <div>
+                        <CodeBlocks
+                        position={"lg:flex-row-reverse"}
+                        heading={
+                            <div className='text-4xl font-semibold'>
+                                Unlock Your
+                                <HighlightText text={"Coding Potential"}/>
+                                With our Online Courses
+                            </div>
+                        }
+                        subHeading={
+                            "our courses are designed and taught by industry experts who have years of experience in coding and are passionate about sharing their knowledge with you."
+                        }
+                        ctabtn1 = {
+                           {
+                            btntext: "Try it Yourself",
+                            linkto: "/signup",
+                            active: true,
+                           }
+                        }
+                        ctabtn2 = {
+                           {
+                            btntext: "Learn More",
+                            linkto: "/login",
+                            active: false,
+                           }
+                        }
+
+                        codeblock={
+                           `function hello() {\n  console.log("Hello, Jay!");\n}`
+                        }
+                        codeColor={"text-yellow-500"}
+                        
+                        ></CodeBlocks>
+                    </div>
+
             </div>
+
+            
 
            
 
