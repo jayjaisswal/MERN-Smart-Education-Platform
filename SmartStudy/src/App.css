@@ -127,3 +127,12 @@
   --max-width-max-content: 1260px;
   --max-width-max-content-tab: 650px;
 }
+
+html, body{
+  overflow-x:hidden ;
+}
+
+.homepage-bg{
+  background-image: url("../src/assets/Images/bghome.svg");
+
+}

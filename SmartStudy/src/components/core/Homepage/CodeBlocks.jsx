@@ -1,6 +1,5 @@
 import React from 'react';
 import CTAButton from './Button';
-import HighlightText from './HighlightText';
 import { FaArrowRight } from "react-icons/fa";
 import { TypeAnimation } from 'react-type-animation';
 const CodeBlocks = ({
@@ -11,7 +10,7 @@ const CodeBlocks = ({
             {/* section 1 */}
             <div className='w-[50%] flex flex-col gap-8'>
                 {heading}
-                <div className='text-richblack-300 font-bold'>
+                <div className='text-richblack-300 font-bold text-justify'>
                     {subHeading}
                 </div>
                 <div className='flex gap-7 mt-7'>
