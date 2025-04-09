@@ -13,6 +13,7 @@ import Footer from '../components/common/Footer';
 const Home = () => {
     return (
         <div>
+            
             {/* Section 1 */}
             <div className='relative mx-auto max-w-max-content flex flex-col w-11/12 items-center text-white justify-between'>
                     {/* Section 1.1 */}
@@ -59,43 +60,44 @@ const Home = () => {
                     {/* code section 1.6 */}
                     <div>
                         <CodeBlocks
-                        position={"lg:flex-row"}
-                        heading={
-                            <div className='text-4xl font-semibold'>
-                                Unlock Your
-                                <HighlightText text={"Coding Potential "}/>
-                                With our Online Courses
-                            </div>
-                        }
-                        subHeading={
-                            "our courses are designed and taught by industry experts who have years of experience in coding and are passionate about sharing their knowledge with you."
-                        }
-                        ctabtn1 = {
-                           {
-                            btntext: "Try it Yourself",
-                            linkto: "/signup",
-                            active: true,
-                           }
-                        }
-                        ctabtn2 = {
-                           {
-                            btntext: "Learn More",
-                            linkto: "/login",
-                            active: false,
-                           }
-                        }
+                                position={"lg:flex-row "}
+                                heading={
+                                            <div className='text-4xl font-semibold'>
+                                                    Unlock Your
+                                                    <HighlightText text={"Coding Potential "}/>
+                                                    With our Online Courses
+                                            </div>
+                                        }
+                                subHeading={
+                                                "our courses are designed and taught by industry experts who have years of experience in coding and are passionate about sharing their knowledge with you."
+                                            }
+                                ctabtn1 = {
+                                                {
+                                                    btntext: "Try it Yourself",
+                                                    linkto: "/signup",
+                                                    active: true,
+                                                }
+                                            }
+                                ctabtn2 = {
+                                                {
+                                                    btntext: "Learn More",
+                                                    linkto: "/login",
+                                                    active: false,
+                                                }
+                                           }
 
-                        codeblock={
-                           `function hello() {\n  console.log("Hello, Jay!");\n}`
-                        }
-                        codeColor={"text-yellow-500"}
+                                codeblock={
+                                            `function hello() {\n  console.log("Hello, Jay!");\n}`
+                                          }
+                                codeColor={"text-yellow-500"}
+                        
                         
                         ></CodeBlocks>
                     </div>
                     {/* code section 1.7 */}
                     <div>
                         <CodeBlocks
-                        position={"lg:flex-row-reverse"}
+                        position={"flex-row-reverse"}
                         heading={
                             <div className='text-4xl font-semibold'>
                                 Unlock Your
@@ -202,6 +204,7 @@ const Home = () => {
 
             {/* Section 4 Footer*/}
             <Footer/>
+            
         </div>
     );
 };
