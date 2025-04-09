@@ -5,7 +5,7 @@ import { NavbarLinks } from '../../data/navbar-links';
 import { useLocation ,matchPath } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FaShoppingCart } from "react-icons/fa";
-import { setTotalItems } from '../../slices/cartSlice';
+import { setTotalItems } from '../../slices/CartSlice';
 import ProfileDropDown from '../core/Auth/ProfileDropDown';
 const Navbar = () => {
     const {token} = useSelector((state)=> state.auth);
