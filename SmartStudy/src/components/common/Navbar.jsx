@@ -5,11 +5,11 @@ import { NavbarLinks } from '../../data/navbar-links';
 import { useLocation ,matchPath } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FaShoppingCart } from "react-icons/fa";
-import { setTotalItems } from '../../slices/CartSlice';
+// import { setTotalItems } from '../../slices/CartSlice';
 import { IoIosArrowDown } from "react-icons/io";
 import ProfileDropDown from '../core/Auth/ProfileDropDown';
 import { apiConnector } from '../../services/apiConnector';
-import { categories } from '../../services/api';
+import { categories } from '../../services/apis';
 const Navbar = () => {
     const {token} = useSelector((state)=> state.auth);
     const {user} = useSelector((state)=> state.profile);
