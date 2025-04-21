@@ -74,7 +74,9 @@ exports.signup = async (req, res) => {
       email,
       password,
       confirmPassword,
-      contactNumber,
+      
+      
+      // contactNumber,
       // address,
       otp,
       accountType,
@@ -88,7 +90,8 @@ exports.signup = async (req, res) => {
       !email ||
       !password ||
       !confirmPassword ||
-      !contactNumber ||
+      !accountType||
+      // !contactNumber ||
       !otp
     ) {
       return res.status(403).json({
@@ -172,7 +175,7 @@ exports.signup = async (req, res) => {
       firstName,
       lastName,
       email,
-      contactNumber,
+      // contactNumber,
       password: hashedPassword,
       accountType,
       additionalDetails: profileDetails._id,
