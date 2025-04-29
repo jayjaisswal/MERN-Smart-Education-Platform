@@ -86,11 +86,8 @@ const Home = () => {
                                                 }
                                            }
 
-                                codeblock={
-                                            `function hello() {\n  console.log("Hello, Jay!");\n}`
-                                          }
-                                codeColor={"text-yellow-500"}
-                        
+                                           codeblock={`<<!DOCTYPE html>\n<html>\nhead><title>Example</title><linkrel="stylesheet"href="styles.css">\n/head>\n`}
+                                           codeColor={"text-yellow-25"}
                         
                         ></CodeBlocks>
                     </div>
@@ -123,10 +120,9 @@ const Home = () => {
                            }
                         }
 
-                        codeblock={
-                           `function hello() {\n  console.log("Hello, Jay!");\n}`
-                        }
-                        codeColor={"text-yellow-500"}
+                        
+                codeblock={`<<!DOCTYPE html>\n<html>\nhead><title>Example</title><linkrel="stylesheet"href="styles.css">\n/head>\n`}
+                codeColor={"text-yellow-25"}
                         
                         ></CodeBlocks>
                     </div>
@@ -144,9 +140,9 @@ const Home = () => {
                 <div className='homepage-bg h-[300px] '>
                         <div className='h-[150px]'></div>
                         <div className='w-11/12  max-w-max-content flex flex-col items-center gap-5 mx-auto'>
-                            <div className='flex flex-row gap-7 text-white'>
+                            <div className='flex flex-row gap-7 text-white mt-10'>
                                     <CTAButton active={true} linkto={"/signup"}>
-                                        <div className='flex items-center gap-2'>
+                                        <div className='flex items-center gap-2 '>
                                             Explore Full Catelog
                                             <FaArrowAltCircleRight/>
                                         </div>    
