@@ -24,11 +24,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://mern-smart-education-platform.vercel.app"
-    ],
-    credentials: true,
+    // origin: [
+    //   "http://localhost:5173",
+    //   "https://mern-smart-education-platform.vercel.app"
+    // ],
+    // credentials: true,
   })
 );
 app.use(
