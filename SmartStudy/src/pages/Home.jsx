@@ -10,6 +10,7 @@ import TimelineSection from '../components/core/Homepage/TimelineSection';
 import InstructorSection from '../components/core/Homepage/InstructorSection';
 import ExploreMore from '../components/core/Homepage/ExploreMore';
 import Footer from '../components/common/Footer';
+import { TypeAnimation } from 'react-type-animation';
 const Home = () => {
     return (
         <div>
@@ -47,8 +48,31 @@ const Home = () => {
                             <CTAButton active={false} linkto={"/login"}>Book a Demo</CTAButton>
                     </div>
 
+                    <div className='mt-5 font-bold text-blue-200 lg:text-[2rem] text-[1rem]'>
+                    <TypeAnimation
+                        
+                        sequence={[
+                            "Learn Web Development from Experts",
+                            1000,
+                            "Master Data Structures & Algorithms",
+                            1000,
+                            "Crack Interviews with Confidence",
+                            1000,
+                            "Build Real-World Projects Hands-On",
+                            1000,
+                            "Upskill with Industry-Relevant Courses",
+                            1000,
+                          ]}
+                          
+                            speed={50}
+                            // style={{ fontSize: '1em' }}
+                            repeat={Infinity}
+                            omitDeletionAnimation={true}
+                            />
+                    </div>
+
                     {/* Section 1.5 */}
-                    <div className='mx-3 my-13 shadow-blue-200 '>
+                    <div className='mx-3 my-8 shadow-blue-200 '>
                         <video
                         muted
                         loop

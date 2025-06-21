@@ -58,7 +58,10 @@ const ContactUsForm = () => {
             name="firstname"
             id="firstname"
             placeholder="Enter first name"
-            className="form-style"
+            style={{
+              boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+            }}
+            className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5"
             {...register("firstname", { required: true })}
           />
           {errors.firstname && (
@@ -76,7 +79,10 @@ const ContactUsForm = () => {
             name="lastname"
             id="lastname"
             placeholder="Enter last name"
-            className="form-style"
+            style={{
+              boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+            }}
+            className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5"
             {...register("lastname")}
           />
         </div>
@@ -91,7 +97,10 @@ const ContactUsForm = () => {
           name="email"
           id="email"
           placeholder="Enter email address"
-          className="form-style"
+          style={{
+            boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+          }}
+          className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5"
           {...register("email", { required: true })}
         />
         {errors.email && (
@@ -113,7 +122,10 @@ const ContactUsForm = () => {
               name="firstname"
               id="firstname"
               placeholder="Enter first name"
-              className="form-style"
+              style={{
+                boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+              }}
+              className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5"
               {...register("countrycode", { required: true })}
             >
               {CountryCode.map((ele, i) => {
@@ -131,7 +143,10 @@ const ContactUsForm = () => {
               name="phonenumber"
               id="phonenumber"
               placeholder="12345 67890"
-              className="form-style"
+              style={{
+                boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+              }}
+              className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5"
               {...register("phoneNo", {
                 required: {
                   value: true,
@@ -160,7 +175,10 @@ const ContactUsForm = () => {
           cols="30"
           rows="7"
           placeholder="Enter your message here"
-          className="form-style"
+          style={{
+            boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+          }}
+          className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5"
           {...register("message", { required: true })}
         />
         {errors.message && (
@@ -176,7 +194,7 @@ const ContactUsForm = () => {
         className={`rounded-md bg-yellow-50 px-6 py-3 text-center text-[13px] font-bold text-black shadow-[2px_2px_0px_0px_rgba(255,255,255,0.18)] 
          ${
            !loading &&
-           "transition-all duration-200 hover:scale-95 hover:shadow-none"
+           "transition-all duration-200 cursor-pointer hover:shadow-none"
          }  disabled:bg-richblack-500 sm:text-[16px] `}
       >
         Send Message

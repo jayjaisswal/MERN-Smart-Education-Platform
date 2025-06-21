@@ -48,10 +48,10 @@ const Footer = () => {
                 })}
               </div>
               <div className="flex gap-3 text-lg">
-                <FaFacebook />
-                <FaGoogle />
-                <FaTwitter />
-                <FaYoutube />
+                <Link to={"/fb"}><FaFacebook /></Link>
+                <Link to={"/fb"}> <FaGoogle /></Link>
+                <Link to={"/fb"}><FaTwitter /></Link>
+                <Link to={"/fb"}><FaYoutube /></Link>
               </div>
               
             </div>

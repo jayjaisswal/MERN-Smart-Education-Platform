@@ -1,7 +1,7 @@
 import "./App.css";
 import Home from "./pages/Home";
 import Navbar from "./components/common/Navbar";
-import { Route, Routes,useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OpenRoute from "./components/core/Auth/OpenRoute";
@@ -9,7 +9,7 @@ import ForgetPassword from "./pages/ForgetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import VerifyEmail from "./pages/VerifyEmail";
 import About from "./pages/About";
-import MyProfile from "../src/components/core/Dashboard/MyProfile"
+import MyProfile from "../src/components/core/Dashboard/MyProfile";
 import PrivateRoute from "./components/core/Auth/PrivateRoute";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
@@ -20,16 +20,19 @@ import Cart from "./components/core/Dashboard/Cart";
 import { ACCOUNT_TYPE } from "./utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 function App() {
-  
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const { user } = useSelector((state) => state.profile)
+
+  const { user } = useSelector((state) => state.profile);
   return (
     <div className="w-screen min-h-screen bg-richblack-900 flex flex-col">
       <Navbar></Navbar>
+
       <Routes>
+        {/* Home */}
         <Route path="/" element={<Home />} />
+
+        {/* signup */}
         <Route
           path="signup"
           element={
@@ -38,6 +41,8 @@ function App() {
             </OpenRoute>
           }
         />
+
+        {/* login */}
         <Route
           path="login"
           element={
@@ -46,6 +51,8 @@ function App() {
             </OpenRoute>
           }
         />
+
+        {/*forgot-password */}
         <Route
           path="forgot-password"
           element={
@@ -54,6 +61,8 @@ function App() {
             </OpenRoute>
           }
         />
+
+        {/* verify-email */}
         <Route
           path="verify-email"
           element={
@@ -62,6 +71,8 @@ function App() {
             </OpenRoute>
           }
         />
+
+        {/* update-password/:id */}
         <Route
           path="update-password/:id"
           element={
@@ -70,6 +81,8 @@ function App() {
             </OpenRoute>
           }
         />
+
+        {/* about */}
         <Route
           path="about"
           element={
@@ -78,26 +91,39 @@ function App() {
             </OpenRoute>
           }
         />
-        <Route
+
+        {/* Dashboard */}
+        {/* <Route
+          // path="dashboard"
           element={
             <PrivateRoute>
               <Dashboard />
             </PrivateRoute>
           }
-        />
-         <Route path="/contact" element={<Contact />} />
+        /> */}
 
-         <Route path="dashboard/my-profile" element={<MyProfile />} />
-      <Route path="dashboard/Settings" element={<Settings />} />
-      
-      {
-        user?.accountType === ACCOUNT_TYPE.STUDENT && (
+        {/* Contact */}
+        <Route path="/contact" element={<Contact />} />
+
+        <Route
+          path="dashboard/my-profile"
+          element={
+            <PrivateRoute>
+              <MyProfile />
+            </PrivateRoute>
+          }
+        />
+        <Route path="dashboard/Settings" element={<Settings />} />
+
+        {user?.accountType === ACCOUNT_TYPE.STUDENT && (
           <>
-          <Route path="dashboard/cart" element={<Cart />} />
-          <Route path="dashboard/enrolled-courses" element={<EnrolledCourses />} />
+            <Route path="dashboard/cart" element={<Cart />} />
+            <Route
+              path="dashboard/enrolled-courses"
+              element={<EnrolledCourses />}
+            />
           </>
-        )
-      }
+        )}
 
         <Route path="*" element={<Error />} />
       </Routes>

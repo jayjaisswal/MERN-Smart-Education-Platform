@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import { getPasswordResetToken } from '../services/operations/authAPI';
 import { BiArrowBack } from "react-icons/bi"
+import Spinner from "../spinner/Spinner"
 
 const ForgetPassword = () => {
-    const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("")
   const [emailSent, setEmailSent] = useState(false)
   const dispatch = useDispatch()
   const { loading } = useSelector((state) => state.auth)
@@ -19,7 +20,7 @@ const ForgetPassword = () => {
   return (
     <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
       {loading ? (
-        <div className="spinner"></div>
+        <div><Spinner/></div>
       ) : (
         <div className="max-w-[500px] p-4 lg:p-8">
           <h1 className="text-[1.875rem] font-semibold leading-[2.375rem] text-richblack-5">
@@ -43,13 +44,13 @@ const ForgetPassword = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter email address"
-                  className="form-style w-full"
+                  className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5 shadow-[inset_0px_-1px_0px_rgba(255,255,255,0.18)]"
                 />
               </label>
             )}
             <button
               type="submit"
-              className="mt-6 w-full rounded-[8px] bg-yellow-50 py-[12px] px-[12px] font-medium text-richblack-900"
+              className="mt-6 w-full rounded-[8px] bg-yellow-50 py-[12px] px-[12px]  cursor-pointer font-medium text-richblack-900"
             >
               {!emailSent ? "Sumbit" : "Resend Email"}
             </button>

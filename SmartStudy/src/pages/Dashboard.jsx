@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import Spinner from '../spinner/Spinner';
 
 const Dashboard = () => {
     const {loading:authLoading} = useSelector((state) => state.auth);
@@ -9,7 +10,7 @@ const Dashboard = () => {
     if(profileLoading || authLoading){
         return(
             <div className='mt-10'>
-                Loading...
+               <Spinner/>
             </div>
         )
     }
@@ -20,9 +21,7 @@ const Dashboard = () => {
                 <div className='mx-auto w-11/12 max-w-[1000px] py-10'>
                     <Outlet/>
                 </div>
-
             </div>
-            
         </div>
     );
 };

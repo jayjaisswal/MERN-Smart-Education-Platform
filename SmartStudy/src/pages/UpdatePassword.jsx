@@ -30,14 +30,14 @@ function UpdatePassword() {
 
   const handleOnSubmit = (e) => {
     e.preventDefault()
-    const token = location.pathname.split("/").at(-1)
+    const token = location.pathname.split("/").at(-1) // sent by backend as link to mail
     dispatch(resetPassword(password, confirmPassword, token, navigate))
   }
 
   return (
     <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
       {loading ? (
-        <div className="spinner"></div>
+        <div className="spinner">Loading...</div>
       ) : (
         <div className="max-w-[500px] p-4 lg:p-8">
           <h1 className="text-[1.875rem] font-semibold leading-[2.375rem] text-richblack-5">
@@ -58,8 +58,11 @@ function UpdatePassword() {
                 value={password}
                 onChange={handleOnChange}
                 placeholder="Enter Password"
-                className="form-style w-full !pr-10"
-              />
+                style={{
+                  // boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+                }}
+                className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5 shadow-[inset_0px_-1px_0px_rgba(255,255,255,0.18)]"
+              />                                                                                   
               <span
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-[38px] z-[10] cursor-pointer"
@@ -82,7 +85,7 @@ function UpdatePassword() {
                 value={confirmPassword}
                 onChange={handleOnChange}
                 placeholder="Confirm Password"
-                className="form-style w-full !pr-10"
+                className="w-full rounded-[0.5rem] bg-richblack-800 p-[12px] text-richblack-5 shadow-[inset_0px_-1px_0px_rgba(255,255,255,0.18)]"
               />
               <span
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
@@ -98,7 +101,7 @@ function UpdatePassword() {
 
             <button
               type="submit"
-              className="mt-6 w-full rounded-[8px] bg-yellow-50 py-[12px] px-[12px] font-medium text-richblack-900"
+              className="mt-6 w-full rounded-[8px] bg-yellow-50 py-[12px] px-[12px] font-medium text-richblack-900 cursor-pointer"
             >
               Reset Password
             </button>

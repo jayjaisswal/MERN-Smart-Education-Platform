@@ -13,7 +13,7 @@ const RenderTotalAmount = () => {
         //TODO: API integrate -> payment gateway tak leke jaegi
     }
   return (
-    <div>
+    <div >
 
         <p>Total:</p>
         <p>Rs {total}</p>

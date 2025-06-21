@@ -49,6 +49,7 @@ function SignupForm() {
       ...formData,
       accountType,
     }
+    // console.log(signupData);
 
     // Setting signup data to state
     // To be used after otp verification
@@ -86,7 +87,7 @@ function SignupForm() {
       {/* Tab */}
       <Tab tabData={tabData} field={accountType} setField={setAccountType} />
       {/* Form */}
-      <form onSubmit={handleOnSubmit} className="flex w-full flex-col gap-y-4">
+      <form onSubmit={handleOnSubmit} className="flex  w-11/12  flex-col gap-y-4">
         <div className="flex gap-x-4">
           <label>
             <p className="mb-1 text-[0.875rem] leading-[1.375rem] text-richblack-5">
@@ -198,7 +199,7 @@ function SignupForm() {
         </div>
         <button
           type="submit"
-          className="mt-6 rounded-[8px] bg-yellow-50 py-[8px] px-[12px] font-medium text-richblack-900"
+          className="mt-6 rounded-[8px] bg-yellow-50 py-[8px] px-[12px] hover:scale-95 transition-all cursor-pointer duration-200 font-medium text-richblack-900"
         >
           Create Account
         </button>
