@@ -27,7 +27,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://mern-smart-education-platform.vercel.app",
-      "https://mern-smart-education-platform-xm1g.vercel.app"
+      
     ],
     credentials: true,
   })
