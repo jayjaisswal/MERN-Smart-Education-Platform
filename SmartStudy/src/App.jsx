@@ -15,6 +15,7 @@ import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Error from "./pages/Error";
 import Settings from "./components/core/Dashboard/Settings";
+import PurchasedHistory from "./components/core/Dashboard/PurchasedHistory";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
 import Cart from "./components/core/Dashboard/Cart";
 import { ACCOUNT_TYPE } from "./utils/constants";
@@ -82,49 +83,30 @@ function App() {
           }
         />
 
-        {/* about */}
-        <Route
-          path="about"
-          element={
-            <OpenRoute>
-              <About />
-            </OpenRoute>
-          }
-        />
-
-        {/* Dashboard */}
-        {/* <Route
-          // path="dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        /> */}
+       
 
         {/* Contact */}
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
 
         <Route
-          path="dashboard/my-profile"
-          element={
-            <PrivateRoute>
-              <MyProfile />
-            </PrivateRoute>
-          }
-        />
-        <Route path="dashboard/Settings" element={<Settings />} />
-
-        {user?.accountType === ACCOUNT_TYPE.STUDENT && (
-          <>
-            <Route path="dashboard/cart" element={<Cart />} />
-            <Route
-              path="dashboard/enrolled-courses"
-              element={<EnrolledCourses />}
-            />
-          </>
-        )}
-
+            path="dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          >
+            <Route path="my-profile" element={<MyProfile />} />
+            <Route path="settings" element={<Settings />} />
+            {user?.accountType === ACCOUNT_TYPE.STUDENT && (
+              <>
+                <Route path="cart" element={<Cart />} />
+                <Route path="enrolled-courses" element={<EnrolledCourses />} />
+                <Route path="purchase-history" element={<PurchasedHistory />} />
+              </>
+            )}
+     </Route>
         <Route path="*" element={<Error />} />
       </Routes>
     </div>
