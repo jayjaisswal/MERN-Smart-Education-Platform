@@ -9,33 +9,21 @@ import { IoIosArrowDown } from "react-icons/io";
 import ProfileDropDown from "../core/Auth/ProfileDropDown";
 import { apiConnector } from "../../services/apiConnector";
 import { categories } from "../../services/apis";
+import { useNavigate } from 'react-router-dom';
+
 
 const Navbar = () => {
   const { token } = useSelector((state) => state.auth);
   const { user } = useSelector((state) => state.profile);
   const { setTotalItems } = useSelector((state) => state.cart);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Responsive menu state
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Theme state
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
-
   // Catalog dropdown state for mobile
   const [catalogOpen, setCatalogOpen] = useState(false);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
 
   // api call
   const [sublinks, setSubLinks] = useState([]);
@@ -70,6 +58,22 @@ const Navbar = () => {
     setCatalogOpen(false);
   };
 
+  const handleLoginClick = () => {
+  setMenuOpen(false);
+  setCatalogOpen(false);
+  setTimeout(() => {
+    navigate('/login');
+  }, 100); // wait 100ms so state update completes
+};
+
+const handleSignupClick = () => {
+  setMenuOpen(false);
+  setCatalogOpen(false);
+  setTimeout(() => {
+    navigate('/signup');
+  }, 100);
+};
+
   return (
     <div className="flex h-16 items-center justify-center border-b border-b-richblack-700 dark:border-b-gray-700 bg-white dark:bg-gray-900 transition-colors shadow-sm">
       <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto">
@@ -83,7 +87,14 @@ const Navbar = () => {
 
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <img src={Logo} alt="Logo" width={120} height={32} loading="lazy" className="drop-shadow-md" />
+          <img
+            src={Logo}
+            alt="Logo"
+            width={120}
+            height={32}
+            loading="lazy"
+            className="drop-shadow-md"
+          />
         </Link>
 
         {/* Navlinks */}
@@ -99,7 +110,9 @@ const Navbar = () => {
                   <div
                     className="flex items-center gap-1 cursor-pointer select-none"
                     onClick={handleCatalogClick}
-                    onMouseLeave={() => window.innerWidth < 768 && setCatalogOpen(false)}
+                    onMouseLeave={() =>
+                      window.innerWidth < 768 && setCatalogOpen(false)
+                    }
                   >
                     <span
                       className={`transition-colors duration-200 ${
@@ -110,12 +123,24 @@ const Navbar = () => {
                     >
                       {link.title}
                     </span>
-                    <IoIosArrowDown className={`text-lg transition-transform duration-300 ${catalogOpen ? "rotate-180" : ""}`} />
+                    <IoIosArrowDown
+                      className={`text-lg transition-transform duration-300 ${
+                        catalogOpen ? "rotate-180" : ""
+                      }`}
+                    />
                     {/* Dropdown */}
                     <div
                       className={`
-                        ${catalogOpen || (window.innerWidth >= 768 && "group-hover:visible group-hover:opacity-100")}
-                        ${catalogOpen ? "visible opacity-100" : "invisible opacity-0"}
+                        ${
+                          catalogOpen ||
+                          (window.innerWidth >= 768 &&
+                            "group-hover:visible group-hover:opacity-100")
+                        }
+                        ${
+                          catalogOpen
+                            ? "visible opacity-100"
+                            : "invisible opacity-0"
+                        }
                         absolute left-0 top-8 min-w-[180px] rounded-md bg-white dark:bg-gray-800 shadow-lg z-20 transition-all duration-300
                       `}
                     >
@@ -131,7 +156,9 @@ const Navbar = () => {
                           </Link>
                         ))
                       ) : (
-                        <span className="block px-4 py-2 text-gray-400">No Categories</span>
+                        <span className="block px-4 py-2 text-gray-400">
+                          No Categories
+                        </span>
                       )}
                     </div>
                   </div>
@@ -144,9 +171,6 @@ const Navbar = () => {
                           : "text-richblack-700 dark:text-white"
                       }`}
                     >
-                      {link.title === "Home" && <span className="mr-1">🏠</span>}
-                      {link.title === "About Us" && <span className="mr-1">ℹ️</span>}
-                      {link.title === "Contact Us" && <span className="mr-1">📞</span>}
                       {link.title}
                     </span>
                   </Link>
@@ -155,16 +179,16 @@ const Navbar = () => {
             ))}
           </ul>
           {/* Login/Signup for mobile */}
-          <div className="flex flex-col gap-2 mt-4 md:hidden">
+          <div className="flex flex-col gap-2 mt-0 md:hidden">
             {token === null && (
               <>
-                <Link to="/login">
-                  <button className="w-full border border-blue-400 bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4">
+                <Link to="/login" onClick={handleLoginClick} >
+                  <button className="w-1/4 border border-richblack-400 bg-richblack-700 text-white px-1 py-1.5 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4 ml-3">
                     Login
                   </button>
                 </Link>
-                <Link to="/signup">
-                  <button className="w-full border border-green-400 bg-gradient-to-r from-green-400 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4">
+                <Link to="/signup" onClick={handleSignupClick} >
+                  <button className="w-1/4 border border-richblack-400 bg-richblack-700 text-white px-1 py-1.5 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4 ml-3 mb-3">
                     Sign up
                   </button>
                 </Link>
@@ -176,15 +200,6 @@ const Navbar = () => {
 
         {/* Right side: Cart, Auth, Theme Toggle */}
         <div className="hidden md:flex gap-4 items-center">
-          {/* Theme Toggle */}
-          <button
-            onClick={() => setDarkMode((prev) => !prev)}
-            className="text-2xl text-richblack-900 dark:text-white hover:text-sky-500 dark:hover:text-yellow-400 transition-colors"
-            aria-label="Toggle dark mode"
-          >
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </button>
-
           {/* Cart */}
           {user && user?.accountType !== "Instructor" && (
             <Link to="/dashboard/cart" className="relative text-white">
@@ -200,16 +215,22 @@ const Navbar = () => {
           {/* Auth Buttons */}
           {token === null && (
             <>
-              <Link to="/login">
-                <button className="border border-blue-400 bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all">
-                  Login
-                </button>
-              </Link>
-              <Link to="/signup">
-                <button className="ml-2 border border-green-400 bg-gradient-to-r from-green-400 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all">
-                  Sign up
-                </button>
-              </Link>
+             <Link to="/login" >
+              <button 
+              className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4"
+              // onClick={handleLoginClick}
+              >
+                Login
+              </button>
+            </Link>
+            <Link to="/signup" >
+              <button 
+              className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4"
+              // onClick={handleSignupClick}
+              >
+                Sign up
+              </button>
+            </Link>
             </>
           )}
 
