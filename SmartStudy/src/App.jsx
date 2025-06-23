@@ -106,6 +106,7 @@ function App() {
                 <Route path="cart" element={<Cart />} />
                 <Route path="enrolled-courses" element={<EnrolledCourses />} />
                 <Route path="purchase-history" element={<PurchasedHistory />} />
+                <Route path="community" element={<div className="text-white">Community Coming Soon...</div>} />
                 
               </>
             )}

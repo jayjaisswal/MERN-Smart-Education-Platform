@@ -16,6 +16,21 @@ function Template({ title, description1, description2, image, formType }) {
       ) : (
         <div className="mx-auto flex w-11/12 max-w-maxContent flex-col-reverse justify-between gap-y-12 py-12 md:flex-row md:gap-y-0 md:gap-x-12">
           <div className="mx-auto w-11/12 max-w-[450px] md:mx-0">
+          {/* Demo Credentials */}
+            <div className="mb-4 p-3 rounded bg-richblack-800 text-richblack-100 text-sm border border-richblack-700">
+              <div className="mb-2 font-bold text-richblack-5">Demo Accounts:</div>
+              <div>
+                <span className="font-semibold">Student</span>:<br />
+                Username: <span className="font-mono">student@example.com</span><br />
+                Password: <span className="font-mono">student123</span>
+              </div>
+              <div className="mt-2">
+                <span className="font-semibold">Instructor</span>:<br />
+                Username: <span className="font-mono">instructor@example.com</span><br />
+                Password: <span className="font-mono">instructor123</span>
+              </div>
+            </div>
+
             <h1 className="text-[1.875rem] font-semibold leading-[2.375rem] text-richblack-5">
               {title}
             </h1>
