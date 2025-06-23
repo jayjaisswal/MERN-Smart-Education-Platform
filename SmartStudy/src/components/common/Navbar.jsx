@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect,useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/Logo/Logo-Full-Light.png";
 import { NavbarLinks } from "../../data/navbar-links";
@@ -18,6 +18,7 @@ const Navbar = () => {
   const { setTotalItems } = useSelector((state) => state.cart);
   const location = useLocation();
   const navigate = useNavigate();
+  const navRef = useRef(null)
 
   // Responsive menu state
   const [menuOpen, setMenuOpen] = useState(false);
@@ -74,12 +75,26 @@ const handleSignupClick = () => {
   }, 100);
 };
 
+useEffect(() => {
+  if (!menuOpen) return;
+
+  function handleClickOutside(event) {
+    if (navRef.current && !navRef.current.contains(event.target)) {
+      setMenuOpen(false);
+      setCatalogOpen(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, [menuOpen]);
+
   return (
     <div className="flex h-16 items-center justify-center border-b border-b-richblack-700 dark:border-b-gray-700 bg-white dark:bg-gray-900 transition-colors shadow-sm">
       <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto">
         {/* Hamburger for mobile */}
         <button
-          className="md:hidden text-2xl text-richblack-900 dark:text-white mr-2"
+          className="md:hidden text-2xl  text-white mr-2"
           onClick={() => setMenuOpen((prev) => !prev)}
         >
           {menuOpen ? <FaTimes /> : <FaBars />}
@@ -99,6 +114,7 @@ const handleSignupClick = () => {
 
         {/* Navlinks */}
         <nav
+         ref={navRef}
           className={`${
             menuOpen ? "flex" : "hidden"
           } absolute top-16 left-0 w-full flex-col bg-white dark:bg-gray-900 md:static md:flex md:flex-row md:w-auto md:bg-transparent z-50 transition-all duration-300`}
@@ -124,7 +140,7 @@ const handleSignupClick = () => {
                       {link.title}
                     </span>
                     <IoIosArrowDown
-                      className={`text-lg transition-transform duration-300 ${
+                      className={`text-lg transition-transform duration-300 text-white ${
                         catalogOpen ? "rotate-180" : ""
                       }`}
                     />
@@ -194,7 +210,7 @@ const handleSignupClick = () => {
                 </Link>
               </>
             )}
-            {token !== null && <ProfileDropDown />}
+            {token !== null && <ProfileDropDown onAction={handleLinkClick} />}
           </div>
         </nav>
 
@@ -234,7 +250,7 @@ const handleSignupClick = () => {
             </>
           )}
 
-          {token !== null && <ProfileDropDown />}
+          {token !== null && <ProfileDropDown  />}
         </div>
       </div>
     </div>

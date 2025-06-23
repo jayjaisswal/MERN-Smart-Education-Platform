@@ -6,10 +6,13 @@ const User = require("../models/User");
 exports.auth = async (req, res, next) => {
   try {
     // extract token
-    const token =
+     const authHeader = req.header("Authorization");
+     console.log("Authorization header:", authHeader);
+     const token =
       req.cookies.token ||
       req.body.token ||
-      req.header("Authorization").replace("Bearer ", "");
+      (authHeader && authHeader.replace("Bearer ", "").trim());
+      console.log("Token extracted:", token);
 
     // if token missing, then return response
     if (!token) {
