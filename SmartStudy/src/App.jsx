@@ -21,10 +21,12 @@ import Cart from "./components/core/Dashboard/Cart";
 import { ACCOUNT_TYPE } from "./utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 function App() {
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.profile);
+  // console.log("User in App.jsx:", user);
   return (
     <div className="w-screen min-h-screen bg-richblack-900 flex flex-col">
       <Navbar></Navbar>
@@ -104,6 +106,7 @@ function App() {
                 <Route path="cart" element={<Cart />} />
                 <Route path="enrolled-courses" element={<EnrolledCourses />} />
                 <Route path="purchase-history" element={<PurchasedHistory />} />
+                
               </>
             )}
      </Route>

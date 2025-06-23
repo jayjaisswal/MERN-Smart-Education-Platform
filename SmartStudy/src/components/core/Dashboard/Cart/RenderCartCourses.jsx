@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {GiNinjaStar} from "react-icons/gi"
 import {RiDeleteBin6Line} from "react-icons/ri"
 import { removeFromCart } from '../../../../slices/CartSlice'
-// import ReactStars from "react-rating-stars-component";
+import ReactStars from "react-rating-stars-component";
 
 const RenderCartCourses = () => {
 
@@ -23,14 +23,14 @@ const RenderCartCourses = () => {
                         <p>{course?.category?.name}</p>
                         <div>
                             <span>4.8</span>
-                            {/* <ReactStars
+                            <ReactStars
                                 count={5}
                                 size={20}
                                 edit={false}
                                 activeColor="#ffd700"
                                 emtpyIcon={<GiNinjaStar />}
                                 fullIcon={<GiNinjaStar />}
-                            />  */}
+                            /> 
 
                             <span>{course?.ratingAndReviews?.length} Ratings</span>
 

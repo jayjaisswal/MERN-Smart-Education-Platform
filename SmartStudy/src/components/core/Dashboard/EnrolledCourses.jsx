@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { getUserEnrolledCourses } from '../../../services/operations/profileAPI';
-// import ProgressBar from '@ramonak/react-progress-bar';
+import Spinner from '../../../spinner/Spinner';
+import ProgressBar from '@ramonak/react-progress-bar';
 
 const EnrolledCourses = () => {
 
@@ -31,7 +32,7 @@ const EnrolledCourses = () => {
         <div>Enrolled Courses</div>
         {
             !enrolledCourses ? (<div>
-                Loading...
+                <Spinner></Spinner>
             </div>)
             : !enrolledCourses.length ? (<p>You have not enrolled in any course yet</p>)
             : (
@@ -57,14 +58,14 @@ const EnrolledCourses = () => {
                                     {course?.totalDuration}
                                 </div>
 
-                                {/* <div>
+                                <div>
                                     <p>Progress: {course.progressPercentage || 0}%</p>
                                     <ProgressBar
                                         completed={course.progressPercentage || 0}
                                         height='8px'
                                         isLabelVisible={false}
                                         />
-                                </div> */}
+                                </div>
                             </div>
                         ))
                     }
