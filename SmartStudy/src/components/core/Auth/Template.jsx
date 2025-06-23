@@ -19,7 +19,7 @@ function Template({ title, description1, description2, image, formType }) {
           {/* Demo Credentials */}
             <div className="mb-4 p-3 rounded bg-richblack-800 text-richblack-100 text-sm border border-richblack-700">
               <div className="mb-2 text-xs text-yellow-300">
-                Note: First load may take time. If login fails, please try again.<br/>
+                Note: First load may take time. If login fails, please try again.
                 Because Data Fetched from Render.com
               </div>
               <div className="mb-2 font-bold text-richblack-5">Demo Accounts:</div>
