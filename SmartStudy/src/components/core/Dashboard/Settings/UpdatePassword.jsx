@@ -13,6 +13,7 @@ export default function UpdatePassword() {
 
   const [showOldPassword, setShowOldPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
+  const [confirmPassword, setconfirmPassword] = useState(false)
 
   const {
     register,
@@ -21,7 +22,7 @@ export default function UpdatePassword() {
   } = useForm()
 
   const submitPasswordForm = async (data) => {
-    // console.log("password Data - ", data)
+    console.log("password Data - ", data)
     try {
       await changePassword(token, data)
     } catch (error) {
@@ -32,7 +33,7 @@ export default function UpdatePassword() {
   return (
     <>
       <form onSubmit={handleSubmit(submitPasswordForm)}>
-        <div className="my-10 flex flex-col gap-y-6 rounded-md border-[1px] border-richblack-700 bg-richblack-800 p-8 px-12">
+        <div className="my-10 flex flex-col gap-y-6 rounded-md border-[1px] border-richblack-700 text-white bg-richblack-800 p-8 px-12">
           <h2 className="text-lg font-semibold text-richblack-5">Password</h2>
           <div className="flex flex-col gap-5 lg:flex-row">
             <div className="relative flex flex-col gap-2 lg:w-[48%]">
@@ -86,6 +87,35 @@ export default function UpdatePassword() {
                 )}
               </span>
               {errors.newPassword && (
+                <span className="-mt-1 text-[12px] text-yellow-100">
+                  Please enter your New Password.
+                </span>
+              )}
+            </div>
+            {/* confirm */}
+            <div className="relative flex flex-col gap-2 lg:w-[48%]">
+              <label htmlFor="newPassword" className="lable-style">
+                Confirm Password
+              </label>
+              <input
+                type={confirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                id="confirmPassword"
+                placeholder="Enter Confirm Password"
+                className="form-style"
+                {...register("confirmPassword", { required: true })}
+              />
+              <span
+                onClick={() => setconfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-[38px] z-[10] cursor-pointer"
+              >
+                {confirmPassword ? (
+                  <AiOutlineEyeInvisible fontSize={24} fill="#AFB2BF" />
+                ) : (
+                  <AiOutlineEye fontSize={24} fill="#AFB2BF" />
+                )}
+              </span>
+              {errors.confirmPassword && (
                 <span className="-mt-1 text-[12px] text-yellow-100">
                   Please enter your New Password.
                 </span>

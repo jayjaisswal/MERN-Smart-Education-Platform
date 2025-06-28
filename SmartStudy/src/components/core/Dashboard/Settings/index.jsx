@@ -5,18 +5,30 @@ import UpdatePassword from "./UpdatePassword"
 
 export default function Settings() {
   return (
-    <>
-      <h1 className="mb-14 text-3xl font-medium text-richblack-5">
+    <div className="w-full max-w-[900px] mx-auto px-4 py-8">
+      <h1 className="mb-10 text-2xl sm:text-3xl font-semibold text-richblack-5 text-center sm:text-left">
         Edit Profile
       </h1>
-      {/* Change Profile Picture */}
-      <ChangeProfilePicture />
-      {/* Profile */}
-      <EditProfile />
-      {/* Password */}
-      <UpdatePassword />
+
+      {/* Profile Picture - stack on mobile */}
+      <div className="mb-8">
+        <ChangeProfilePicture />
+      </div>
+
+      {/* Edit Profile Section */}
+      <div className="mb-8">
+        <EditProfile />
+      </div>
+
+      {/* Update Password */}
+      <div className="mb-8">
+        <UpdatePassword />
+      </div>
+
       {/* Delete Account */}
-      <DeleteAccount />
-    </>
+      <div className="mb-8">
+        <DeleteAccount />
+      </div>
+    </div>
   )
 }

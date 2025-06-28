@@ -24,16 +24,21 @@ exports.auth = async (req, res, next) => {
 
     // verify the token
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log(decoded);
-      req.user = decoded;
-    } catch (error) {
-      // verification issue
-      return res.status(401).json({
-        success: false,
-        message: "Token is invalid",
-      });
-    }
+      const decode = jwt.verify(token, process.env.JWT_SECRET);
+  req.user = decode;
+} catch (err) {
+  if (err.name === "TokenExpiredError") {
+    return res.status(401).json({
+      success: false,
+      message: "Token has expired",
+    });
+  }
+  return res.status(401).json({
+    success: false,
+    message: "Token is invalid",
+  });
+}
+    
     next();
   } catch (error) {
     return res.status(401).json({

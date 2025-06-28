@@ -79,25 +79,51 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader");
 // Method for updating a profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { dateOfBirth = "", about = "", contactNumber } = req.body;
+    const { dateOfBirth = "", about = "", contactNumber,  gender,firstName, lastName  } = req.body;
     const id = req.user.id;
+    console.log("Received in req.body:", req.body);
 
+    // Validation
+  
     // Find the profile by id
     const userDetails = await User.findById(id);
+    if (!userDetails) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    console.log(userDetails);
+    // Get the profile using additionalDetails from user
     const profile = await Profile.findById(userDetails.additionalDetails);
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+      }
+    console.log(profile);
+    
 
     // Update the profile fields
     profile.dateOfBirth = dateOfBirth;
     profile.about = about;
     profile.contactNumber = contactNumber;
+    profile.gender = gender;
+    userDetails.firstName = firstName;
+    userDetails.lastName = lastName;
+
+
 
     // Save the updated profile
     await profile.save();
+    await userDetails.save();
 
     return res.json({
       success: true,
-      message: "Profile updated successfully",
+      message: "Profile updated successfully!!",
       profile,
+      userDetails,
     });
   } catch (error) {
     console.log(error);
@@ -124,7 +150,7 @@ exports.deleteAccount = async (req, res) => {
     }
 
     // delete profile
-    await Profile.findByIdAndDelete({ _id: userDetails.additionDetail });
+    await Profile.findByIdAndDelete({ _id: userDetails.additionalDetails });
     // Todo unenroll user from all enrolled Course
     // delete user
     // what is cronejob

@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
       required: true,
@@ -25,6 +26,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["Admin", "Student", "Instructor"],
       required: true,
+      
     },
     active: {
       type: Boolean,

@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const mailSender = require("../utils/mailSender");
-const { passwordUpdate } = require("../mail/templates/passwordUpdate");
+const { passwordUpdated } = require("../mail/templates/passwordUpdate");
 require("dotenv").config();
 const Profile = require("../models/Profile");
 
@@ -74,8 +74,7 @@ exports.signup = async (req, res) => {
       email,
       password,
       confirmPassword,
-      
-      
+
       // contactNumber,
       // address,
       otp,
@@ -90,7 +89,7 @@ exports.signup = async (req, res) => {
       !email ||
       !password ||
       !confirmPassword ||
-      !accountType||
+      !accountType ||
       // !contactNumber ||
       !otp
     ) {
@@ -221,8 +220,7 @@ exports.login = async (req, res) => {
     }
 
     // generate JWT, after password match
-    if (await bcrypt.compare(password, user.password)) 
-      {
+    if (await bcrypt.compare(password, user.password)) {
       const payload = {
         email: user.email,
         id: user._id,
@@ -267,7 +265,7 @@ exports.changePassword = async (req, res) => {
     const userDetails = await User.findById(req.user.id);
 
     // Get old password, new password, and confirm new password from req.body
-    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
 
     // Validate old password
     const isPasswordMatch = await bcrypt.compare(
@@ -278,11 +276,11 @@ exports.changePassword = async (req, res) => {
       // If old password does not match, return a 401 (Unauthorized) error
       return res
         .status(401)
-        .json({ success: false, message: "The password is incorrect" });
+        .json({ success: false, message: "The old password is incorrect" });
     }
 
     // Match new password and confirm new password
-    if (newPassword !== confirmNewPassword) {
+    if (newPassword !== confirmPassword) {
       // If new password and confirm new password do not match, return a 400 (Bad Request) error
       return res.status(400).json({
         success: false,

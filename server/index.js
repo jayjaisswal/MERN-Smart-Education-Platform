@@ -22,17 +22,19 @@ database.connect();
 // middleware
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
       "https://mern-smart-education-platform.vercel.app",
-      
     ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], //  Required
   })
 );
+
 app.use(
   fileUpload({
     useTempFiles: true,
@@ -60,5 +62,3 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-
