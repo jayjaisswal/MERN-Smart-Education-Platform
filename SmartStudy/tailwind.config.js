@@ -4,6 +4,14 @@ export default {
   content: ["./src/**/*.{js,jsx}"],
 
   theme: {
+    screens: {
+      xs: "480px",
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "900px", // 👈 custom screen size
+      "2xl": "1280px",
+    },
     colors: {
       transparent: "#ffffff00",
       white: "#fff",

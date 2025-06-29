@@ -133,7 +133,7 @@ export default function CourseBuilderForm() {
             <button
               type="button"
               onClick={cancelEdit}
-              className="text-sm text-richblack-300 underline"
+              className="text-sm text-richblack-300 underline hover:bg-richblack-600"
             >
               Cancel Edit
             </button>

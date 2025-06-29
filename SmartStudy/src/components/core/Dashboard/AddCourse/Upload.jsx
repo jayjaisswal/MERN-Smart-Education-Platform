@@ -86,7 +86,7 @@ export default function Upload({
                   setSelectedFile(null)
                   setValue(name, null)
                 }}
-                className="mt-3 text-richblack-400 underline"
+                className="mt-3 text-richblack-400 underline hover:bg-richblack-600"
               >
                 Cancel
               </button>

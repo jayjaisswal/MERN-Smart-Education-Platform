@@ -1,51 +1,54 @@
-import React, { useEffect,useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useLocation, matchPath, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
+import { IoIosArrowDown } from "react-icons/io";
+
 import Logo from "../../assets/Logo/Logo-Full-Light.png";
 import { NavbarLinks } from "../../data/navbar-links";
-import { useLocation, matchPath } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
-import { IoIosArrowDown } from "react-icons/io";
 import ProfileDropDown from "../core/Auth/ProfileDropDown";
 import { apiConnector } from "../../services/apiConnector";
 import { categories } from "../../services/apis";
-import { useNavigate } from 'react-router-dom';
-
+import Spinner from "../../spinner/Spinner";
 
 const Navbar = () => {
-  const { token } = useSelector((state) => state.auth);
-  const { user } = useSelector((state) => state.profile);
+  const { token, loading: authLoading } = useSelector((state) => state.auth);
+  const { user, loading: profileLoading } = useSelector((state) => state.profile);
   const { setTotalItems } = useSelector((state) => state.cart);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [sublinks, setSubLinks] = useState([]);
+  const navRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const navRef = useRef(null)
 
-  // Responsive menu state
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  // Catalog dropdown state for mobile
-  const [catalogOpen, setCatalogOpen] = useState(false);
-
-  // api call
-  const [sublinks, setSubLinks] = useState([]);
-  const fetchSubLinks = async () => {
-    try {
-      const result = await apiConnector("GET", categories.CATEGORIES_API);
-      setSubLinks(result.data.allTags);
-    } catch (error) {
-      // handle error
-    }
-  };
   useEffect(() => {
+    const fetchSubLinks = async () => {
+      try {
+        const result = await apiConnector("GET", categories.CATEGORIES_API);
+        setSubLinks(result.data.allTags);
+      } catch (error) {
+        console.error("Category fetch failed:", error);
+      }
+    };
     fetchSubLinks();
   }, []);
 
-  const matchRoute = (route) => {
-    if (!route) return false;
-    return matchPath({ path: route }, location.pathname);
-  };
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setMenuOpen(false);
+        setCatalogOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
 
-  // Handle Catalog dropdown for mobile
+  const matchRoute = (route) => route && matchPath({ path: route }, location.pathname);
+
   const handleCatalogClick = (e) => {
     if (window.innerWidth < 768) {
       e.preventDefault();
@@ -53,68 +56,69 @@ const Navbar = () => {
     }
   };
 
-  // Close menu on link click (mobile)
   const handleLinkClick = () => {
     setMenuOpen(false);
     setCatalogOpen(false);
   };
 
   const handleLoginClick = () => {
-  setMenuOpen(false);
-  setCatalogOpen(false);
-  setTimeout(() => {
-    navigate('/login');
-  }, 100); // wait 100ms so state update completes
-};
+    handleLinkClick();
+    navigate("/login");
+  };
 
-const handleSignupClick = () => {
-  setMenuOpen(false);
-  setCatalogOpen(false);
-  setTimeout(() => {
-    navigate('/signup');
-  }, 100);
-};
+  const handleSignupClick = () => {
+    handleLinkClick();
+    navigate("/signup");
+  };
 
-useEffect(() => {
-  if (!menuOpen) return;
-
-  function handleClickOutside(event) {
-    if (navRef.current && !navRef.current.contains(event.target)) {
-      setMenuOpen(false);
-      setCatalogOpen(false);
-    }
+  if (profileLoading || authLoading) {
+    return (
+      <div className="mt-10">
+        <Spinner />
+      </div>
+    );
   }
-
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, [menuOpen]);
 
   return (
     <div className="flex h-16 items-center justify-center border-b border-b-richblack-700 dark:border-b-gray-700 bg-white dark:bg-gray-900 transition-colors shadow-sm">
       <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto">
-        {/* Hamburger for mobile */}
-        <button
-          className="md:hidden text-2xl  text-white mr-2"
-          onClick={() => setMenuOpen((prev) => !prev)}
-        >
-          {menuOpen ? <FaTimes /> : <FaBars />}
-        </button>
 
-        {/* Logo */}
+        {/* Left: Logo */}
         <Link to="/" className="flex items-center">
-          <img
+          {/* <img
             src={Logo}
             alt="Logo"
             width={120}
             height={32}
             loading="lazy"
             className="drop-shadow-md"
-          />
+          /> */}
         </Link>
 
-        {/* Navlinks */}
+        {/* Right: Hamburger and Cart for Mobile */}
+        <div className="flex items-center gap-4 md:hidden">
+          {user && user?.accountType !== "Instructor" && (
+            <Link to="/dashboard/cart" className="relative text-white">
+              <FaShoppingCart className="text-xl hover:text-sky-500 transition-colors" />
+              {setTotalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full px-1">
+                  {setTotalItems}
+                </span>
+              )}
+            </Link>
+          )}
+
+          <button
+            className="text-2xl text-white"
+            onClick={() => setMenuOpen((prev) => !prev)}
+          >
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
+
+        {/* Nav Links */}
         <nav
-         ref={navRef}
+          ref={navRef}
           className={`${
             menuOpen ? "flex" : "hidden"
           } absolute top-16 left-0 w-full flex-col bg-white dark:bg-gray-900 md:static md:flex md:flex-row md:w-auto md:bg-transparent z-50 transition-all duration-300`}
@@ -147,17 +151,9 @@ useEffect(() => {
                     {/* Dropdown */}
                     <div
                       className={`
-                        ${
-                          catalogOpen ||
-                          (window.innerWidth >= 768 &&
-                            "group-hover:visible group-hover:opacity-100")
-                        }
-                        ${
-                          catalogOpen
-                            ? "visible opacity-100"
-                            : "invisible opacity-0"
-                        }
                         absolute left-0 top-8 min-w-[180px] rounded-md bg-white dark:bg-gray-800 shadow-lg z-20 transition-all duration-300
+                        ${catalogOpen ? "visible opacity-100" : "invisible opacity-0"}
+                        md:group-hover:visible md:group-hover:opacity-100
                       `}
                     >
                       {Array.isArray(sublinks) && sublinks.length > 0 ? (
@@ -194,29 +190,30 @@ useEffect(() => {
               </li>
             ))}
           </ul>
-          {/* Login/Signup for mobile */}
+
+          {/* Auth Buttons (Mobile) */}
           <div className="flex flex-col gap-2 mt-0 md:hidden">
-            {token === null && (
+            {!token ? (
               <>
-                <Link to="/login" onClick={handleLoginClick} >
+                <Link to="/login" onClick={handleLoginClick}>
                   <button className="w-1/4 border border-richblack-400 bg-richblack-700 text-white px-1 py-1.5 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4 ml-3">
                     Login
                   </button>
                 </Link>
-                <Link to="/signup" onClick={handleSignupClick} >
+                <Link to="/signup" onClick={handleSignupClick}>
                   <button className="w-1/4 border border-richblack-400 bg-richblack-700 text-white px-1 py-1.5 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4 ml-3 mb-3">
                     Sign up
                   </button>
                 </Link>
               </>
+            ) : (
+              <ProfileDropDown onAction={handleLinkClick} />
             )}
-            {token !== null && <ProfileDropDown onAction={handleLinkClick} />}
           </div>
         </nav>
 
-        {/* Right side: Cart, Auth, Theme Toggle */}
+        {/* Auth (Desktop) */}
         <div className="hidden md:flex gap-4 items-center">
-          {/* Cart */}
           {user && user?.accountType !== "Instructor" && (
             <Link to="/dashboard/cart" className="relative text-white">
               <FaShoppingCart className="text-xl hover:text-sky-500 transition-colors" />
@@ -227,30 +224,22 @@ useEffect(() => {
               )}
             </Link>
           )}
-
-          {/* Auth Buttons */}
-          {token === null && (
+          {!token ? (
             <>
-             <Link to="/login" >
-              <button 
-              className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4"
-              // onClick={handleLoginClick}
-              >
-                Login
-              </button>
-            </Link>
-            <Link to="/signup" >
-              <button 
-              className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4"
-              // onClick={handleSignupClick}
-              >
-                Sign up
-              </button>
-            </Link>
+              <Link to="/login">
+                <button className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4">
+                  Login
+                </button>
+              </Link>
+              <Link to="/signup">
+                <button className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4">
+                  Sign up
+                </button>
+              </Link>
             </>
+          ) : (
+            <ProfileDropDown />
           )}
-
-          {token !== null && <ProfileDropDown  />}
         </div>
       </div>
     </div>

@@ -137,5 +137,17 @@ html, body{
 
 }
 
+/* For input labels */
+.label-style {
+  @apply text-richblack-5 text-sm font-medium;
+}
+
+/* For input and select elements */
+.form-style {
+  @apply w-full rounded-md border border-richblack-600 bg-richblack-700 px-3 py-2 text-sm text-richblack-5 placeholder-richblack-400 focus:border-richblack-300 focus:outline-none focus:ring-1 focus:ring-richblack-200 transition-all duration-200;
+}
+
+
+
 
 

@@ -35,9 +35,9 @@ export default function EditProfile() {
           <h2 className="text-lg font-semibold text-richblack-5">
             Profile Information
           </h2>
-          <div className="flex flex-col gap-5 lg:flex-row">
+          <div className="flex flex-col gap-5 lg:flex-row text-white">
             <div className="flex flex-col gap-2 lg:w-[48%]">
-              <label htmlFor="firstName" className="lable-style">
+              <label htmlFor="firstName" className="lable-style ">
                 First Name
               </label>
               <input
@@ -76,7 +76,7 @@ export default function EditProfile() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-5 lg:flex-row">
+          <div className="flex flex-col gap-5 lg:flex-row text-white">
             <div className="flex flex-col gap-2 lg:w-[48%]">
               <label htmlFor="dateOfBirth" className="lable-style">
                 Date of Birth
@@ -132,7 +132,7 @@ export default function EditProfile() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-5 lg:flex-row">
+          <div className="flex flex-col gap-5 lg:flex-row text-white">
             <div className="flex flex-col gap-2 lg:w-[48%]">
               <label htmlFor="contactNumber" className="lable-style">
                 Contact Number
@@ -186,7 +186,7 @@ export default function EditProfile() {
             onClick={() => {
               navigate("/dashboard/my-profile")
             }}
-            className="cursor-pointer rounded-md bg-richblack-700 py-2 px-5 font-semibold text-richblack-50 "
+            className="cursor-pointer hover:bg-richblack-600 rounded-md bg-richblack-700 py-2 px-5 font-semibold text-richblack-50 "
           >
             Cancel
           </button>

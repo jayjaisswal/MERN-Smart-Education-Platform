@@ -56,9 +56,9 @@ export default function ChangeProfilePicture() {
   }, [imageFile])
 
   return (
-    <div className="w-full rounded-md border border-richblack-700 bg-richblack-800 p-6 sm:p-8 mb-8 text-richblack-5 shadow-md">
-      <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-6">
-        {/* Profile image */}
+    <div className="w-full rounded-md border flex flex-col justify-center border-richblack-700 bg-richblack-800 p-6 sm:p-8 mb-8 text-richblack-5 shadow-md">
+      <div className="flex flex-col sm:flex-row items-center sm:items-center sm:justify-between gap-6">
+        {/* Profile image + text */}
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <img
             src={previewSource || user?.image}
@@ -71,7 +71,7 @@ export default function ChangeProfilePicture() {
         </div>
 
         {/* Upload Controls */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+        <div className="flex flex-row sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
           <input
             type="file"
             ref={fileInputRef}
@@ -82,7 +82,7 @@ export default function ChangeProfilePicture() {
           <button
             onClick={handleClick}
             disabled={loading}
-            className="w-full sm:w-auto rounded-md bg-richblack-700 px-4 py-2 text-sm font-semibold hover:bg-richblack-600 transition duration-200"
+            className="w-full sm:w-auto  text-sm  cursor-pointer rounded-md bg-richblack-700 py-4 px-5 font-semibold text-richblack-50 hover:bg-richblack-600 transition duration-200"
           >
             Select
           </button>
@@ -91,7 +91,7 @@ export default function ChangeProfilePicture() {
             onclick={handleFileUpload}
             disabled={!imageFile || loading}
           >
-            {!loading && <FiUpload className="text-lg text-richblack-900" />}
+            {!loading && <FiUpload className="text-lg  text-richblack-900" />}
           </IconBtn>
         </div>
       </div>
