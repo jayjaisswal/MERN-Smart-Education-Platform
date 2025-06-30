@@ -33,7 +33,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], //  Required
   })
-);g
+);
 
 app.use(
   fileUpload({
