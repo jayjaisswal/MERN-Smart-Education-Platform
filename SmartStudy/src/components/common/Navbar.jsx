@@ -85,14 +85,14 @@ const Navbar = () => {
 
         {/* Left: Logo */}
         <Link to="/" className="flex items-center">
-          {/* <img
+          <img
             src={Logo}
             alt="Logo"
-            width={120}
-            height={32}
+            width={150}
+            height={40}
             loading="lazy"
             className="drop-shadow-md"
-          /> */}
+          />
         </Link>
 
         {/* Right: Hamburger and Cart for Mobile */}

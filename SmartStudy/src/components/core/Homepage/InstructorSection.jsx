@@ -22,7 +22,7 @@ const InstructorSection = () => {
                         </div>
 
                         <p className='font-medium text-[16px] w-[90%] text-richblack-300 text-justify'>
-                            Instructors from aroun the world teach millions of students on StudyNotion. We provide the
+                            Instructors from aroun the world teach millions of students on PadhloIndia. We provide the
                             tools and skills to teach what you love.
                         </p>
 
