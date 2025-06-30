@@ -27,13 +27,13 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://mern-smart-education-platform.vercel.app",
+      "https://padhlo-india.vercel.app",
     ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], //  Required
   })
-);
+);g
 
 app.use(
   fileUpload({
