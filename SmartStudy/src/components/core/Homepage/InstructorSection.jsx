@@ -21,7 +21,7 @@ const InstructorSection = () => {
                             <HighlightText text={"Instructor"}/>  
                         </div>
 
-                        <p className='font-medium text-[16px] w-[90%] text-richblack-300 text-justify'>
+                        <p className='font-medium text-[16px] w-[90%] text-richblack-300 '>
                             Instructors from aroun the world teach millions of students on PadhloIndia. We provide the
                             tools and skills to teach what you love.
                         </p>

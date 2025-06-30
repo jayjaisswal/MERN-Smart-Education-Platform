@@ -82,9 +82,9 @@ const Home = () => {
                     </div>
 
                     {/* code section 1.6 */}
-                    <div>
+                    <div className='hidden sm:block'>
                         <CodeBlocks
-                                position={"lg:flex-row "}
+                                position={"sm:flex-row "}
                                 heading={
                                             <div className='text-4xl font-semibold'>
                                                     Unlock Your
@@ -116,11 +116,11 @@ const Home = () => {
                         ></CodeBlocks>
                     </div>
                     {/* code section 1.7 */}
-                    <div>
+                    <div className=''>
                         <CodeBlocks
-                        position={"flex-row-reverse"}
+                        position={"sm:flex-row-reverse flex-col"}
                         heading={
-                            <div className='text-4xl font-semibold'>
+                            <div className='text-4xl font-semibold hidden sm:block'>
                                 Unlock Your
                                 <HighlightText text={"Coding Potential"}/>
                                 With our Online Courses
@@ -145,7 +145,7 @@ const Home = () => {
                         }
 
                         
-                codeblock={`<<!DOCTYPE html>\n<html>\nhead><title>Example</title><linkrel="stylesheet"href="styles.css">\n/head>\n`}
+                codeblock={`#include<iostream>\nusing namespace std;\nint main() {\n cout<<"Hello Padhlo India";\nreturn 0;\n}\n`}
                 codeColor={"text-yellow-25"}
                         
                         ></CodeBlocks>
@@ -192,7 +192,7 @@ const Home = () => {
                        
 
                                 <div className='flex flex-col gap-10 w-[40%] items-start' >
-                                    <div className='text-[16px] text-justify'>
+                                    <div className='text-[16px] '>
                                         The modern PadhloIndia is the dictates its own terms. Today, to be a competitive
                                         specialist requires more than professional skills.
                                     </div>
@@ -205,12 +205,6 @@ const Home = () => {
                         
             </div>
    
-            
-
-            
-
-
-
             {/* Section 3 */}
 
             <div className='w-11/12 mx-auto max-w-max-content flex-col items-center justify-between gap-8 bg-richblack-900 text-white '>

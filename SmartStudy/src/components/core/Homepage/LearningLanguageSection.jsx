@@ -19,7 +19,7 @@ const LearningLanguageSection = () => {
                     progress tracking, custom schedule and more.
                 </div>
 
-                <div className='flex flex-row items-center justify-center mt-5'>
+                <div className='hidden lg:flex flex-row items-center justify-center mt-5 '>
                     <img 
                     src={Know_your_progress} 
                     alt="Know_your_progresss"

@@ -71,7 +71,7 @@ export default function ChangeProfilePicture() {
         </div>
 
         {/* Upload Controls */}
-        <div className="flex flex-row sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
+        <div className="flex flex-row sm:flex-row sm:items-center gap-4 w-full sm:w-auto ">
           <input
             type="file"
             ref={fileInputRef}
