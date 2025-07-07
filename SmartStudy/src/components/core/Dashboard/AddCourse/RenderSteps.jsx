@@ -1,44 +1,36 @@
 import { FaCheck } from "react-icons/fa"
 import { useSelector } from "react-redux"
 
-// import CourseBuilderForm from "./CourseBuilder/CourseBuilderForm"
+import CourseBuilderForm from "./CourseBuilder/CourseBuilderForm"
 import CourseInformationForm from "./CourseInformation/CourseInformationForm"
-// import PublishCourse from "./PublishCourse"
-
+import PublishCourse from "./PublishCourse"
 
 export default function RenderSteps() {
   const { step } = useSelector((state) => state.course)
 
   const steps = [
-    {
-      id: 1,
-      title: "Course Information",
-    },
-    {
-      id: 2,
-      title: "Course Builder",
-    },
-    {
-      id: 3,
-      title: "Publish",
-    },
+    { id: 1, title: "Course Information" },
+    { id: 2, title: "Course Builder" },
+    { id: 3, title: "Publish" },
   ]
 
   return (
-    <>
-      <div className="relative mb-2 flex w-full justify-center">
-        {steps.map((item) => (
-          <>
-            <div
-              className="flex flex-col items-center "
-              key={item.id}
-            >
+    <div className="w-full max-w-screen overflow-x-hidden px-2">
+      {/* Step Circles and Lines */}
+      <div className="relative mb-4 flex w-full flex-wrap justify-center items-center gap-x-2 overflow-x-auto">
+        {steps.map((item, index) => (
+          <div key={item.id} className="flex items-center">
+            {/* Step Circle */}
+            <div className="flex flex-col items-center">
               <button
-                className={`grid cursor-default aspect-square w-[34px] place-items-center rounded-full border-[1px] ${
-                  step === item.id
-                    ? "border-yellow-50 bg-yellow-900 text-yellow-50"
-                    : "border-richblack-700 bg-richblack-800 text-richblack-300"
-                } ${step > item.id && "bg-yellow-50 text-yellow-50"}} `}
+                className={`grid aspect-square w-[34px] place-items-center rounded-full border-[1.5px] transition-all duration-300
+                  ${
+                    step === item.id
+                      ? "border-green-300 bg-green-800 text-white"
+                      : "border-richblack-700 bg-richblack-800 text-richblack-300"
+                  }
+                  ${step > item.id && "bg-green-300 text-white"}
+                `}
               >
                 {step > item.id ? (
                   <FaCheck className="font-bold text-richblack-900" />
@@ -46,45 +38,43 @@ export default function RenderSteps() {
                   item.id
                 )}
               </button>
-              
             </div>
-            {item.id !== steps.length && (
-              <>
-                <div
-                  className={`h-[calc(34px/2)] w-[33%]  border-dashed border-b-2 ${
-                  step > item.id  ? "border-yellow-50" : "border-richblack-500"
-                } `}
-                ></div>
-              </>
+
+            {/* Dashed Line (except last step) */}
+            {index !== steps.length - 1 && (
+              <div
+                className={`h-[2px] w-16 md:w-24 border-b-2 border-dashed mx-2 transition-all duration-300
+                ${
+                  step > item.id
+                    ? "border-green-300"
+                    : "border-richblack-500"
+                }`}
+              ></div>
             )}
-          </>
+          </div>
         ))}
       </div>
 
-      <div className="relative mb-16 flex w-full select-none justify-between">
-        {steps.map((item) => (
-          <>
-            <div
-              className="flex min-w-[130px] flex-col items-center gap-y-2"
-              key={item.id}
-            >
-              
-              <p
-                className={`text-sm ${
-                  step >= item.id ? "text-richblack-5" : "text-richblack-500"
-                }`}
-              >
-                {item.title}
-              </p>
-            </div>
-            
-          </>
-        ))}
-      </div>
-      {/* Render specific component based on current step */}
+      {/* Step Titles */}
+     <div className="relative mb-12 flex w-full select-none">
+  {steps.map((item) => (
+    <div key={item.id} className="flex-1 flex justify-center">
+      <p
+        className={`text-sm text-center ${
+          step >= item.id ? "text-richblack-5" : "text-richblack-500"
+        }`}
+      >
+        {item.title}
+      </p>
+    </div>
+  ))}
+</div>
+
+
+      {/* Render the current form */}
       {step === 1 && <CourseInformationForm />}
-      {/* {step === 2 && <CourseBuilderForm />}
-      {step === 3 &&  <PublishCourse /> } */}
-    </>
+      {step === 2 && <CourseBuilderForm />}
+      {step === 3 && <PublishCourse />}
+    </div>
   )
 }

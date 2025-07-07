@@ -41,12 +41,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       ref: "Profile",
     },
+    
     courses: [
-      {
-        type: String,
-        ref: "Course",
-      },
-    ],
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course",
+          },
+        ],
+
     image: {
       type: String,
       required: true,

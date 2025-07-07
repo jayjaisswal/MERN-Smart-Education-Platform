@@ -94,7 +94,7 @@ export default function PublishCourse() {
           >
             Back
           </button>
-          <IconBtn disabled={loading} text="Save Changes" />
+          <IconBtn disabled={loading} type="submit" text="Save Changes" />
         </div>
       </form>
     </div>

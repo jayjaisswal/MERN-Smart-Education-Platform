@@ -120,6 +120,7 @@ export default function CourseBuilderForm() {
             </span>
           )}
         </div>
+        {/* .................................................................. */}
         <div className="flex items-end gap-x-4">
           <IconBtn
             type="submit"
@@ -133,13 +134,14 @@ export default function CourseBuilderForm() {
             <button
               type="button"
               onClick={cancelEdit}
-              className="text-sm text-richblack-300 underline hover:bg-richblack-600"
+              className="text-sm text-richblack-5 px-3 py-2 underline hover:bg-richblack-600"
             >
               Cancel Edit
             </button>
           )}
         </div>
       </form>
+      {/* ............................................................................. */}
       {course.courseContent.length > 0 && (
         <NestedView handleChangeEditSectionName={handleChangeEditSectionName} />
       )}

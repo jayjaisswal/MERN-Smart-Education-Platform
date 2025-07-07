@@ -74,7 +74,7 @@ export default function SubSectionModal({
       formData.append("description", currentValues.lectureDesc)
     }
     if (currentValues.lectureVideo !== modalData.videoUrl) {
-      formData.append("video", currentValues.lectureVideo)
+      formData.append("videoFile", currentValues.lectureVideo)
     }
     setLoading(true)
     const result = await updateSubSection(formData, token)
@@ -92,7 +92,7 @@ export default function SubSectionModal({
   }
 
   const onSubmit = async (data) => {
-    // console.log(data)
+    console.log(data)
     if (view) return
 
     if (edit) {
@@ -105,10 +105,10 @@ export default function SubSectionModal({
     }
 
     const formData = new FormData()
-    formData.append("sectionId", modalData)
+    formData.append("sectionId", add ? modalData : modalData.sectionId)
     formData.append("title", data.lectureTitle)
     formData.append("description", data.lectureDesc)
-    formData.append("video", data.lectureVideo)
+    formData.append("videoFile", data.lectureVideo)
     setLoading(true)
     const result = await createSubSection(formData, token)
     if (result) {
@@ -124,7 +124,7 @@ export default function SubSectionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] !mt-0 grid h-screen w-screen place-items-center overflow-auto bg-white bg-opacity-10 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[1000] !mt-0 grid h-screen w-screen place-items-center overflow-auto bg-richblack-700 bg-opacity-10 backdrop-blur-sm">
       <div className="my-10 w-11/12 max-w-[700px] rounded-lg border border-richblack-400 bg-richblack-800">
         {/* Modal Header */}
         <div className="flex items-center justify-between rounded-t-lg bg-richblack-700 p-5">
@@ -191,6 +191,7 @@ export default function SubSectionModal({
           {!view && (
             <div className="flex justify-end">
               <IconBtn
+                type="submit"
                 disabled={loading}
                 text={loading ? "Loading.." : edit ? "Save Changes" : "Save"}
               />
