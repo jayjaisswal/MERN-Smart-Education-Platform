@@ -62,9 +62,9 @@ export default function SubSectionModal({
   // handle the editing of subsection
   const handleEditSubsection = async () => {
     const currentValues = getValues()
-    // console.log("changes after editing form values:", currentValues)
+    console.log("changes after editing form values:", currentValues)
     const formData = new FormData()
-    // console.log("Values After Editing form values:", currentValues)
+    console.log("Values After Editing form values:", currentValues)
     formData.append("sectionId", modalData.sectionId)
     formData.append("subSectionId", modalData._id)
     if (currentValues.lectureTitle !== modalData.title) {
@@ -124,7 +124,7 @@ export default function SubSectionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] !mt-0 grid h-screen w-screen place-items-center overflow-auto bg-richblack-700 bg-opacity-10 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[1000] !mt-0 grid h-screen w-screen place-items-center overflow-auto   backdrop-blur-sm">
       <div className="my-10 w-11/12 max-w-[700px] rounded-lg border border-richblack-400 bg-richblack-800">
         {/* Modal Header */}
         <div className="flex items-center justify-between rounded-t-lg bg-richblack-700 p-5">
