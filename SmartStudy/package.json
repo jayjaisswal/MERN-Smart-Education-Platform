@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -c \"bgBlue.bold,bgYellow.bold\" \"npm run server\" \"npm run client\"",
-    "server": "npm --prefix ../server start",
+    "server": "npm --prefix ../server run dev",
     "client": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -29,6 +29,7 @@
     "react-rating-stars-component": "^2.2.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.4.1",
+    "react-super-responsive-table": "^6.0.2",
     "react-type-animation": "^3.2.0",
     "redux-toolkit": "^1.1.2",
     "tailwindcss": "^4.1.1"

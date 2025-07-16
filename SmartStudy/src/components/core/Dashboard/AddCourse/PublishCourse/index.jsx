@@ -18,7 +18,7 @@ export default function PublishCourse() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (course?.status === COURSE_STATUS.PUBLISHED) {
+    if (course?.status === COURSE_STATUS.PUBLISHED) {  // already published then set checkbox to true
       setValue("public", true)
     }
   }, [])
