@@ -31,7 +31,10 @@
     "react-router-dom": "^7.4.1",
     "react-super-responsive-table": "^6.0.2",
     "react-type-animation": "^3.2.0",
+    "react-window": "^1.8.11",
     "redux-toolkit": "^1.1.2",
+    "responsive-table-react": "^1.2.3",
+    "swiper": "^11.2.10",
     "tailwindcss": "^4.1.1"
   },
   "devDependencies": {

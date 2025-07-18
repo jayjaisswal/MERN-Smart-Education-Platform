@@ -7,6 +7,7 @@ import { sidebarLinks } from "../../../data/dashboard-links"
 import { logout } from "../../../services/operations/authAPI"
 import ConfirmationModal from "../../common/ConfirmationModal"
 import SidebarLink from "./SidebarLink"
+import Spinner from "../../../spinner/Spinner"
 
 export default function Sidebar() {
   const { user } = useSelector((state) => state.profile)
@@ -81,7 +82,7 @@ export default function Sidebar() {
   if (loading) {
     return (
       <div className="grid h-[calc(100vh-3.5rem)] min-w-[220px] items-center border-r-[1px] border-r-richblack-700 bg-richblack-800">
-        <div className="spinner"></div>
+        <div className="spinner"><Spinner></Spinner></div>
       </div>
     )
   }

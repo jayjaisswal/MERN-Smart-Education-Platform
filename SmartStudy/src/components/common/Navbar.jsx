@@ -74,7 +74,7 @@ const Navbar = () => {
   if (profileLoading || authLoading) {
     return (
       <div className="mt-10">
-        <Spinner />
+        {/* <Spinner /> */}
       </div>
     );
   }
@@ -160,7 +160,7 @@ const Navbar = () => {
                         sublinks.map((tag, idx) => (
                           <Link
                             key={idx}
-                            to={`${tag.name}`}
+                            to={`/catalog/${tag.name.split(" ").join("-").toLowerCase()}`}
                             className="block px-4 py-2 text-richblack-700 dark:text-white hover:bg-sky-100 dark:hover:bg-gray-700 rounded transition-colors"
                             onClick={handleLinkClick}
                           >
