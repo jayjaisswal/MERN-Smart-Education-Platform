@@ -76,6 +76,7 @@ export default function CoursesTable({ courses, setCourses }) {
                   <img
                     src={course?.thumbnail}
                     alt={course?.courseName}
+                     loading="lazy"
                     className="h-[148px] w-[220px] rounded-lg object-cover"
                   />
                   <div className="flex flex-col justify-between">

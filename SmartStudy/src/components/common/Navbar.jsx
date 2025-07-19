@@ -80,7 +80,8 @@ const Navbar = () => {
   }
 
   return (
-    <div className="flex h-16 items-center justify-center border-b border-b-richblack-700 dark:border-b-gray-700 bg-white dark:bg-gray-900 transition-colors shadow-sm">
+    // Line 70: Change this div's className
+<div className="fixed top-0 left-0 w-full z-50 flex h-16 items-center justify-center border-b border-b-richblack-700 dark:border-b-gray-700 bg-white dark:bg-gray-900 transition-colors shadow-sm">
       <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto">
 
         {/* Left: Logo */}

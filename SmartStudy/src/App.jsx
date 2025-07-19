@@ -1,7 +1,7 @@
 import "./App.css";
 import Home from "./pages/Home";
 import Navbar from "./components/common/Navbar";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate,Outlet } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OpenRoute from "./components/core/Auth/OpenRoute";
@@ -33,7 +33,12 @@ function App() {
   // console.log("User in App.jsx:", user);
   return (
     <div className="w-screen min-h-screen overflow-hidden dark:bg-richblack-900 flex flex-col">
-      <Navbar></Navbar>
+     <div>
+      <Navbar />
+      <div className="mt-16"> {/* This adds spacing below fixed navbar */}
+        <Outlet />
+      </div>
+    </div>
 
       <Routes>
         {/* Home */}
