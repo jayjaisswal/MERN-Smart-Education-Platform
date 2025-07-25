@@ -1,7 +1,7 @@
 import "./App.css";
 import Home from "./pages/Home";
 import Navbar from "./components/common/Navbar";
-import { Route, Routes, useNavigate,Outlet } from "react-router-dom";
+import { Route, Routes, useNavigate, Outlet } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OpenRoute from "./components/core/Auth/OpenRoute";
@@ -25,8 +25,9 @@ import MyCourses from "./components/core/Dashboard/MyCourses";
 import EditCourse from "./components/core/Dashboard/EditCourse";
 import Catalog from "./pages/Catalog";
 import CourseDetails from "./pages/CourseDetails";
+import ViewCourse from "./pages/ViewCourse";
+import VideoDetails from "./components/core/ViewCourse/VideoDetails";
 function App() {
-  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -34,12 +35,14 @@ function App() {
   // console.log("User in App.jsx:", user);
   return (
     <div className="w-screen min-h-screen overflow-hidden dark:bg-richblack-900 flex flex-col">
-     <div>
-      <Navbar />
-      <div className="mt-16"> {/* This adds spacing below fixed navbar */}
-        <Outlet />
+      <div>
+        <Navbar />
+        <div className="mt-16">
+          {" "}
+          {/* This adds spacing below fixed navbar */}
+          <Outlet />
+        </div>
       </div>
-    </div>
 
       <Routes>
         {/* Home */}
@@ -97,40 +100,78 @@ function App() {
           }
         />
 
-       
-
         {/* Contact */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
 
         <Route
-            path="dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          >
-            <Route path="my-profile" element={<MyProfile />} />
-            <Route path="settings" element={<Settings />} />
-            {user?.accountType === ACCOUNT_TYPE.STUDENT && (
-              <>
-                <Route path="cart" element={<Cart />} />
-                <Route path="enrolled-courses" element={<EnrolledCourses />} />
-                <Route path="purchase-history" element={<PurchasedHistory />} />
-                <Route path="community" element={<div className="text-white">Community Coming Soon...</div>} />
-                
-              </>
-            )}
-            {user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
-              <>
-                <Route path="add-course" element={<AddCourse />} />
-                <Route path="my-courses" element={<MyCourses />} />
-                <Route path="edit-course/:courseId" element={<EditCourse />} />
-                
-              </>
-            )}
-     </Route>
+          path="dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        >
+          <Route path="my-profile" element={<MyProfile />} />
+          <Route path="settings" element={<Settings />} />
+          {user?.accountType === ACCOUNT_TYPE.STUDENT && (
+            <>
+              <Route path="cart" element={<Cart />} />
+              <Route path="enrolled-courses" element={<EnrolledCourses />} />
+              <Route path="purchase-history" element={<PurchasedHistory />} />
+              <Route
+                path="community"
+                element={
+                  <div className="text-white">Community Coming Soon...</div>
+                }
+              />
+            </>
+          )}
+          {user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
+            <>
+              <Route path="add-course" element={<AddCourse />} />
+              <Route path="my-courses" element={<MyCourses />} />
+              <Route path="edit-course/:courseId" element={<EditCourse />} />
+            </>
+          )}
+        </Route>
+
+        {/* For the watching course lectures */}
+        <Route
+          element={
+            <PrivateRoute>
+              <ViewCourse />
+            </PrivateRoute>
+          }
+        >
+          {user?.accountType === ACCOUNT_TYPE.STUDENT && (
+            <>
+              <Route
+                path="view-course/:courseId/section/:sectionId/sub-section/:subSectionId"
+                element={<VideoDetails />}
+              />
+            </>
+          )}
+        </Route>
+
+        {/* For the watching course lectures */}
+        <Route
+          element={
+            <PrivateRoute>
+              <ViewCourse />
+            </PrivateRoute>
+          }
+        >
+          {user?.accountType === ACCOUNT_TYPE.STUDENT && (
+            <>
+              <Route
+                path="view-course/:courseId/section/:sectionId/sub-section/:subSectionId"
+                element={<VideoDetails />}
+              />
+            </>
+          )}
+        </Route>
+
         <Route path="*" element={<Error />} />
       </Routes>
     </div>

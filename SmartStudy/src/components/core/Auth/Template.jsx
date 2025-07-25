@@ -25,13 +25,13 @@ function Template({ title, description1, description2, image, formType }) {
               <div className="mb-2 font-bold text-richblack-5">Demo Accounts:</div>
               <div>
                 <span className="font-semibold">Student</span>:<br />
-                Username: <span className="font-mono">student@example.com</span><br />
-                Password: <span className="font-mono">student123</span>
+                Username: <span className="font-mono">kumarprince138333@gmail.com</span><br />
+                Password: <span className="font-mono">123456</span>
               </div>
               <div className="mt-2">
                 <span className="font-semibold">Instructor</span>:<br />
-                Username: <span className="font-mono">instructor@example.com</span><br />
-                Password: <span className="font-mono">instructor123</span>
+                Username: <span className="font-mono">kumarprince13833@gmail.com</span><br />
+                Password: <span className="font-mono">123456</span>
               </div>
             </div>
 
