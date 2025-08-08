@@ -12,31 +12,35 @@ export default function IconBtn({
       disabled={disabled}
       onClick={onclick}
       type={type}
-      className="bg-gradient-to-r from-blue-400 to-caribbeangreen-300 
-                hover:from-blue-300 hover:to-caribbeangreen-200 
-                text-richblack-900 px-5 py-3 
-                text-base flex items-center justify-center 
-                cursor-pointer rounded-md font-medium 
-                transition-all duration-300 transform 
-                shadow-lg hover:shadow-blue-500/25 
-                w-full sm:w-auto gap-1 min-w-[120px]"
+      className={`
+        flex items-center justify-center gap-1
+        rounded-md font-medium cursor-pointer
+        bg-gradient-to-r from-blue-400 to-caribbeangreen-300 
+        hover:from-blue-300 hover:to-caribbeangreen-200 
+        text-richblack-900
+        transition-all duration-300 transform 
+        shadow-lg hover:shadow-blue-500/25
 
-      // className={`flex items-center gap-x-2 rounded-xl px-5 bg-gradient-to-r from-blue-400 to-caribbeangreen-300 py-2 text-richblack-900 font-semibold transition-all duration-300
-      //   ${
-      //     outline
-      //       ? "border border-caribbeangreen-200 bg-transparent text-caribbeangreen-200 hover:bg-caribbeangreen-900 hover:text-white"
-      //       : "bg-caribbeangreen-200 text-richblack-900 hover:bg-caribbeangreen-300"
-      //   }
-      //   ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
-      //   ${customClasses}`}
+        /* Mobile first - small size */
+        text-sm px-3 py-2 min-w-[100px]
+
+        /* Tablet and up - medium size */
+        md:text-base md:px-5 md:py-3 md:min-w-[120px]
+
+        /* Handle disabled state */
+        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+
+        /* Custom classes passed as prop */
+        ${customClasses}
+      `}
     >
       {children ? (
         <>
-          <span>{text}</span>
+          <span className="truncate">{text}</span>
           {children}
         </>
       ) : (
-        text
+        <span className="truncate">{text}</span>
       )}
     </button>
   );
