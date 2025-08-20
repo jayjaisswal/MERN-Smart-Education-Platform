@@ -62,7 +62,7 @@ export default function ProfileDropdown({ onAction }) {
             className="flex w-full items-center gap-x-2 py-3 px-4 text-base text-richblack-100 hover:bg-richblack-700 hover:text-richblack-25 transition-colors cursor-pointer"
           >
             <VscSignOut className="text-lg" />
-            Logout
+            Logout 
           </div>
         </div>
       )}
