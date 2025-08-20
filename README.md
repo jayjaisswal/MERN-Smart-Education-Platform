@@ -9,7 +9,7 @@ The platform provides **secure authentication, course management, media handling
 
 ## 🔗 Live Website  
 
-🌐 [https://your-deployed-link.com](https://padho-india.vercel.app/) 
+🌐 Live(https://padho-india.vercel.app/) 
 
 ---
 
@@ -63,7 +63,7 @@ The platform provides **secure authentication, course management, media handling
 
 ## 🚀 Tech Stack  
 
-- **Frontend:** React + Redux Toolkit + Tailwind CSS + Material UI  
+- **Frontend:** React + Redux Toolkit + Tailwind CSS  
 - **Backend:** Node.js + Express.js  
 - **Database:** MongoDB (Atlas)  
 - **Cloud & Media:** Cloudinary  
