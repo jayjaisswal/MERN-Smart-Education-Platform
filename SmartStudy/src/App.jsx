@@ -27,6 +27,7 @@ import Catalog from "./pages/Catalog";
 import CourseDetails from "./pages/CourseDetails";
 import ViewCourse from "./pages/ViewCourse";
 import VideoDetails from "./components/core/ViewCourse/VideoDetails";
+import ScrollToTop from "./components/ScrollToTop";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ function App() {
           <Outlet />
         </div>
       </div>
-
+       <ScrollToTop />
       <Routes>
         {/* Home */}
         <Route path="/" element={<Home />} />
