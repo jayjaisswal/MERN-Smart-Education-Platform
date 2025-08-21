@@ -81,7 +81,7 @@ const Navbar = () => {
 
   return (
     // Line 70: Change this div's className
-<div className="fixed top-0 left-0 w-full z-50 flex h-16 items-center justify-center border-b border-b-richblack-700 dark:border-b-gray-700 bg-white dark:bg-gray-900 transition-colors shadow-sm">
+<div className="fixed top-0 left-0 w-full z-50 flex h-16 items-center justify-center border-b border-b-gray-700  bg-gray-900 transition-colors shadow-sm">
       <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto">
 
         {/* Left: Logo */}
@@ -122,7 +122,7 @@ const Navbar = () => {
           ref={navRef}
           className={`${
             menuOpen ? "flex" : "hidden"
-          } absolute top-16 left-0 w-full flex-col bg-white dark:bg-gray-900 md:static md:flex md:flex-row md:w-auto md:bg-transparent z-50 transition-all duration-300`}
+          } absolute top-16 left-0 w-full flex-col bg-gray-900 md:static md:flex md:flex-row md:w-auto md:bg-transparent z-50 transition-all duration-300`}
         >
           <ul className="flex flex-col md:flex-row gap-4 md:gap-6 text-base font-semibold p-4 md:p-0">
             {NavbarLinks.map((link, index) => (
@@ -139,7 +139,7 @@ const Navbar = () => {
                       className={`transition-colors duration-200 ${
                         matchRoute(link?.path)
                           ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
-                          : "text-richblack-700 dark:text-white"
+                          : " text-white"
                       }`}
                     >
                       {link.title}
@@ -152,7 +152,7 @@ const Navbar = () => {
                     {/* Dropdown */}
                     <div
                       className={`
-                        absolute left-0 top-8 min-w-[180px] rounded-md bg-white dark:bg-gray-800 shadow-lg z-20 transition-all duration-300
+                        absolute left-0 top-8 min-w-[180px] rounded-md bg-gray-800 shadow-lg z-20 transition-all duration-300
                         ${catalogOpen ? "visible opacity-100" : "invisible opacity-0"}
                         md:group-hover:visible md:group-hover:opacity-100
                       `}
@@ -162,7 +162,7 @@ const Navbar = () => {
                           <Link
                             key={idx}
                             to={`/catalog/${tag.name.split(" ").join("-").toLowerCase()}`}
-                            className="block px-4 py-2 text-richblack-700 dark:text-white hover:bg-sky-100 dark:hover:bg-gray-700 rounded transition-colors"
+                            className="block px-4 py-2 text-white hover:bg-gray-700 rounded transition-colors"
                             onClick={handleLinkClick}
                           >
                             {tag.name}
@@ -181,7 +181,7 @@ const Navbar = () => {
                       className={`transition-colors duration-200 ${
                         matchRoute(link?.path)
                           ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
-                          : "text-richblack-700 dark:text-white"
+                          : "text-white"
                       }`}
                     >
                       {link.title}

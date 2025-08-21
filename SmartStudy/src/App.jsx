@@ -34,7 +34,7 @@ function App() {
   const { user } = useSelector((state) => state.profile);
   // console.log("User in App.jsx:", user);
   return (
-    <div className="w-screen min-h-screen overflow-hidden dark:bg-richblack-900 flex flex-col">
+    <div className="w-screen min-h-screen overflow-hidden bg-richblack-900 flex flex-col">
       <div>
         <Navbar />
         <div className="mt-16">
