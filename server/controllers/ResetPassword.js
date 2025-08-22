@@ -36,57 +36,84 @@ exports.resetPasswordToken = async (req, res) => {
     // ...existing code...
 
     const emailBody = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <style>
-              .container {
-                  font-family: Arial, sans-serif;
-                  max-width: 600px;
-                  margin: 0 auto;
-                  padding: 20px;
-                  background-color: #f9f9f9;
-              }
-              .header {
-                  background: linear-gradient(to right, #2563eb, #059669);
-                  color: white;
-                  padding: 20px;
-                  text-align: center;
-                  border-radius: 10px 10px 0 0;
-              }
-                  .logo {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 10px;
+     <!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <style type="text/css">
+    body, #bodyTable { margin:0; padding:0; width:100% !important; }
+        img { border:0; height:auto; line-height:100%; outline:none; text-decoration:none; }
+        table { border-collapse:collapse !important; }
+        .container {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f8f8;
         }
-              .content {
-                  background: white;
-                  padding: 20px;
-                  border-radius: 0 0 10px 10px;
-                  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-              }
-              .button {
-                  display: inline-block;
-                  padding: 12px 24px;
-                  background: linear-gradient(to right, #2563eb, #059669);
-                  color: white;
-                  text-decoration: none;
-                  border-radius: 5px;
-                  margin: 20px 0;
-              }
-              .footer {
-                  text-align: center;
-                  margin-top: 20px;
-                  color: #666;
-                  font-size: 12px;
-              }
+        .header {
+            background: #111827;  /* Dark navy background to match logo */
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+          .logo {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 15px;
+            background: transparent;
+        
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+               .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #111827;  
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .button:hover {
+            background: #001B35;
+        }
+               .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+        h1 {
+          color: #FFD60A; /* Yellow accent color */
+          font-size: 28px;
+          margin: 10px 0;
+          }
+            h2 {
+            color: #111827;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #424854;
+            line-height: 1.6;
+        }
           </style>
       </head>
       <body>
           <div class="container">
               <div class="header">
                   <img src="https://res.cloudinary.com/dtspyzore/image/upload/v1755887160/logo.png" alt="Padho India Logo" class="logo"/>
-                  <h1>Padho India</h1>
+                  <h1>Padhlo India</h1>
               </div>
               <div class="content">
                   <h2>Password Reset Request</h2>
@@ -109,7 +136,12 @@ exports.resetPasswordToken = async (req, res) => {
       `;
 
     // Update the mailSender call
-    await mailSender(email, "Reset Your Padho India Password", emailBody);
+    const uniqueId = Math.random().toString(36).substring(7);
+    await mailSender(
+      email,
+      `Reset Your Padho India Password (Ref: ${uniqueId})`,
+      emailBody
+    );
 
     // ...existing code...
     // return response
