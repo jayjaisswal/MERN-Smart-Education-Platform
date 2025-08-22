@@ -29,14 +29,89 @@ exports.resetPasswordToken = async (req, res) => {
       { new: true } // return updated user
     );
     // create url
-    const baseUrl = process.env.PRODUCTION_FRONTEND_URL || process.env.FRONTEND_URL;
+    const baseUrl =
+      process.env.PRODUCTION_FRONTEND_URL || process.env.FRONTEND_URL;
     const url = `${baseUrl}/update-password/${token}`;
     // send mail containing the url
-    await mailSender(
-      email,
-      "Reset Password",
-      `Please click on the link to reset your password: ${url}`
-    );
+    // ...existing code...
+
+    const emailBody = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <style>
+              .container {
+                  font-family: Arial, sans-serif;
+                  max-width: 600px;
+                  margin: 0 auto;
+                  padding: 20px;
+                  background-color: #f9f9f9;
+              }
+              .header {
+                  background: linear-gradient(to right, #2563eb, #059669);
+                  color: white;
+                  padding: 20px;
+                  text-align: center;
+                  border-radius: 10px 10px 0 0;
+              }
+                  .logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+              .content {
+                  background: white;
+                  padding: 20px;
+                  border-radius: 0 0 10px 10px;
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              }
+              .button {
+                  display: inline-block;
+                  padding: 12px 24px;
+                  background: linear-gradient(to right, #2563eb, #059669);
+                  color: white;
+                  text-decoration: none;
+                  border-radius: 5px;
+                  margin: 20px 0;
+              }
+              .footer {
+                  text-align: center;
+                  margin-top: 20px;
+                  color: #666;
+                  font-size: 12px;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="header">
+                  <img src="https://res.cloudinary.com/dtspyzore/image/upload/v1755887160/logo.png" alt="Padho India Logo" class="logo"/>
+                  <h1>Padho India</h1>
+              </div>
+              <div class="content">
+                  <h2>Password Reset Request</h2>
+                  <p>Hello,</p>
+                  <p>We received a request to reset your password for your Padho India account. Click the button below to reset it:</p>
+                  <div style="text-align: center;">
+                      <a href="${url}" class="button">Reset Password</a>
+                  </div>
+                  <p>This link will expire in 5 minutes for security reasons.</p>
+                  <p>If you didn't request this password reset, please ignore this email or contact support if you have concerns.</p>
+                  <p>Best regards,<br>The Padho India Team</p>
+              </div>
+              <div class="footer">
+                  <p>This is an automated message, please do not reply to this email.</p>
+                  <p>© ${new Date().getFullYear()} Padho India. All rights reserved.</p>
+              </div>
+          </div>
+      </body>
+      </html>
+      `;
+
+    // Update the mailSender call
+    await mailSender(email, "Reset Your Padho India Password", emailBody);
+
+    // ...existing code...
     // return response
     return res.status(200).json({
       success: true,
