@@ -11,6 +11,7 @@ import InstructorSection from '../components/core/Homepage/InstructorSection';
 import ExploreMore from '../components/core/Homepage/ExploreMore';
 import Footer from '../components/common/Footer';
 import { TypeAnimation } from 'react-type-animation';
+import ReviewSlider from '../components/common/ReviewSlider';
 const Home = () => {
     return (
         <div>
@@ -212,6 +213,7 @@ const Home = () => {
                     <InstructorSection/>
                     <h2 className='text-center text-4xl font-semibold mt-10'>Review from other Learner</h2>
                     {/* Review Slider */}
+                    <ReviewSlider/>
 
             </div>
 

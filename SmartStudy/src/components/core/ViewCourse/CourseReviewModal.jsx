@@ -1,7 +1,7 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { RxCross2 } from "react-icons/rx"
-import ReactStars from "react-rating-stars-component"
+import { FaStar } from "react-icons/fa"
 import { useSelector } from "react-redux"
 
 import { createRating } from "../../../services/operations/courseDetailsAPI"
@@ -19,15 +19,17 @@ export default function CourseReviewModal({ setReviewModal }) {
     formState: { errors },
   } = useForm()
 
+  const [rating, setRating] = useState(0)
+
   useEffect(() => {
     setValue("courseExperience", "")
     setValue("courseRating", 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const ratingChanged = (newRating) => {
-    // console.log(newRating)
-    setValue("courseRating", newRating)
+  const handleStarClick = (star) => {
+    setRating(star)
+    setValue("courseRating", star)
   }
 
   const onSubmit = async (data) => {
@@ -52,31 +54,42 @@ export default function CourseReviewModal({ setReviewModal }) {
             <RxCross2 className="text-2xl text-richblack-5" />
           </button>
         </div>
+
         {/* Modal Body */}
         <div className="p-6">
           <div className="flex items-center justify-center gap-x-4">
             <img
               src={user?.image}
-              alt={user?.firstName + "profile"}
+              alt={user?.firstName + " profile"}
               className="aspect-square w-[50px] rounded-full object-cover"
             />
-            <div className="">
+            <div>
               <p className="font-semibold text-richblack-5">
                 {user?.firstName} {user?.lastName}
               </p>
               <p className="text-sm text-richblack-5">Posting Publicly</p>
             </div>
           </div>
+
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="mt-6 flex flex-col items-center"
           >
-            <ReactStars
-              count={5}
-              onChange={ratingChanged}
-              size={24}
-              activeColor="#ffd700"
-            />
+            {/* Custom Star Rating */}
+            <div className="flex gap-2 mb-4">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  size={28}
+                  className={`cursor-pointer transition-colors ${
+                    star <= rating ? "text-yellow-100" : "text-richblack-300"
+                  }`}
+                  onClick={() => handleStarClick(star)}
+                />
+              ))}
+            </div>
+
+            {/* Experience Textarea */}
             <div className="flex w-11/12 flex-col space-y-2">
               <label
                 className="text-sm text-richblack-5"
@@ -96,14 +109,17 @@ export default function CourseReviewModal({ setReviewModal }) {
                 </span>
               )}
             </div>
+
+            {/* Buttons */}
             <div className="mt-6 flex w-11/12 justify-end gap-x-2">
               <button
+                type="button"
                 onClick={() => setReviewModal(false)}
-                className={`flex cursor-pointer items-center gap-x-2 rounded-md bg-richblack-300 py-[8px] px-[20px] font-semibold text-richblack-900`}
+                className="flex cursor-pointer items-center gap-x-2 rounded-md bg-richblack-300 py-[8px] px-[20px] font-semibold text-richblack-900"
               >
                 Cancel
               </button>
-              <IconBtn text="Save" />
+              <IconBtn text="Save" type="submit" />
             </div>
           </form>
         </div>

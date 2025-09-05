@@ -14,7 +14,7 @@ import Spinner from "../../spinner/Spinner";
 const Navbar = () => {
   const { token, loading: authLoading } = useSelector((state) => state.auth);
   const { user, loading: profileLoading } = useSelector((state) => state.profile);
-  const { setTotalItems } = useSelector((state) => state.cart);
+  const { totalItems } = useSelector((state) => state.cart);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
@@ -101,9 +101,9 @@ const Navbar = () => {
           {user && user?.accountType !== "Instructor" && (
             <Link to="/dashboard/cart" className="relative text-white">
               <FaShoppingCart className="text-xl hover:text-sky-500 transition-colors" />
-              {setTotalItems > 0 && (
+              {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full px-1">
-                  {setTotalItems}
+                  {totalItems}
                 </span>
               )}
             </Link>
@@ -218,9 +218,9 @@ const Navbar = () => {
           {user && user?.accountType !== "Instructor" && (
             <Link to="/dashboard/cart" className="relative text-white">
               <FaShoppingCart className="text-xl hover:text-sky-500 transition-colors" />
-              {setTotalItems > 0 && (
+              {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full px-1">
-                  {setTotalItems}
+                  {totalItems}
                 </span>
               )}
             </Link>

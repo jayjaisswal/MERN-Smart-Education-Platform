@@ -7,7 +7,7 @@ export const apiConnector = (method, url, bodyData, headers = {}, params = {}) =
     method: method,
     url: url,
     data: bodyData || null,
-    headers: headers,   // ✅ always pass an object, even if empty
+    headers: headers,   // always pass an object, even if empty
     params: params
     })
 
