@@ -28,6 +28,8 @@ import CourseDetails from "./pages/CourseDetails";
 import ViewCourse from "./pages/ViewCourse";
 import VideoDetails from "./components/core/ViewCourse/VideoDetails";
 import ScrollToTop from "./components/ScrollToTop";
+import InstructorChart from "./components/core/Dashboard/InstructorDashboard/InstructorChart";
+import Instructor from "./components/core/Dashboard/InstructorDashboard/Instructor";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -133,6 +135,7 @@ function App() {
               <Route path="add-course" element={<AddCourse />} />
               <Route path="my-courses" element={<MyCourses />} />
               <Route path="edit-course/:courseId" element={<EditCourse />} />
+              <Route path="instructor" element={<Instructor/>} />
             </>
           )}
         </Route>
