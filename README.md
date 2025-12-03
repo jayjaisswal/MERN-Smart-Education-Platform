@@ -86,4 +86,4 @@ The platform provides **secure authentication, course management, media handling
 
 ## 📄 License  
 
-This project is licensed for academic and educational purposes.  
+This project is licensed for academic and educational purposes  
