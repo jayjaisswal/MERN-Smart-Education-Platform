@@ -20,10 +20,10 @@ A comprehensive **MERN stack** education platform that bridges the gap between i
 
 ### Demo Credentials
 
-| Role          | Email                  | Password |
-| ------------- | ---------------------- | -------- |
-| 👨‍🏫 Instructor | `instructor@gmail.com` | `123456` |
-| 👨‍🎓 Student    | `student@gmail.com`    | `123456` |
+| Role          | Email                         | Password |
+| ------------- | ----------------------------- | -------- |
+| 👨‍🏫 Instructor | `kumarprince13833@gmail.com`  | `123456` |
+| 👨‍🎓 Student    | `kumarprince138333@gmail.com` | `123456` |
 
 > **Note:** Students and instructors have distinct role-based access controls and dashboards.
 
