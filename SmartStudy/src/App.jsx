@@ -24,6 +24,7 @@ import AddCourse from "./components/core/Dashboard/AddCourse";
 import MyCourses from "./components/core/Dashboard/MyCourses";
 import EditCourse from "./components/core/Dashboard/EditCourse";
 import Catalog from "./pages/Catalog";
+import ExploreCourses from "./pages/ExploreCourses";
 import CourseDetails from "./pages/CourseDetails";
 import ViewCourse from "./pages/ViewCourse";
 import VideoDetails from "./components/core/ViewCourse/VideoDetails";
@@ -51,6 +52,7 @@ function App() {
         {/* Home */}
         <Route path="/" element={<Home />} />
         <Route path="/catalog/:catalogName" element={<Catalog />} />
+        <Route path="/explore-courses" element={<ExploreCourses />} />
         <Route path="/courses/:courseId" element={<CourseDetails />} />
 
         {/* signup */}
@@ -122,12 +124,6 @@ function App() {
               <Route path="cart" element={<Cart />} />
               <Route path="enrolled-courses" element={<EnrolledCourses />} />
               <Route path="purchase-history" element={<PurchasedHistory />} />
-              <Route
-                path="community"
-                element={
-                  <div className="text-white">Community Coming Soon...</div>
-                }
-              />
             </>
           )}
           {user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (

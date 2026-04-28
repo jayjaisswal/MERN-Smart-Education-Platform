@@ -7,6 +7,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import Logo from "../../assets/Logo/Logo-Full-Light.png";
 import { NavbarLinks } from "../../data/navbar-links";
 import ProfileDropDown from "../core/Auth/ProfileDropDown";
+import SearchBox from "./SearchBox";
 import { apiConnector } from "../../services/apiConnector";
 import { categories } from "../../services/apis";
 import Spinner from "../../spinner/Spinner";
@@ -81,8 +82,8 @@ const Navbar = () => {
 
   return (
     // Line 70: Change this div's className
-<div className="fixed top-0 left-0 w-full z-50 flex h-16 items-center justify-center border-b border-b-gray-700  bg-gray-900 transition-colors shadow-sm">
-      <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto">
+    <div className="fixed top-0 left-0 w-full z-50 flex h-16 items-center justify-center border-b border-b-gray-700  bg-gray-900 transition-colors shadow-sm">
+      <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto gap-6">
 
         {/* Left: Logo */}
         <Link to="/" className="flex items-center">
@@ -95,6 +96,9 @@ const Navbar = () => {
             className="drop-shadow-md"
           />
         </Link>
+
+        {/* Center: Search Box (Desktop) */}
+        <SearchBox />
 
         {/* Right: Hamburger and Cart for Mobile */}
         <div className="flex items-center gap-4 md:hidden">
@@ -120,9 +124,8 @@ const Navbar = () => {
         {/* Nav Links */}
         <nav
           ref={navRef}
-          className={`${
-            menuOpen ? "flex" : "hidden"
-          } absolute top-16 left-0 w-full flex-col bg-gray-900 md:static md:flex md:flex-row md:w-auto md:bg-transparent z-50 transition-all duration-300`}
+          className={`${menuOpen ? "flex" : "hidden"
+            } absolute top-16 left-0 w-full flex-col bg-gray-900 md:static md:flex md:flex-row md:w-auto md:bg-transparent z-50 transition-all duration-300`}
         >
           <ul className="flex flex-col md:flex-row gap-4 md:gap-6 text-base font-semibold p-4 md:p-0">
             {NavbarLinks.map((link, index) => (
@@ -136,18 +139,16 @@ const Navbar = () => {
                     }
                   >
                     <span
-                      className={`transition-colors duration-200 ${
-                        matchRoute(link?.path)
+                      className={`transition-colors duration-200 ${matchRoute(link?.path)
                           ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
                           : " text-white"
-                      }`}
+                        }`}
                     >
                       {link.title}
                     </span>
                     <IoIosArrowDown
-                      className={`text-lg transition-transform duration-300 text-white ${
-                        catalogOpen ? "rotate-180" : ""
-                      }`}
+                      className={`text-lg transition-transform duration-300 text-white ${catalogOpen ? "rotate-180" : ""
+                        }`}
                     />
                     {/* Dropdown */}
                     <div
@@ -178,11 +179,10 @@ const Navbar = () => {
                 ) : (
                   <Link to={link?.path} onClick={handleLinkClick}>
                     <span
-                      className={`transition-colors duration-200 ${
-                        matchRoute(link?.path)
+                      className={`transition-colors duration-200 ${matchRoute(link?.path)
                           ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
                           : "text-white"
-                      }`}
+                        }`}
                     >
                       {link.title}
                     </span>

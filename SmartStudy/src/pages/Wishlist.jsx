@@ -93,7 +93,7 @@ const Wishlist = () => {
 
                             {/* View Details Button */}
                             <button
-                                onClick={() => navigate(`/course/${course._id}`)}
+                                onClick={() => navigate(`/courses/${course._id}`)}
                                 className="mt-3 w-full rounded border border-richblack-600 py-2 text-richblack-200 transition-all duration-200 hover:bg-richblack-700"
                             >
                                 View Details

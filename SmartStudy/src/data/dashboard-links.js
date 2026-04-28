@@ -51,8 +51,8 @@ export const sidebarLinks = [
   },
   {
     id: 8,
-    name: "Community",
-    path: "/dashboard/community",
+    name: "Explore Courses",
+    path: "/explore-courses",
     type: ACCOUNT_TYPE.STUDENT,
     icon: "VscSymbolEvent",
   },
