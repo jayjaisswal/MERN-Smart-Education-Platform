@@ -173,7 +173,7 @@ const Footer = () => {
             })}
           </div>
 
-          <div className="text-center">Made with ❤️ jay © 2025 SmartStudy</div>
+          <div className="text-center">Made with ❤️ jay © 2026 PadhoIndia</div>
         </div>
       </div>
     </div>

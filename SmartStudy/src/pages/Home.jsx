@@ -197,7 +197,7 @@ const Home = () => {
                                         The modern PadhloIndia is the dictates its own terms. Today, to be a competitive
                                         specialist requires more than professional skills.
                                     </div>
-                                    <CTAButton active={true} linkto={"/singup"}> Learn More</CTAButton>
+                                    <CTAButton active={true} linkto={"/signup"}> Learn More</CTAButton>
                                 </div>
                     </div>
                     <TimelineSection/>
