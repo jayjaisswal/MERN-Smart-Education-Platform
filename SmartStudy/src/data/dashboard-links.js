@@ -56,4 +56,11 @@ export const sidebarLinks = [
     type: ACCOUNT_TYPE.STUDENT,
     icon: "VscSymbolEvent",
   },
+  {
+    id: 9,
+    name: "Master Aptitude",
+    path: "/aptitude",
+    type: ACCOUNT_TYPE.STUDENT,
+    icon: "VscLightbulb",
+  },
 ];

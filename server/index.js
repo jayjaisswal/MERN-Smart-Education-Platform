@@ -5,6 +5,7 @@ const userRoutes = require("./routes/User");
 const profileRoutes = require("./routes/Profile");
 const paymentRoutes = require("./routes/Payments");
 const courseRoutes = require("./routes/Course");
+const aptitudeRoutes = require("./routes/Aptitude");
 
 const database = require("./config/database");
 const cors = require("cors");
@@ -27,14 +28,14 @@ app.use(cookieParser());
 app.use(
   cors({
     // origin: [
-      // "http://localhost:5173",
-      // "https://padho-india.vercel.app",
-      // "https://super-spoon-5w56w75g5vgcwwr-5173.app.github.dev/",
+    // "http://localhost:5173",
+    // "https://padho-india.vercel.app",
+    // "https://super-spoon-5w56w75g5vgcwwr-5173.app.github.dev/",
 
     // ],
     origin: "*",
     credentials: true,
- 
+
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], //  Required
   }),
@@ -56,6 +57,7 @@ app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactRoutes);
+app.use("/api/v1/aptitude", aptitudeRoutes);
 
 // default route
 app.get("/", (req, res) => {

@@ -31,6 +31,9 @@ import VideoDetails from "./components/core/ViewCourse/VideoDetails";
 import ScrollToTop from "./components/ScrollToTop";
 import InstructorChart from "./components/core/Dashboard/InstructorDashboard/InstructorChart";
 import Instructor from "./components/core/Dashboard/InstructorDashboard/Instructor";
+import AptitudePractice from "./components/Aptitude/AptitudePractice";
+import AptitudeTopics from "./components/Aptitude/AptitudeTopics";
+import AptitudeQuestions from "./components/Aptitude/AptitudeQuestions";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -108,6 +111,11 @@ function App() {
         {/* Contact */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
+
+        {/* Aptitude Practice */}
+        <Route path="/aptitude" element={<AptitudePractice />} />
+        <Route path="/aptitude-topics/:category" element={<AptitudeTopics />} />
+        <Route path="/aptitude-questions/:category/:topic" element={<AptitudeQuestions />} />
 
         <Route
           path="dashboard"
