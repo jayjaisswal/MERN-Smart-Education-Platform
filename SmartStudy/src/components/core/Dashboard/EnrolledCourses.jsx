@@ -13,7 +13,7 @@ export default function EnrolledCourses() {
   const [enrolledCourses, setEnrolledCourses] = useState(null)
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       try {
         const res = await getUserEnrolledCourses(token) // Getting all the published and the drafted courses
 
@@ -55,9 +55,8 @@ export default function EnrolledCourses() {
           {/* Course Names */}
           {enrolledCourses.map((course, i, arr) => (
             <div
-              className={`flex items-center border border-richblack-700 ${
-                i === arr.length - 1 ? "rounded-b-lg" : "rounded-none"
-              }`}
+              className={`flex items-center border border-richblack-700 ${i === arr.length - 1 ? "rounded-b-lg" : "rounded-none"
+                }`}
               key={i}
             >
               <div
@@ -83,13 +82,17 @@ export default function EnrolledCourses() {
                 </div>
               </div>
               <div className="w-1/4 px-2 py-3">{course?.totalDuration}</div>
-              <div className="flex w-1/5 flex-col gap-2 px-2 py-3">
-                <p>Progress: {course.progressPercentage || 0}%</p>
-                <ProgressBar
-                  completed={course.progressPercentage || 0}
-                  height="8px"
-                  isLabelVisible={false}
-                />
+              <div className="flex flex-1 flex-col gap-2 px-2 py-3">
+                <p className="text-sm">Progress: {course.progressPercentage || 0}%</p>
+                <div style={{ width: "100%" }}>
+                  <ProgressBar
+                    completed={Math.min(course.progressPercentage || 0, 100)}
+                    height="8px"
+                    isLabelVisible={false}
+                    barContainerClassName="bg-richblack-600 rounded"
+                    bgColor="#23d997"
+                  />
+                </div>
               </div>
             </div>
           ))}

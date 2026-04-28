@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Chart, registerables } from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 
 Chart.register(...registerables);
 
@@ -8,14 +8,27 @@ export default function InstructorChart({ courses }) {
   // State to keep track of the currently selected chart
   const [currChart, setCurrChart] = useState("students");
 
-  // Function to generate random colors for the chart
-  const generateRandomColors = (numColors) => {
+  // Beautiful color palette for the chart
+  const beautifulColors = [
+    "#FF6B6B", // Red
+    "#4ECDC4", // Teal
+    "#45B7D1", // Blue
+    "#FFA07A", // Salmon
+    "#98D8C8", // Mint
+    "#F7DC6F", // Gold
+    "#BB8FCE", // Purple
+    "#85C1E2", // Sky Blue
+    "#F8B88B", // Peach
+    "#52CDA9", // Emerald
+    "#FF9999", // Light Red
+    "#FFD700", // Bright Gold
+  ];
+
+  // Generate colors with gradient effect
+  const getColorsWithGradient = (numColors) => {
     const colors = [];
     for (let i = 0; i < numColors; i++) {
-      const color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
-        Math.random() * 256
-      )}, ${Math.floor(Math.random() * 256)})`;
-      colors.push(color);
+      colors.push(beautifulColors[i % beautifulColors.length]);
     }
     return colors;
   };
@@ -26,7 +39,11 @@ export default function InstructorChart({ courses }) {
     datasets: [
       {
         data: courses.map((course) => course.totalStudentsEnrolled),
-        backgroundColor: generateRandomColors(courses.length),
+        backgroundColor: getColorsWithGradient(courses.length),
+        borderColor: "#1f2937",
+        borderWidth: 3,
+        hoverBorderWidth: 5,
+        hoverOffset: 15,
       },
     ],
   };
@@ -37,46 +54,100 @@ export default function InstructorChart({ courses }) {
     datasets: [
       {
         data: courses.map((course) => course.totalAmountGenerated),
-        backgroundColor: generateRandomColors(courses.length),
+        backgroundColor: getColorsWithGradient(courses.length),
+        borderColor: "#1f2937",
+        borderWidth: 3,
+        hoverBorderWidth: 5,
+        hoverOffset: 15,
       },
     ],
   };
 
-  // Options for the chart
+  // Enhanced options for the chart with animations and effects
   const options = {
     maintainAspectRatio: false,
+    responsive: true,
+    animation: {
+      animateRotate: true,
+      animateScale: false,
+      duration: 1500,
+      easing: "easeInOutQuart",
+    },
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#ffffff",
+          font: {
+            size: 13,
+            weight: "600",
+          },
+          padding: 15,
+          usePointStyle: true,
+          pointStyle: "circle",
+          generateLabels: (chart) => {
+            const data = chart.data;
+            if (data.labels.length && data.datasets.length) {
+              return data.labels.map((label, i) => ({
+                text: label,
+                fillStyle: data.datasets[0].backgroundColor[i],
+                fontColor: "#ffffff",
+                hidden: false,
+                index: i,
+              }));
+            }
+            return [];
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        borderColor: "#fbbf24",
+        borderWidth: 2,
+        padding: 12,
+        displayColors: true,
+        cornerRadius: 8,
+        callbacks: {
+          label: function (context) {
+            const label = context.label || "";
+            const value = context.parsed || 0;
+            return `${label}: ${value.toLocaleString()}`;
+          },
+        },
+      },
+    },
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-y-4 rounded-md bg-richblack-800 p-6">
+    <div className="text-white flex flex-1 flex-col gap-y-4 rounded-md bg-richblack-800 p-6 shadow-lg">
       <p className="text-lg font-bold text-richblack-5">Visualize</p>
       <div className="space-x-4 font-semibold">
         {/* Button to switch to the "students" chart */}
         <button
           onClick={() => setCurrChart("students")}
-          className={`rounded-sm p-1 px-3 transition-all duration-200 ${
-            currChart === "students"
-              ? "bg-richblack-700 text-yellow-50"
-              : "text-yellow-400"
-          }`}
+          className={`rounded-sm p-2 px-4 transition-all duration-300 transform hover:scale-105 ${currChart === "students"
+            ? "bg-yellow-50 text-richblack-900 shadow-md"
+            : "bg-richblack-700 text-yellow-400 hover:bg-richblack-600"
+            }`}
         >
           Students
         </button>
         {/* Button to switch to the "income" chart */}
         <button
           onClick={() => setCurrChart("income")}
-          className={`rounded-sm p-1 px-3 transition-all duration-200 ${
-            currChart === "income"
-              ? "bg-richblack-700 text-yellow-50"
-              : "text-yellow-400"
-          }`}
+          className={`rounded-sm p-2 px-4 transition-all duration-300 transform hover:scale-105 ${currChart === "income"
+            ? "bg-yellow-50 text-richblack-400 shadow-md"
+            : "bg-richblack-700 text-yellow-400 hover:bg-richblack-600"
+            }`}
         >
           Income
         </button>
       </div>
-      <div className="relative mx-auto aspect-square h-full w-full">
-        {/* Render the Pie chart based on the selected chart */}
-        <Pie
+      <div className="relative mx-auto h-96 w-full p-4 flex flex-col justify-center">
+        {/* Render the Doughnut chart with beautiful styling */}
+        <Doughnut
           data={currChart === "students" ? chartDataStudents : chartIncomeData}
           options={options}
         />

@@ -10,7 +10,8 @@ import { useSelector } from "react-redux";
 import Error from "./Error";
 
 const Catalog = () => {
-   const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [catalogLoading, setCatalogLoading] = useState(false);
   const { loading } = useSelector((state) => state.profile);
   const { catalogName } = useParams();
   const [active, setActive] = useState(1);
@@ -18,42 +19,46 @@ const Catalog = () => {
   const [categoryId, setCategoryId] = useState("");
 
   //Fetch all categories
- useEffect(() => {
-  const getCategories = async () => {
-    setIsLoading(true);
-    try {
-      const res = await apiConnector("GET", categories.CATEGORIES_API);
-      console.log("Printing res: ", res);
-      const matchedCategory = res?.data?.allTags?.find(
-        (ct) => ct.name.split(" ").join("-").toLowerCase() === catalogName
-      );
+  useEffect(() => {
+    const getCategories = async () => {
+      setIsLoading(true);
+      try {
+        const res = await apiConnector("GET", categories.CATEGORIES_API);
+        console.log("Printing res: ", res);
+        const matchedCategory = res?.data?.allTags?.find(
+          (ct) => ct.name.split(" ").join("-").toLowerCase() === catalogName
+        );
 
-      if (matchedCategory) {
-        setCategoryId(matchedCategory._id);
-      } else {
-        console.warn("No category matched:", catalogName);
+        if (matchedCategory) {
+          setCategoryId(matchedCategory._id);
+        } else {
+          console.warn("No category matched:", catalogName);
+          setCategoryId(null);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
         setCategoryId(null);
+      } finally {
+        setIsLoading(false); // Set loading to false regardless of success/failure
       }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      setCategoryId(null);
-    } finally {
-      setIsLoading(false); // Set loading to false regardless of success/failure
-    }
-  };
-  getCategories();
-}, [catalogName]);
+    };
+    getCategories();
+  }, [catalogName]);
 
   console.log("Category ID: ", categoryId);
 
   useEffect(() => {
     const getCategoryDetails = async () => {
+      setCatalogLoading(true);
       try {
         const res = await getCatalogaPageData(categoryId);
         console.log("PRinting res: ", res);
         setCatalogPageData(res);
       } catch (error) {
         console.log(error);
+        setCatalogPageData(null);
+      } finally {
+        setCatalogLoading(false);
       }
     };
     if (categoryId) {
@@ -61,7 +66,7 @@ const Catalog = () => {
     }
   }, [categoryId]);
 
-  if (isLoading || !catalogPageData) {
+  if (isLoading || catalogLoading || !catalogPageData) {
     return (
       <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
         <div className="spinner"></div>
@@ -100,27 +105,25 @@ const Catalog = () => {
         <div className="section_heading">Courses to get you started</div>
         <div className="my-4 flex border-b border-b-richblack-600 text-sm">
           <p
-            className={`px-4 py-2 ${
-              active === 1
-                ? "border-b border-b-yellow-25 text-yellow-25"
-                : "text-richblack-50"
-            } cursor-pointer`}
+            className={`px-4 py-2 ${active === 1
+              ? "border-b border-b-yellow-25 text-yellow-25"
+              : "text-richblack-50"
+              } cursor-pointer`}
             onClick={() => setActive(1)}
           >
             Most Populer
           </p>
           <p
-            className={`px-4 py-2 ${
-              active === 2
-                ? "border-b border-b-yellow-25 text-yellow-25"
-                : "text-richblack-50"
-            } cursor-pointer`}
+            className={`px-4 py-2 ${active === 2
+              ? "border-b border-b-yellow-25 text-yellow-25"
+              : "text-richblack-50"
+              } cursor-pointer`}
             onClick={() => setActive(2)}
           >
             New
           </p>
         </div>
-        <div>
+        <div className="overflow-x-hidden">
           <CourseSlider
             Courses={catalogPageData?.data?.selectedCategory?.courses}
           />
@@ -131,7 +134,7 @@ const Catalog = () => {
         <div className="section_heading">
           Top courses in {catalogPageData?.data?.differentCategory?.name}
         </div>
-        <div className="py-8">
+        <div className="py-8 overflow-x-hidden">
           <CourseSlider
             Courses={catalogPageData?.data?.differentCategory?.courses}
           />

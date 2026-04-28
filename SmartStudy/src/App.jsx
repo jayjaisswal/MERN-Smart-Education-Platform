@@ -46,7 +46,7 @@ function App() {
           <Outlet />
         </div>
       </div>
-       <ScrollToTop />
+      <ScrollToTop />
       <Routes>
         {/* Home */}
         <Route path="/" element={<Home />} />
@@ -135,7 +135,7 @@ function App() {
               <Route path="add-course" element={<AddCourse />} />
               <Route path="my-courses" element={<MyCourses />} />
               <Route path="edit-course/:courseId" element={<EditCourse />} />
-              <Route path="instructor" element={<Instructor/>} />
+              <Route path="instructor" element={<Instructor />} />
             </>
           )}
         </Route>

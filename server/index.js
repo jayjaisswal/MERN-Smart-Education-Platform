@@ -26,21 +26,25 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://padho-india.vercel.app",
-    ],
+    // origin: [
+      // "http://localhost:5173",
+      // "https://padho-india.vercel.app",
+      // "https://super-spoon-5w56w75g5vgcwwr-5173.app.github.dev/",
+
+    // ],
+    origin: "*",
     credentials: true,
+ 
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], //  Required
-  })
+  }),
 );
 
 app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp",
-  })
+  }),
 );
 
 // cloudinary connection

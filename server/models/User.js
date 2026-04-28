@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["Admin", "Student", "Instructor"],
       required: true,
-      
     },
     active: {
       type: Boolean,
@@ -41,13 +40,26 @@ const userSchema = new mongoose.Schema(
       required: true,
       ref: "Profile",
     },
-    
+
     courses: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Course",
-          },
-        ],
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+    ],
+
+    courseEnrollments: [
+      {
+        courseId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Course",
+        },
+        enrollmentDate: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
 
     image: {
       type: String,
@@ -67,7 +79,7 @@ const userSchema = new mongoose.Schema(
     ],
     // Add timestamps for when the document is created and last modified
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);
