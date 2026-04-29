@@ -104,7 +104,7 @@ export default function QuestionCard({
                 >
                     <p className="font-bold mb-2 text-gray-900">
                         {userAnswer === resolvedCorrectOption
-                            ? "✅ Correct!"
+                            ? " Correct!"
                             : "❌ Incorrect"}
                     </p>
                     <p className="text-sm text-gray-700">

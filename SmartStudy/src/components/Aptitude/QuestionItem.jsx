@@ -46,7 +46,7 @@ export default function QuestionItem({ question, questionNumber, category, topic
                 Number.isInteger(result.correctOption) ? result.correctOption : null
             );
             setSubmitted(true);
-            toast.success(result.isCorrect ? "✅ Correct!" : "❌ Incorrect");
+            result.isCorrect ? `${toast.success("Correct")}` : `${toast.error("Incorrect!")}`;
         }
     };
 
@@ -159,7 +159,7 @@ export default function QuestionItem({ question, questionNumber, category, topic
             {showAnswer && !submitted && (
                 <div className="mt-6 pt-6 border-t border-richblack-600 bg-richblack-900 p-4 rounded">
                     <p className="text-richblack-200 text-sm mb-2">
-                        <span className="font-bold text-purple-300">Correct Answer:</span>
+                        <span className="font-bold text-green-300">Correct Answer:</span>
                     </p>
                     <p className="text-white mb-3">
                         {correctOption !== null
@@ -167,7 +167,7 @@ export default function QuestionItem({ question, questionNumber, category, topic
                             : "Answer unavailable"}
                     </p>
                     <p className="text-richblack-300 text-sm">
-                        <span className="font-bold text-purple-300">Explanation:</span>
+                        <span className="font-bold text-green-300">Explanation:</span>
                     </p>
                     <p className="text-richblack-200 text-sm mt-2">{question.explanation}</p>
                 </div>
@@ -178,12 +178,12 @@ export default function QuestionItem({ question, questionNumber, category, topic
                 <div className="mt-6 pt-6 border-t border-richblack-600">
                     <div className={`mb-4 p-4 rounded-lg ${isCorrect ? "bg-green-50/10 border border-green-400" : "bg-red-50/10 border border-red-400"}`}>
                         <p className={`font-bold ${isCorrect ? "text-green-400" : "text-red-400"}`}>
-                            {isCorrect ? "✅ Correct Answer!" : "❌ Incorrect Answer"}
+                            {isCorrect ? " Correct Answer!" : "❌ Incorrect Answer"}
                         </p>
                     </div>
                     <div className="bg-richblack-900 p-4 rounded">
-                        <p className="text-purple-300 font-bold mb-2">Explanation:</p>
-                        <p className="text-richblack-100 text-sm">{question.explanation}</p>
+                        <p className="text-green-300 font-bold mb-2">Explanation:</p>
+                        <p className="text-green-100 text-sm">{question.explanation}</p>
                     </div>
                 </div>
             )}
