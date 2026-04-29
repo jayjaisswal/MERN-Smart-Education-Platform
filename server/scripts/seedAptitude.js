@@ -3,13 +3,15 @@ const path = require("path");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const Aptitude = require("../models/Aptitude");
+const Arithmetic = require("../models/Arithmetic");
+const VerbalAbility = require("../models/VerbalAbility");
+const LogicalReasoning = require("../models/LogicalReasoning");
 const database = require("../config/database");
 
 // Import JSON data
-const verbalAbilityData = require("../../SmartStudy/src/data/Aptitude/verbal_ability.json");
-const arithmeticData = require("../../SmartStudy/src/data/Aptitude/Arithmetic.json");
-const logicalReasoningData = require("../../SmartStudy/src/data/Aptitude/logicalReasoning.json");
+const verbalAbilityData = require("../data/Aptitude/verbal_ability.json");
+const arithmeticData = require("../data/Aptitude/Arithmetic.json");
+const logicalReasoningData = require("../data/Aptitude/logicalReasoning.json");
 
 // Map categories
 const categoryMap = {
@@ -19,83 +21,29 @@ const categoryMap = {
 };
 
 // Format data
-// Extract correct answer from explanation
-const extractAnswerFromExplanation = (explanation, options) => {
-  if (!explanation) return null;
-
-  const explanationText = explanation.toLowerCase().trim();
-
-  // Look for last option mention or value after "=" or "is"
-  let answer = null;
-
-  // Check each option to see if it appears in explanation
-  for (let i = options.length - 1; i >= 0; i--) {
-    const option = options[i];
-    if (explanation.includes(option)) {
-      answer = option;
-      break;
-    }
-  }
-
-  // If no option found, try to extract the final answer value
-  if (!answer) {
-    // Look for pattern after last "="
-    const equalMatches = explanation.match(/=\s*([^=\n]+)/g);
-    if (equalMatches) {
-      const lastMatch = equalMatches[equalMatches.length - 1];
-      const extracted = lastMatch.replace(/=\s*/, "").trim();
-      // Check if extracted value matches any option
-      for (let i = 0; i < options.length; i++) {
-        if (options[i].includes(extracted) || extracted.includes(options[i])) {
-          answer = options[i];
-          break;
-        }
-      }
-      if (!answer && extracted) {
-        answer = extracted;
-      }
-    }
-  }
-
-  return answer;
+// Convert letter answer (A, B, C, D) to index
+const letterToIndex = (letter) => {
+  const mapping = { A: 0, B: 1, C: 2, D: 3, E: 4 };
+  return mapping[letter.toUpperCase()] !== undefined
+    ? mapping[letter.toUpperCase()]
+    : 0;
 };
 
-const formatQuestion = (data, categoryName) => {
+const formatQuestion = (data) => {
   // Skip if no question or options
   if (!data.question || !data.options || data.options.length === 0) {
     return null;
   }
 
-  let category = categoryName;
   let topic = data.category || data.topic || "general";
 
-  // Extract correct answer
-  let correctAnswer = data.answer ? data.answer.trim() : "";
-  if (!correctAnswer) {
-    correctAnswer = extractAnswerFromExplanation(
-      data.explanation,
-      data.options,
-    );
-  }
-
-  if (!correctAnswer) {
-    return null; // Skip questions without answer
-  }
-
-  // Find correct option index
+  // Convert answer from letter to index
   let correctOption = 0;
-  for (let i = 0; i < data.options.length; i++) {
-    if (
-      data.options[i].includes(correctAnswer) ||
-      correctAnswer.includes(data.options[i])
-    ) {
-      correctOption = i;
-      break;
-    }
+  if (data.answer) {
+    correctOption = letterToIndex(data.answer);
   }
 
   return {
-    category: category,
     topic: topic,
     question: data.question,
     options: data.options,
@@ -110,40 +58,82 @@ const seedDatabase = async () => {
     await database.connect();
     console.log("Connected to database");
 
-    // Clear existing data
-    await Aptitude.deleteMany({});
-    console.log("Cleared existing aptitude questions");
+    // Clear existing data from all models
+    await Promise.all([
+      Arithmetic.deleteMany({}),
+      VerbalAbility.deleteMany({}),
+      LogicalReasoning.deleteMany({}),
+    ]);
+    console.log("Cleared existing aptitude questions from all models");
 
-    // Format and prepare questions - filter out null values
-    const allQuestions = [
-      ...verbalAbilityData
-        .map((q) => formatQuestion(q, "verbal_ability"))
-        .filter((q) => q !== null),
-      ...arithmeticData
-        .map((q) => formatQuestion(q, "arithmetic"))
-        .filter((q) => q !== null),
-      ...logicalReasoningData
-        .map((q) => formatQuestion(q, "logical_reasoning"))
-        .filter((q) => q !== null),
-    ];
+    // Format and prepare questions by category
+    const verbalAbilityQuestions = verbalAbilityData
+      .map((q) => formatQuestion(q))
+      .filter((q) => q !== null);
 
-    console.log(`Preparing to insert ${allQuestions.length} questions...`);
+    const arithmeticQuestions = arithmeticData
+      .map((q) => formatQuestion(q))
+      .filter((q) => q !== null);
 
-    if (allQuestions.length === 0) {
-      console.log("No valid questions to insert!");
-      mongoose.connection.close();
-      process.exit(1);
-    }
+    const logicalReasoningQuestions = logicalReasoningData
+      .map((q) => formatQuestion(q))
+      .filter((q) => q !== null);
 
-    // Insert questions
-    const result = await Aptitude.insertMany(allQuestions);
-    console.log(`Successfully inserted ${result.length} questions`);
+    // Remove duplicates and organize by topic with variable distribution
+    const organizeByTopic = (questions) => {
+      const topicGroups = {};
+      const seen = new Set();
 
-    // Log statistics
-    const categories = await Aptitude.aggregate([
+      questions.forEach((q) => {
+        const key = `${q.topic}|${q.question}|${q.options.join("|")}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          if (!topicGroups[q.topic]) {
+            topicGroups[q.topic] = [];
+          }
+          topicGroups[q.topic].push(q);
+        }
+      });
+
+      return topicGroups;
+    };
+
+    const verbalTopicGroups = organizeByTopic(verbalAbilityQuestions);
+    const arithmeticTopicGroups = organizeByTopic(arithmeticQuestions);
+    const logicalTopicGroups = organizeByTopic(logicalReasoningQuestions);
+
+    // Flatten back to arrays
+    const uniqueVerbalAbility = Object.values(verbalTopicGroups).flat();
+    const uniqueArithmetic = Object.values(arithmeticTopicGroups).flat();
+    const uniqueLogicalReasoning = Object.values(logicalTopicGroups).flat();
+
+    console.log(
+      `\nFormatting Statistics:
+- Verbal Ability: ${verbalAbilityQuestions.length} → ${uniqueVerbalAbility.length} (after deduplication)
+- Arithmetic: ${arithmeticQuestions.length} → ${uniqueArithmetic.length} (after deduplication)
+- Logical Reasoning: ${logicalReasoningQuestions.length} → ${uniqueLogicalReasoning.length} (after deduplication)`,
+    );
+
+    // Insert questions into respective models
+    const [verbalResult, arithmeticResult, logicalResult] = await Promise.all([
+      VerbalAbility.insertMany(uniqueVerbalAbility),
+      Arithmetic.insertMany(uniqueArithmetic),
+      LogicalReasoning.insertMany(uniqueLogicalReasoning),
+    ]);
+
+    const totalInserted =
+      verbalResult.length + arithmeticResult.length + logicalResult.length;
+
+    console.log(`\nSuccessfully inserted ${totalInserted} questions total:
+- Verbal Ability: ${verbalResult.length} questions
+- Arithmetic: ${arithmeticResult.length} questions
+- Logical Reasoning: ${logicalResult.length} questions`);
+
+    // Get statistics from all models
+    const verbalTopics = await VerbalAbility.aggregate([
       {
         $group: {
-          _id: "$category",
+          _id: "$topic",
           count: { $sum: 1 },
         },
       },
@@ -152,36 +142,53 @@ const seedDatabase = async () => {
       },
     ]);
 
-    console.log("\n=== Category Statistics ===");
-    categories.forEach((cat) => {
-      console.log(`${cat._id}: ${cat.count} questions`);
-    });
-
-    // Log topics per category
-    const topicStats = await Aptitude.aggregate([
+    const arithmeticTopics = await Arithmetic.aggregate([
       {
         $group: {
-          _id: { category: "$category", topic: "$topic" },
+          _id: "$topic",
           count: { $sum: 1 },
         },
       },
       {
-        $sort: { "_id.category": 1, "_id.topic": 1 },
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    const logicalTopics = await LogicalReasoning.aggregate([
+      {
+        $group: {
+          _id: "$topic",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
       },
     ]);
 
     console.log("\n=== Topics Per Category ===");
-    let currentCategory = null;
-    topicStats.forEach((stat) => {
-      if (stat._id.category !== currentCategory) {
-        currentCategory = stat._id.category;
-        console.log(`\n${currentCategory}:`);
-      }
-      console.log(`  - ${stat._id.topic}: ${stat.count} questions`);
+
+    console.log(`\narithmetic: ${uniqueArithmetic.length} questions`);
+    arithmeticTopics.forEach((topic) => {
+      console.log(`  - ${topic._id}: ${topic.count} questions`);
+    });
+
+    console.log(
+      `\nlogical_reasoning: ${uniqueLogicalReasoning.length} questions`,
+    );
+    logicalTopics.forEach((topic) => {
+      console.log(`  - ${topic._id}: ${topic.count} questions`);
+    });
+
+    console.log(`\nverbal_ability: ${uniqueVerbalAbility.length} questions`);
+    verbalTopics.forEach((topic) => {
+      console.log(`  - ${topic._id}: ${topic.count} questions`);
     });
 
     mongoose.connection.close();
-    console.log("\n✅ Database seeding completed successfully!");
+    console.log(
+      "\n✅ Database seeding completed successfully with 3 separate models!",
+    );
   } catch (error) {
     console.error("Error seeding database:", error);
     mongoose.connection.close();

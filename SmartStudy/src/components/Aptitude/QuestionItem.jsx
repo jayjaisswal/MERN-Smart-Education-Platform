@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { submitAptitudeAnswer } from "../../services/operations/aptitudeAPI";
+import {
+    getAptitudeQuestionDetails,
+    submitAptitudeAnswer,
+} from "../../services/operations/aptitudeAPI";
 import { toast } from "react-hot-toast";
 
 export default function QuestionItem({ question, questionNumber, category, topic }) {
@@ -9,6 +12,10 @@ export default function QuestionItem({ question, questionNumber, category, topic
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [userAnswer, setUserAnswer] = useState(null);
     const [isCorrect, setIsCorrect] = useState(null);
+    const [correctOption, setCorrectOption] = useState(
+        Number.isInteger(question.correctOption) ? question.correctOption : null
+    );
+    const [isAnswerLoading, setIsAnswerLoading] = useState(false);
     const [timeStarted] = useState(Date.now());
     const [submitted, setSubmitted] = useState(false);
 
@@ -24,8 +31,6 @@ export default function QuestionItem({ question, questionNumber, category, topic
         }
 
         const timeTaken = Math.ceil((Date.now() - timeStarted) / 1000);
-        const correct = selectedAnswer === question.correctOption;
-
         const result = await submitAptitudeAnswer(
             question._id,
             selectedAnswer,
@@ -36,22 +41,37 @@ export default function QuestionItem({ question, questionNumber, category, topic
 
         if (result) {
             setUserAnswer(selectedAnswer);
-            setIsCorrect(correct);
+            setIsCorrect(result.isCorrect);
+            setCorrectOption(
+                Number.isInteger(result.correctOption) ? result.correctOption : null
+            );
             setSubmitted(true);
-            toast.success(correct ? "✅ Correct!" : "❌ Incorrect");
+            toast.success(result.isCorrect ? "✅ Correct!" : "❌ Incorrect");
         }
     };
 
+    const handleToggleAnswer = async () => {
+        if (!showAnswer && correctOption === null) {
+            setIsAnswerLoading(true);
+            const details = await getAptitudeQuestionDetails(question._id);
+            if (details && Number.isInteger(details.correctOption)) {
+                setCorrectOption(details.correctOption);
+            }
+            setIsAnswerLoading(false);
+        }
+        setShowAnswer((prev) => !prev);
+    };
+
     return (
-        <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-6 hover:border-yellow-50/50 transition-all">
+        <div className="bg-richblack-800 border border-richblack-700 rounded-lg p-6 hover:border-purple-300/50 transition-all">
             {/* Question Header */}
             <div className="mb-6">
                 <div className="text-sm text-richblack-300 mb-2">
-                    <span className="font-bold text-yellow-50">Q{questionNumber}</span>
+                    <span className="font-bold text-purple-300">Q{questionNumber}</span>
                     <span className="mx-2">•</span>
                     <span className="capitalize">{topic.replace(/[-_]/g, " ")}</span>
                     <span className="mx-2">•</span>
-                    <span className="font-bold capitalize text-yellow-100">{question.difficulty}</span>
+                    <span className="font-bold capitalize text-purple-200">{question.difficulty}</span>
                 </div>
                 <p className="text-white font-semibold text-lg">{question.question}</p>
             </div>
@@ -62,12 +82,12 @@ export default function QuestionItem({ question, questionNumber, category, topic
                     <label
                         key={index}
                         className={`flex items-start gap-3 p-3 border-2 rounded-lg cursor-pointer transition-all ${selectedAnswer === index
-                                ? "bg-yellow-50/10 border-yellow-50"
-                                : submitted && index === question.correctOption
-                                    ? "bg-green-50/10 border-green-400"
-                                    : submitted && index === userAnswer && !isCorrect
-                                        ? "bg-red-50/10 border-red-400"
-                                        : "border-richblack-600 hover:border-richblack-500"
+                            ? "bg-purple-300/10 border-purple-300"
+                            : submitted && correctOption !== null && index === correctOption
+                                ? "bg-green-50/10 border-green-400"
+                                : submitted && index === userAnswer && !isCorrect
+                                    ? "bg-red-50/10 border-red-400"
+                                    : "border-richblack-600 hover:border-richblack-500"
                             }`}
                     >
                         <input
@@ -85,7 +105,7 @@ export default function QuestionItem({ question, questionNumber, category, topic
                             </p>
                             <p className="text-richblack-100 text-sm">{option}</p>
                         </div>
-                        {submitted && index === question.correctOption && (
+                        {submitted && correctOption !== null && index === correctOption && (
                             <span className="text-green-400 font-bold">✓</span>
                         )}
                         {submitted && index === userAnswer && !isCorrect && (
@@ -102,15 +122,19 @@ export default function QuestionItem({ question, questionNumber, category, topic
                         <button
                             onClick={handleSubmit}
                             disabled={selectedAnswer === null}
-                            className="flex-1 bg-yellow-50 text-richblack-900 font-bold py-2 rounded-lg hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 bg-purple-500 text-white font-bold py-2 rounded-lg hover:bg-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Submit Answer
                         </button>
                         <button
-                            onClick={() => setShowAnswer(!showAnswer)}
-                            className="px-4 py-2 text-yellow-50 border border-yellow-50 rounded-lg hover:bg-yellow-50 hover:text-richblack-900 transition-all font-semibold"
+                            onClick={handleToggleAnswer}
+                            className="px-4 py-2 text-purple-300 border border-purple-300 rounded-lg hover:bg-purple-300 hover:text-richblack-900 transition-all font-semibold"
                         >
-                            {showAnswer ? "Hide Answer" : "Show Answer"}
+                            {isAnswerLoading
+                                ? "Loading..."
+                                : showAnswer
+                                    ? "Hide Answer"
+                                    : "Show Answer"}
                         </button>
                     </>
                 ) : (
@@ -135,11 +159,15 @@ export default function QuestionItem({ question, questionNumber, category, topic
             {showAnswer && !submitted && (
                 <div className="mt-6 pt-6 border-t border-richblack-600 bg-richblack-900 p-4 rounded">
                     <p className="text-richblack-200 text-sm mb-2">
-                        <span className="font-bold text-yellow-50">Correct Answer:</span>
+                        <span className="font-bold text-purple-300">Correct Answer:</span>
                     </p>
-                    <p className="text-white mb-3">{question.options[question.correctOption]}</p>
+                    <p className="text-white mb-3">
+                        {correctOption !== null
+                            ? question.options[correctOption]
+                            : "Answer unavailable"}
+                    </p>
                     <p className="text-richblack-300 text-sm">
-                        <span className="font-bold text-yellow-50">Explanation:</span>
+                        <span className="font-bold text-purple-300">Explanation:</span>
                     </p>
                     <p className="text-richblack-200 text-sm mt-2">{question.explanation}</p>
                 </div>
@@ -154,7 +182,7 @@ export default function QuestionItem({ question, questionNumber, category, topic
                         </p>
                     </div>
                     <div className="bg-richblack-900 p-4 rounded">
-                        <p className="text-yellow-50 font-bold mb-2">Explanation:</p>
+                        <p className="text-purple-300 font-bold mb-2">Explanation:</p>
                         <p className="text-richblack-100 text-sm">{question.explanation}</p>
                     </div>
                 </div>

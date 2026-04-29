@@ -7,9 +7,13 @@ export default function QuestionCard({
     userAnswer,
     selectedAnswer,
     setSelectedAnswer,
+    correctOption,
     timeRemaining,
 }) {
     const [localAnswer, setLocalAnswer] = useState(selectedAnswer);
+    const resolvedCorrectOption = Number.isInteger(correctOption)
+        ? correctOption
+        : question.correctOption;
 
     useEffect(() => {
         setLocalAnswer(selectedAnswer);
@@ -27,9 +31,9 @@ export default function QuestionCard({
             "w-full p-4 mb-3 text-left border-2 rounded-lg cursor-pointer transition-all duration-200 font-semibold";
 
         if (isAnswered) {
-            if (index === question.correctOption) {
+            if (index === resolvedCorrectOption) {
                 return baseClass + " border-green-500 bg-green-50 text-green-900";
-            } else if (index === userAnswer && userAnswer !== question.correctOption) {
+            } else if (index === userAnswer && userAnswer !== resolvedCorrectOption) {
                 return baseClass + " border-red-500 bg-red-50 text-red-900";
             } else {
                 return baseClass + " border-gray-300 bg-gray-50 text-gray-900";
@@ -48,10 +52,10 @@ export default function QuestionCard({
                 <div className="text-sm font-semibold text-gray-700">Question</div>
                 <div
                     className={`text-lg font-bold px-4 py-2 rounded-lg ${timeRemaining <= 10 && timeRemaining > 0
-                            ? "bg-red-100 text-red-600 animate-pulse"
-                            : timeRemaining === 0
-                                ? "bg-red-100 text-red-600"
-                                : "bg-blue-100 text-blue-600"
+                        ? "bg-red-100 text-red-600 animate-pulse"
+                        : timeRemaining === 0
+                            ? "bg-red-100 text-red-600"
+                            : "bg-blue-100 text-blue-600"
                         }`}
                 >
                     ⏱️ {Math.floor(timeRemaining / 60)}:
@@ -93,13 +97,13 @@ export default function QuestionCard({
             {/* Explanation (shown after answer) */}
             {isAnswered && (
                 <div
-                    className={`p-4 rounded-lg ${userAnswer === question.correctOption
-                            ? "bg-green-50 border border-green-200"
-                            : "bg-yellow-50 border border-yellow-200"
+                    className={`p-4 rounded-lg ${userAnswer === resolvedCorrectOption
+                        ? "bg-green-50 border border-green-200"
+                        : "bg-yellow-50 border border-yellow-200"
                         }`}
                 >
                     <p className="font-bold mb-2 text-gray-900">
-                        {userAnswer === question.correctOption
+                        {userAnswer === resolvedCorrectOption
                             ? "✅ Correct!"
                             : "❌ Incorrect"}
                     </p>

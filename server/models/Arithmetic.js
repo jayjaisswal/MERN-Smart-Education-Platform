@@ -1,16 +1,11 @@
 const mongoose = require("mongoose");
 
-const aptitudeSchema = new mongoose.Schema(
+const arithmeticSchema = new mongoose.Schema(
   {
-    category: {
-      type: String,
-      required: true,
-      enum: ["verbal_ability", "arithmetic", "logical_reasoning"],
-      index: true,
-    },
     topic: {
       type: String,
       required: true,
+      index: true,
     },
     question: {
       type: String,
@@ -30,6 +25,7 @@ const aptitudeSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0,
+      max: 4,
     },
     explanation: {
       type: String,
@@ -40,8 +36,14 @@ const aptitudeSchema = new mongoose.Schema(
       enum: ["easy", "medium", "hard"],
       default: "medium",
     },
+    source: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true },
 );
 
-module.exports = mongoose.model("Aptitude", aptitudeSchema);
+arithmeticSchema.index({ topic: 1, question: 1 });
+
+module.exports = mongoose.model("Arithmetic", arithmeticSchema);

@@ -22,6 +22,7 @@ export default function AptitudeQuiz() {
     const [timePerQuestion, setTimePerQuestion] = useState({});
     const [startTime, setStartTime] = useState(Date.now());
     const [timeRemaining, setTimeRemaining] = useState(60); // 60 seconds per question
+    const [answerResults, setAnswerResults] = useState({});
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -91,6 +92,13 @@ export default function AptitudeQuiz() {
         );
 
         if (result) {
+            setAnswerResults((prev) => ({
+                ...prev,
+                [currentQuestionIndex]: {
+                    isCorrect: result.isCorrect,
+                    correctOption: result.correctOption,
+                },
+            }));
             toast.success(result.isCorrect ? "Correct! 🎉" : "Incorrect, try the next one!");
         }
     };
@@ -206,6 +214,7 @@ export default function AptitudeQuiz() {
                             [currentQuestionIndex]: answer,
                         }));
                     }}
+                    correctOption={answerResults[currentQuestionIndex]?.correctOption}
                     timeRemaining={timeRemaining}
                 />
 
@@ -231,7 +240,7 @@ export default function AptitudeQuiz() {
                     ) : (
                         <button
                             onClick={handleSkipQuestion}
-                            className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-all"
+                            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-all"
                         >
                             Skip Question ➤
                         </button>
@@ -250,10 +259,10 @@ export default function AptitudeQuiz() {
                                     resetTimer();
                                 }}
                                 className={`py-2 px-3 rounded-lg font-bold transition-all ${index === currentQuestionIndex
-                                        ? "bg-purple-600 text-white"
-                                        : answeredQuestions.has(index)
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                    ? "bg-purple-600 text-white"
+                                    : answeredQuestions.has(index)
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                     }`}
                             >
                                 {index + 1}

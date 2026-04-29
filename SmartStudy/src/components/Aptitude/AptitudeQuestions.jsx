@@ -16,6 +16,8 @@ export default function AptitudeQuestions() {
     const [totalQuestions, setTotalQuestions] = useState(0);
     const questionsPerPage = 4;
 
+    const decodedTopic = decodeURIComponent(topic);
+
     useEffect(() => {
         const fetchQuestions = async () => {
             setLoading(true);
@@ -24,7 +26,7 @@ export default function AptitudeQuestions() {
                     category,
                     currentPage,
                     questionsPerPage,
-                    topic
+                    decodedTopic
                 );
                 if (data) {
                     setQuestions(data.data);
@@ -38,9 +40,7 @@ export default function AptitudeQuestions() {
         };
 
         fetchQuestions();
-    }, [category, topic, currentPage]);
-
-    const decodedTopic = decodeURIComponent(topic);
+    }, [category, decodedTopic, currentPage]);
 
     return (
         <div className="min-h-screen bg-richblack-900 py-8">
@@ -77,7 +77,7 @@ export default function AptitudeQuestions() {
                                     question={question}
                                     questionNumber={(currentPage - 1) * questionsPerPage + index + 1}
                                     category={category}
-                                    topic={topic}
+                                    topic={decodedTopic}
                                 />
                             ))}
                         </div>

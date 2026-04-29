@@ -56,7 +56,7 @@ export default function AptitudePractice() {
 
                 {loading ? (
                     <div className="flex justify-center items-center h-40">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-50"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400"></div>
                     </div>
                 ) : error ? (
                     <div className="bg-red-900 border border-red-700 rounded-lg p-6 text-center">
@@ -73,7 +73,7 @@ export default function AptitudePractice() {
                                 onClick={() => handleCategoryClick(category)}
                                 className="cursor-pointer group"
                             >
-                                <div className="bg-richblack-800 rounded-lg border-2 border-richblack-700 hover:border-yellow-50 p-6 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-50/20">
+                                <div className="bg-richblack-800 rounded-lg border-2 border-richblack-700 hover:border-purple-300 p-6 transition-all duration-300 hover:shadow-lg hover:shadow-purple-300/20">
                                     <div className="text-5xl mb-4">{categoryIcons[category.name]}</div>
                                     <h2 className="text-2xl font-bold text-white mb-2 capitalize">
                                         {category.displayName}

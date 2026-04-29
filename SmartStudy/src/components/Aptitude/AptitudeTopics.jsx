@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { getAptitudeQuestions } from "../../services/operations/aptitudeAPI";
-import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { getAptitudeCategories } from "../../services/operations/aptitudeAPI";
+import { setCategories } from "../../slices/aptitudeSlice";
 
 export default function AptitudeTopics() {
     const { category } = useParams();
     const navigate = useNavigate();
-    const { auth } = useSelector((state) => state);
+    const dispatch = useDispatch();
     const { categories } = useSelector((state) => state.aptitude);
 
     const [topics, setTopics] = useState([]);
@@ -15,13 +15,30 @@ export default function AptitudeTopics() {
     const [selectedTopic, setSelectedTopic] = useState(null);
 
     useEffect(() => {
-        // Get unique topics for this category
-        const currentCategory = categories.find((c) => c.name === category);
-        if (currentCategory && currentCategory.topics) {
-            setTopics(currentCategory.topics);
-        }
-        setLoading(false);
-    }, [category, categories]);
+        const loadTopics = async () => {
+            setLoading(true);
+
+            let updatedCategories = categories;
+            if (!categories || categories.length === 0) {
+                const data = await getAptitudeCategories();
+                if (data && data.length > 0) {
+                    dispatch(setCategories(data));
+                    updatedCategories = data;
+                }
+            }
+
+            const currentCategory = updatedCategories.find((c) => c.name === category);
+            if (currentCategory && currentCategory.topics) {
+                setTopics(currentCategory.topics);
+            } else {
+                setTopics([]);
+            }
+
+            setLoading(false);
+        };
+
+        loadTopics();
+    }, [category, categories, dispatch]);
 
     if (loading) {
         return (
@@ -38,7 +55,7 @@ export default function AptitudeTopics() {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/aptitude")}
-                        className="mb-4 text-yellow-50 hover:text-yellow-100 flex items-center gap-2"
+                        className="mb-4 text-purple-300 hover:text-purple-200 flex items-center gap-2"
                     >
                         ← Back to Categories
                     </button>
@@ -53,7 +70,9 @@ export default function AptitudeTopics() {
                     {topics.map((topic, index) => (
                         <div
                             key={topic}
-                            onClick={() => navigate(`/aptitude-questions/${category}/${topic}`)}
+                            onClick={() =>
+                                navigate(`/aptitude-questions/${category}/${encodeURIComponent(topic)}`)
+                            }
                             className="bg-richblack-800 border-2 border-richblack-700 hover:border-yellow-50 rounded-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-yellow-50/20"
                         >
                             <div className="flex items-center gap-4">
