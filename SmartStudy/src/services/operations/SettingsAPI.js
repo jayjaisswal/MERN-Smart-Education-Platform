@@ -13,7 +13,7 @@ const {
 } = settingsEndpoints;
 
 export function updateDisplayPicture(token, formData) {
-  return async (dispatch,getState) => {
+  return async (dispatch, getState) => {
     const toastId = toast.loading("Loading...");
     try {
       const response = await apiConnector(
@@ -33,9 +33,9 @@ export function updateDisplayPicture(token, formData) {
       if (!response.data.success) {
         throw new Error(response.data.message);
       }
-     
+
       const updatedImage = response.data.data.image;
-      
+
       const existingUser = getState().profile.user;
 
       // Merge updated image with previous user data
@@ -47,7 +47,7 @@ export function updateDisplayPicture(token, formData) {
       // Update Redux and localStorage
       dispatch(setUser(updatedUser));
       localStorage.setItem("user", JSON.stringify(updatedUser));
-       toast.success("Display Picture Updated Successfully");
+      toast.success("Display Picture Updated Successfully");
     } catch (error) {
       console.log("UPDATE_DISPLAY_PICTURE_API API ERROR............", error);
       toast.error("Could Not Update Display Picture");
@@ -69,15 +69,21 @@ export function updateProfile(token, formData) {
       if (!response.data.success) {
         throw new Error(response.data.message);
       }
-      const profile = response.data.profile;
-      const userDetails = response.data.userDetails;
-      console.log("profile", profile);
-      console.log("userDetails", userDetails);
+        // ✅ Correct: use updatedUserDetails from API
+      const userDetails = response.data.updatedUserDetails;
+
+      // ✅ Extract nested additional details correctly
+      const profile = userDetails.additionalDetails || {};
+
+      console.log("userDetails:", userDetails);
+      console.log("additionalDetails:", profile);
+     // ✅ Merge properly
       const updatedUser = {
-        ...userDetails, // ✅ includes firstName, lastName, email, image, etc.
-         additionalDetails: {
-    ...profile, // 👈 Keep all profile fields (about, gender, dob) nested properly
-  },
+        ...userDetails,
+        additionalDetails: { ...profile },
+        image:
+          userDetails.image ||
+          `https://api.dicebear.com/5.x/initials/svg?seed=${userDetails.firstName} ${userDetails.lastName}`,
       };
 
       const userImage = userDetails.image
@@ -127,11 +133,10 @@ export function deleteProfile(token, navigate) {
       if (!response.data.status) {
         throw new Error(response.data.message);
       }
-       
+
       toast.success(response.data.message);
-    
+
       dispatch(logout(navigate));
-      
     } catch (error) {
       console.log("DELETE_PROFILE_API API ERROR............", error);
       toast.error("Could Not Delete Profile");
