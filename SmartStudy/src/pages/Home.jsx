@@ -168,7 +168,7 @@ const Home = () => {
                             <div className='flex flex-row gap-7 text-white mt-10'>
                                     <CTAButton active={true} linkto={"/signup"}>
                                         <div className='flex items-center gap-2 '>
-                                            Explore Full Catelog
+                                            Explore Full Catalog
                                             <FaArrowAltCircleRight/>
                                         </div>    
                                     </CTAButton>

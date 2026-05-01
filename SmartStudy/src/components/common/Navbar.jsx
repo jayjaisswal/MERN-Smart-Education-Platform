@@ -6,6 +6,7 @@ import { IoIosArrowDown } from "react-icons/io";
 
 import Logo from "../../assets/Logo/Logo-Full-Light.png";
 import { NavbarLinks } from "../../data/navbar-links";
+import { InterviewLinks } from "../../data/interviewLink";
 import ProfileDropDown from "../core/Auth/ProfileDropDown";
 import SearchBox from "./SearchBox";
 import { apiConnector } from "../../services/apiConnector";
@@ -19,6 +20,7 @@ const Navbar = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  const [interviewOpen, setInterviewOpen] = useState(false);
   const [sublinks, setSubLinks] = useState([]);
   const navRef = useRef(null);
   const location = useLocation();
@@ -60,6 +62,7 @@ const Navbar = () => {
   const handleLinkClick = () => {
     setMenuOpen(false);
     setCatalogOpen(false);
+    setInterviewOpen(false);
   };
 
   const handleLoginClick = () => {
@@ -130,7 +133,7 @@ const Navbar = () => {
           <ul className="flex flex-col md:flex-row gap-4 md:gap-6 text-base font-semibold p-4 md:p-0">
             {NavbarLinks.map((link, index) => (
               <li key={index} className="relative group">
-                {link.title === "Catalog" ? (
+                {link.title === "Catalog" || link.title === "Interview Preparation" ? (
                   <div
                     className="flex items-center gap-1 cursor-pointer select-none"
                     onClick={handleCatalogClick}
@@ -140,8 +143,8 @@ const Navbar = () => {
                   >
                     <span
                       className={`transition-colors duration-200 ${matchRoute(link?.path)
-                          ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
-                          : " text-white"
+                        ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
+                        : " text-white"
                         }`}
                     >
                       {link.title}
@@ -153,35 +156,60 @@ const Navbar = () => {
                     {/* Dropdown */}
                     <div
                       className={`
-                        absolute left-0 top-8 min-w-[180px] rounded-md bg-gray-800 shadow-lg z-20 transition-all duration-300
-                        ${catalogOpen ? "visible opacity-100" : "invisible opacity-0"}
-                        md:group-hover:visible md:group-hover:opacity-100
+                        absolute left-0 top-8 min-w-[200px] rounded-xl bg-gray-900/95 backdrop-blur-md shadow-2xl z-20 transition-all duration-300 border border-gray-700
+                        ${catalogOpen || interviewOpen ? "visible opacity-100 scale-100" : "invisible opacity-0 scale-95"}
+                        md:group-hover:visible md:group-hover:opacity-100 md:group-hover:scale-100
                       `}
                     >
-                      {Array.isArray(sublinks) && sublinks.length > 0 ? (
-                        sublinks.map((tag, idx) => (
-                          <Link
-                            key={idx}
-                            to={`/catalog/${tag.name.split(" ").join("-").toLowerCase()}`}
-                            className="block px-4 py-2 text-white hover:bg-gray-700 rounded transition-colors"
-                            onClick={handleLinkClick}
-                          >
-                            {tag.name}
-                          </Link>
-                        ))
-                      ) : (
-                        <span className="block px-4 py-2 text-gray-400">
-                          No Categories
-                        </span>
+
+                      {/* Catalog Dropdown */}
+                      {link.title === "Catalog" && (
+                        Array.isArray(sublinks) && sublinks.length > 0 ? (
+                          sublinks.map((tag, idx) => (
+                            <Link
+                              key={idx}
+                              to={`/catalog/${tag.name.split(" ").join("-").toLowerCase()}`}
+                              className="block px-4 py-2 text-white hover:bg-gray-700 rounded transition-all"
+                              onClick={handleLinkClick}
+                            >
+                              {tag.name}
+                            </Link>
+                          ))
+                        ) : (
+                          <span className="block px-4 py-2 text-gray-400">
+                            No Categories
+                          </span>
+                        )
                       )}
+
+                      {/* Interview Dropdown */}
+                      {link.title === "Interview Preparation" && (
+                        Array.isArray(InterviewLinks) && InterviewLinks.length > 0 ? (
+                          InterviewLinks.map((item, idx) => (
+                            <Link
+                              key={idx}
+                              to={item.path}
+                              className="block px-4 py-2 text-white hover:bg-gray-700 rounded transition-all"
+                              onClick={handleLinkClick}
+                            >
+                              {item.title}
+                            </Link>
+                          ))
+                        ) : (
+                          <span className="block px-4 py-2 text-gray-400">
+                            No Subjects
+                          </span>
+                        )
+                      )}
+
                     </div>
                   </div>
                 ) : (
                   <Link to={link?.path} onClick={handleLinkClick}>
                     <span
                       className={`transition-colors duration-200 ${matchRoute(link?.path)
-                          ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
-                          : "text-white"
+                        ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
+                        : "text-white"
                         }`}
                     >
                       {link.title}

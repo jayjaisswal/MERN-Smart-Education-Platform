@@ -8,8 +8,8 @@ export const NavbarLinks = [
     // path: '/catalog',
   },
   {
-    title: "Master Aptitude",
-    path: "/aptitude",
+    title: "Interview Preparation",
+    // path: "/aptitude",
   },
   {
     title: "About Us",
