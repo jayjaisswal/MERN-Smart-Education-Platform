@@ -6,6 +6,7 @@ const profileRoutes = require("./routes/Profile");
 const paymentRoutes = require("./routes/Payments");
 const courseRoutes = require("./routes/Course");
 const aptitudeRoutes = require("./routes/Aptitude");
+const interviewRoutes = require("./routes/Interview");
 
 const database = require("./config/database");
 const cors = require("cors");
@@ -58,6 +59,7 @@ app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactRoutes);
 app.use("/api/v1/aptitude", aptitudeRoutes);
+app.use("/api/v1/interview", interviewRoutes);
 
 // default route
 app.get("/", (req, res) => {
