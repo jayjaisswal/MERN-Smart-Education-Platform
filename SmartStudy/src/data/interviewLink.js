@@ -5,7 +5,7 @@ export const InterviewLinks = [
   },
   {
     title: "Operating System",
-    path: "/os",
+    path: "/operating-system",
   },
   {
     title: "DBMS",
@@ -13,6 +13,6 @@ export const InterviewLinks = [
   },
   {
     title: "Computer Networks",
-    path: "/cn",
+    path: "/computer-networks",
   },
 ];
