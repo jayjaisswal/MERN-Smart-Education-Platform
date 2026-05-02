@@ -34,7 +34,7 @@ import Instructor from "./components/core/Dashboard/InstructorDashboard/Instruct
 import AptitudePractice from "./components/Aptitude/AptitudePractice";
 import AptitudeTopics from "./components/Aptitude/AptitudeTopics";
 import AptitudeQuestions from "./components/Aptitude/AptitudeQuestions";
-import DbmsInterviewTheory from "./components/Interview/DBMS/dbmsInterviewTheory";
+import DbmsInterviewTheory from "./components/Interview/DBMS/DbmsInterviewTheory";
 import ComputerNetworkingTheory from "./components/Interview/ComputerNetworking/ComputerNetworkingTheory";
 function App() {
   const dispatch = useDispatch();
@@ -115,7 +115,7 @@ function App() {
         <Route path="/about" element={<About />} />
 
         {/* interview */}
-        <Route path="/dbms" element={<dbmsInterviewTheory />} />
+        <Route path="/dbms" element={<DbmsInterviewTheory />} />
         <Route path="/computer-networks" element={<ComputerNetworkingTheory />} />
 
 

@@ -3,7 +3,7 @@ import React from 'react';
 const ComputerNetworkingTheory = () => {
     return (
         <div>
-            <h1>Hello, Computer Networking Theory!</h1>
+            <h1 className="text-white">Hello, Computer Networking Theory!</h1>
         </div>
     );
 };
