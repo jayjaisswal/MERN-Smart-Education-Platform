@@ -133,7 +133,7 @@ const Navbar = () => {
           <ul className="flex flex-col md:flex-row gap-4 md:gap-6 text-base font-semibold p-4 md:p-0">
             {NavbarLinks.map((link, index) => (
               <li key={index} className="relative group">
-                {link.title === "Catalog" || link.title === "Interview Preparation" ? (
+                {link.title === "Catalog" || link.title === "Exam & Career Prep" ? (
                   <div
                     className="flex items-center gap-1 cursor-pointer select-none"
                     onClick={handleCatalogClick}
@@ -183,7 +183,7 @@ const Navbar = () => {
                       )}
 
                       {/* Interview Dropdown */}
-                      {link.title === "Interview Preparation" && (
+                      {link.title === "Exam & Career Prep" && (
                         Array.isArray(InterviewLinks) && InterviewLinks.length > 0 ? (
                           InterviewLinks.map((item, idx) => (
                             <Link

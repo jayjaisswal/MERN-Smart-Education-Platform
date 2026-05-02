@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "question": "What is the correct way to create a list in Python?",
+    "options": ["list = {1, 2, 3}", "list = [1, 2, 3]", "list = (1, 2, 3)", "list = <1, 2, 3>"],
+    "answer": "list = [1, 2, 3]",
+    "explanation": "Lists in Python are created using square brackets []."
+  },
+  {
+    "id": 2,
+    "question": "How do you define a function in Python?",
+    "options": ["function myFunc():", "def myFunc():", "func myFunc():", "define myFunc():"],
+    "answer": "def myFunc():",
+    "explanation": "Functions are defined using the 'def' keyword in Python."
+  },
+  {
+    "id": 3,
+    "question": "What is PEP 8?",
+    "options": ["Python Extension Protocol", "Python Enhancement Proposal style guide", "Python Error Protocol", "Python Execution Process"],
+    "answer": "Python Enhancement Proposal style guide",
+    "explanation": "PEP 8 is the style guide for Python code that defines formatting conventions."
+  },
+  {
+    "id": 4,
+    "question": "How do you create a dictionary in Python?",
+    "options": ["dict = [1: 'one', 2: 'two']", "dict = {1: 'one', 2: 'two'}", "dict = (1: 'one', 2: 'two')", "dict = <1: 'one'>"],
+    "answer": "dict = {1: 'one', 2: 'two'}",
+    "explanation": "Dictionaries use curly braces with key-value pairs."
+  },
+  {
+    "id": 5,
+    "question": "What is the output of type(5)?",
+    "options": ["<class 'int'>", "<type 'integer'>", "<type 'number'>", "<class 'number'>"],
+    "answer": "<class 'int'>",
+    "explanation": "type() returns the class type of an object."
+  },
+  {
+    "id": 6,
+    "question": "How do you handle exceptions in Python?",
+    "options": ["try-except", "catch-throw", "handle-error", "exception-handle"],
+    "answer": "try-except",
+    "explanation": "Exception handling uses try-except blocks in Python."
+  },
+  {
+    "id": 7,
+    "question": "What is list comprehension?",
+    "options": ["A method to sort lists", "A concise way to create lists", "A way to delete list elements", "A list copying method"],
+    "answer": "A concise way to create lists",
+    "explanation": "List comprehension provides a concise way to create lists based on existing iterables."
+  },
+  {
+    "id": 8,
+    "question": "How do you open a file in Python?",
+    "options": ["open('file.txt', 'r')", "file.open('file.txt')", "open.file('file.txt')", "open('file.txt')"],
+    "answer": "open('file.txt', 'r')",
+    "explanation": "The open() function is used to open files with specified mode."
+  },
+  {
+    "id": 9,
+    "question": "What is self in Python classes?",
+    "options": ["A keyword", "Reference to the instance", "A variable name", "A function"],
+    "answer": "Reference to the instance",
+    "explanation": "self refers to the instance of the class and is the first parameter of instance methods."
+  },
+  {
+    "id": 10,
+    "question": "How do you check if a key exists in a dictionary?",
+    "options": ["key in dict", "dict.contains(key)", "dict.has_key(key)", "exists(key, dict)"],
+    "answer": "key in dict",
+    "explanation": "The 'in' operator checks if a key exists in the dictionary."
+  }
+]

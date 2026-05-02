@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "question": "What is the unit of force?",
+    "options": ["Joule", "Watt", "Newton", "Pascal"],
+    "answer": "Newton",
+    "explanation": "Force is measured in Newtons (N) in the SI system."
+  },
+  {
+    "id": 2,
+    "question": "What is the speed of light in vacuum?",
+    "options": ["3×10⁶ m/s", "3×10⁸ m/s", "3×10⁴ m/s", "3×10² m/s"],
+    "answer": "3×10⁸ m/s",
+    "explanation": "The speed of light in vacuum is approximately 3×10⁸ m/s."
+  },
+  {
+    "id": 3,
+    "question": "Which law states that pressure increases with depth?",
+    "options": [" Boyle's Law", "Pascal's Law", "Archimedes' Principle", "Bernoulli's Principle"],
+    "answer": "Pascal's Law",
+    "explanation": "Pascal's Law states that pressure increases with depth in a fluid."
+  },
+  {
+    "id": 4,
+    "question": "What is the formula for kinetic energy?",
+    "options": ["KE = mv", "KE = mv²", "KE = ½mv²", "KE = mgh"],
+    "answer": "KE = ½mv²",
+    "explanation": "Kinetic energy is given by KE = ½mv²."
+  },
+  {
+    "id": 5,
+    "question": "What is the SI unit of electric current?",
+    "options": ["Volt", "Ampere", "Ohm", "Watt"],
+    "answer": "Ampere",
+    "explanation": "Electric current is measured in Amperes (A)."
+  },
+  {
+    "id": 6,
+    "question": "What is frequency?",
+    "options": ["Energy per unit time", "Number of waves per unit time", "Speed of light", "Distance between waves"],
+    "answer": "Number of waves per unit time",
+    "explanation": "Frequency is the number of complete waves or cycles per unit time."
+  },
+  {
+    "id": 7,
+    "question": "Which lens is used for correction of myopia?",
+    "options": ["Convex lens", "Concave lens", "Cylindrical lens", "Bifocal lens"],
+    "answer": "Concave lens",
+    "explanation": "Myopia (near-sightedness) is corrected using concave lenses."
+  },
+  {
+    "id": 8,
+    "question": "What is momentum?",
+    "options": ["Force × distance", "Mass × velocity", "Force / distance", "Mass / velocity"],
+    "answer": "Mass × velocity",
+    "explanation": "Momentum is the product of mass and velocity (p = mv)."
+  },
+  {
+    "id": 9,
+    "question": "What is the first law of thermodynamics?",
+    "options": ["Heat cannot flow", "Energy is conserved", "Entropy increases", "Heat flows from hot to cold"],
+    "answer": "Energy is conserved",
+    "explanation": "The first law of thermodynamics states that energy is conserved."
+  },
+  {
+    "id": 10,
+    "question": "What is work done?",
+    "options": ["Force × acceleration", "Force × distance", "Power × time", "Mass × acceleration"],
+    "answer": "Force × distance",
+    "explanation": "Work done is the product of force and displacement in the direction of force."
+  }
+]

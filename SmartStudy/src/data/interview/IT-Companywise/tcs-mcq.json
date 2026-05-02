@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "question": "What is the full form of TCS?",
+    "options": ["Tata Computer Services", "Tata Consultancy Services", "Tech Computer Solutions", "Tata Computing Services"],
+    "answer": "Tata Consultancy Services",
+    "explanation": "TCS stands for Tata Consultancy Services, an Indian IT services company."
+  },
+  {
+    "id": 2,
+    "question": "Which language is primarily used in TCS interviews?",
+    "options": ["Only Java", "C, C++, Java, Python", "Only C", "Only Python"],
+    "answer": "C, C++, Java, Python",
+    "explanation": "TCS interviews typically cover C, C++, Java, and Python questions."
+  },
+  {
+    "id": 3,
+    "question": "What is the output of: int a=5; cout<<a++",
+    "options": ["5", "6", "4", "Error"],
+    "answer": "5",
+    "explanation": "a++ returns the value before incrementing, so it prints 5."
+  },
+  {
+    "id": 4,
+    "question": "Which data structure uses LIFO?",
+    "options": ["Queue", "Stack", "Array", "Linked List"],
+    "answer": "Stack",
+    "explanation": "Stack follows Last In First Out (LIFO) principle."
+  },
+  {
+    "id": 5,
+    "question": "What is time complexity of binary search?",
+    "options": ["O(n)", "O(log n)", "O(n²)", "O(1)"],
+    "answer": "O(log n)",
+    "explanation": "Binary search has logarithmic time complexity."
+  },
+  {
+    "id": 6,
+    "question": "Which sorting algorithm is stable?",
+    "options": ["Quick Sort", "Heap Sort", "Merge Sort", "Selection Sort"],
+    "answer": "Merge Sort",
+    "explanation": "Merge Sort is a stable sorting algorithm."
+  },
+  {
+    "id": 7,
+    "question": "What is SQL full form?",
+    "options": ["Structured Query Language", "Simple Query Language", "Standard Query Language", "System Query Language"],
+    "answer": "Structured Query Language",
+    "explanation": "SQL stands for Structured Query Language."
+  },
+  {
+    "id": 8,
+    "question": "Which join returns only matching rows?",
+    "options": ["Left Join", "Right Join", "Inner Join", "Full Join"],
+    "answer": "Inner Join",
+    "explanation": "Inner Join returns only rows that have matching values in both tables."
+  },
+  {
+    "id": 9,
+    "question": "What is normalization in DBMS?",
+    "options": ["Data encryption", "Organizing data to reduce redundancy", "Data compression", "Data backup"],
+    "answer": "Organizing data to reduce redundancy",
+    "explanation": "Normalization organizes data into tables to minimize redundancy."
+  },
+  {
+    "id": 10,
+    "question": "What is OOP?",
+    "options": ["Object Oriented Programming", "Object Online Programming", "Output Oriented Programming", "Ordered Object Programming"],
+    "answer": "Object Oriented Programming",
+    "explanation": "OOP stands for Object Oriented Programming."
+  }
+]

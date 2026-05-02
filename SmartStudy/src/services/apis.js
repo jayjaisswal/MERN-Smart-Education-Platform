@@ -79,3 +79,12 @@ export const settingsEndpoints = {
   CHANGE_PASSWORD_API: BASE_URL + "/auth/changepassword",
   DELETE_PROFILE_API: BASE_URL + "/profile/deleteProfile",
 };
+
+// INTERVIEW ENDPOINTS
+export const interviewEndpoints = {
+  SUBMIT_ANSWER_API: BASE_URL + "/interview/submit",
+  GET_PERFORMANCE_API: BASE_URL + "/interview/performance",
+  GET_DATA_API: BASE_URL + "/interview/data",
+  RESET_PROGRESS_API: BASE_URL + "/interview/reset",
+  GET_LEADERBOARD_API: BASE_URL + "/interview/leaderboard",
+};

@@ -36,6 +36,10 @@ import AptitudeTopics from "./components/Aptitude/AptitudeTopics";
 import AptitudeQuestions from "./components/Aptitude/AptitudeQuestions";
 import DbmsInterviewTheory from "./components/Interview/DBMS/DbmsInterviewTheory";
 import ComputerNetworkingTheory from "./components/Interview/ComputerNetworking/ComputerNetworkingTheory";
+import InterviewHome from "./components/Interview/InterviewHome";
+import InterviewTopics from "./components/Interview/InterviewTopics";
+import InterviewQuestions from "./components/Interview/InterviewQuestions";
+import InterviewPage from "./pages/InterviewPage";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -114,9 +118,30 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
 
-        {/* interview */}
+{/* interview */}
+        <Route path="/interview" element={<InterviewHome />} />
+        <Route path="/interview/:category" element={<InterviewTopics />} />
+        <Route path="/interview/:category/:topic" element={<InterviewQuestions />} />
+        <Route path="/interview/:category/:topic/:type" element={<InterviewPage />} />
         <Route path="/dbms" element={<DbmsInterviewTheory />} />
         <Route path="/computer-networks" element={<ComputerNetworkingTheory />} />
+
+        {/* New dropdown categories - use InterviewPage for ML, AI, Programming, Company Wise, IIT JEE, NEET */}
+        <Route path="/interview/machine-learning" element={<InterviewPage />} />
+        <Route path="/interview/machine-learning/:topic" element={<InterviewPage />} />
+        <Route path="/interview/machine-learning/:topic/:type" element={<InterviewPage />} />
+        <Route path="/interview/python" element={<InterviewPage />} />
+        <Route path="/interview/python/:topic" element={<InterviewPage />} />
+        <Route path="/interview/python/:topic/:type" element={<InterviewPage />} />
+        <Route path="/interview/it-companywise" element={<InterviewPage />} />
+        <Route path="/interview/it-companywise/:topic" element={<InterviewPage />} />
+        <Route path="/interview/it-companywise/:topic/:type" element={<InterviewPage />} />
+        <Route path="/interview/iit-jee" element={<InterviewPage />} />
+        <Route path="/interview/iit-jee/:topic" element={<InterviewPage />} />
+        <Route path="/interview/iit-jee/:topic/:type" element={<InterviewPage />} />
+        <Route path="/interview/neet" element={<InterviewPage />} />
+        <Route path="/interview/neet/:topic" element={<InterviewPage />} />
+        <Route path="/interview/neet/:topic/:type" element={<InterviewPage />} />
 
 
         {/* Aptitude Practice */}

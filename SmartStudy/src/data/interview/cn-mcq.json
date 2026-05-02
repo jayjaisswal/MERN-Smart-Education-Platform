@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "question": "Which layer of the OSI model is responsible for error detection?",
+    "options": {"A": "Physical Layer", "B": "Data Link Layer", "C": "Network Layer", "D": "Transport Layer"},
+    "answer": "B",
+    "explanation": "The Data Link Layer detects errors that occur during data transmission over the physical medium using techniques like CRC and checksum."
+  },
+  {
+    "id": 2,
+    "question": "How many layers are there in the OSI reference model?",
+    "options": {"A": "5", "B": "6", "C": "7", "D": "8"},
+    "answer": "C",
+    "explanation": "The OSI model has seven layers starting from Physical at the bottom to Application at the top."
+  },
+  {
+    "id": 3,
+    "question": "Which device works at the Physical layer of the OSI model?",
+    "options": {"A": "Router", "B": "Switch", "C": "Hub", "D": "Bridge"},
+    "answer": "C",
+    "explanation": "A hub operates at the Physical Layer and simply broadcasts signals to all devices without filtering or checking data."
+  },
+  {
+    "id": 4,
+    "question": "Which layer is responsible for logical addressing?",
+    "options": {"A": "Data Link Layer", "B": "Network Layer", "C": "Transport Layer", "D": "Application Layer"},
+    "answer": "B",
+    "explanation": "The Network Layer assigns logical addresses (IP addresses) and determines the best path for data transmission."
+  },
+  {
+    "id": 5,
+    "question": "Which protocol is used to resolve IP address to MAC address?",
+    "options": {"A": "DNS", "B": "RARP", "C": "ARP", "D": "ICMP"},
+    "answer": "C",
+    "explanation": "ARP (Address Resolution Protocol) helps a device find the MAC address associated with a given IP address in a local network."
+  },
+  {
+    "id": 6,
+    "question": "What type of transmission allows data to flow in both directions but not simultaneously?",
+    "options": {"A": "Simplex", "B": "Duplex", "C": "Half Duplex", "D": "Full Duplex"},
+    "answer": "C",
+    "explanation": "Half duplex communication allows two-way communication, but only one direction at a time, similar to walkie-talkies."
+  },
+  {
+    "id": 7,
+    "question": "Which topology uses a central connecting device?",
+    "options": {"A": "Bus", "B": "Ring", "C": "Star", "D": "Mesh"},
+    "answer": "C",
+    "explanation": "In star topology, all nodes are connected to a central hub or switch, making fault detection easier."
+  },
+  {
+    "id": 8,
+    "question": "Which topology has the highest reliability?",
+    "options": {"A": "Bus", "B": "Ring", "C": "Star", "D": "Mesh"},
+    "answer": "D",
+    "explanation": "Mesh topology provides multiple paths between nodes, so failure of one link does not affect overall communication."
+  },
+  {
+    "id": 9,
+    "question": "Which protocol is used to send emails?",
+    "options": {"A": "POP3", "B": "FTP", "C": "SMTP", "D": "IMAP"},
+    "answer": "C",
+    "explanation": "SMTP (Simple Mail Transfer Protocol) is responsible for sending emails from client to server or between servers."
+  },
+  {
+    "id": 10,
+    "question": "Which address uniquely identifies a device on a network?",
+    "options": {"A": "IP Address", "B": "MAC Address", "C": "Port Number", "D": "URL"},
+    "answer": "B",
+    "explanation": "A MAC address is a hardware address that uniquely identifies a device within a local network."
+  },
+  {
+    "id": 11,
+    "question": "Which layer is responsible for process-to-process communication?",
+    "options": {"A": "Network Layer", "B": "Transport Layer", "C": "Session Layer", "D": "Presentation Layer"},
+    "answer": "B",
+    "explanation": "The Transport Layer enables communication between applications running on different devices using port numbers."
+  },
+  {
+    "id": 12,
+    "question": "Which OSI layer ensures data format compatibility?",
+    "options": {"A": "Session Layer", "B": "Application Layer", "C": "Presentation Layer", "D": "Transport Layer"},
+    "answer": "C",
+    "explanation": "The Presentation Layer handles data encryption, compression, and translation to ensure proper data representation."
+  },
+  {
+    "id": 13,
+    "question": "Which device forwards packets based on IP addresses?",
+    "options": {"A": "Hub", "B": "Switch", "C": "Router", "D": "Repeater"},
+    "answer": "C",
+    "explanation": "Routers operate at the Network Layer and forward packets using logical IP addresses."
+  },
+  {
+    "id": 14,
+    "question": "What is the default port number of HTTP?",
+    "options": {"A": "21", "B": "23", "C": "80", "D": "443"},
+    "answer": "C",
+    "explanation": "HTTP protocol communicates over port number 80 by default for web traffic."
+  },
+  {
+    "id": 15,
+    "question": "Which network type covers a small geographical area?",
+    "options": {"A": "WAN", "B": "MAN", "C": "LAN", "D": "PAN"},
+    "answer": "C",
+    "explanation": "LAN (Local Area Network) is typically used in homes, offices, or campuses."
+  },
+  {
+    "id": 16,
+    "question": "Which protocol is used to transfer files over the internet?",
+    "options": {"A": "FTP", "B": "SMTP", "C": "HTTP", "D": "SNMP"},
+    "answer": "A",
+    "explanation": "FTP (File Transfer Protocol) allows uploading and downloading files between systems."
+  },
+  {
+    "id": 17,
+    "question": "Which topology uses a single cable to connect all nodes?",
+    "options": {"A": "Star", "B": "Bus", "C": "Ring", "D": "Mesh"},
+    "answer": "B",
+    "explanation": "In bus topology, all devices share a single communication line, making it inexpensive but less reliable."
+  },
+  {
+    "id": 18,
+    "question": "Which layer establishes, manages, and terminates sessions?",
+    "options": {"A": "Transport", "B": "Presentation", "C": "Application", "D": "Session"},
+    "answer": "D",
+    "explanation": "The Session Layer manages communication sessions between applications."
+  },
+  {
+    "id": 19,
+    "question": "Which protocol is used to check network connectivity?",
+    "options": {"A": "TCP", "B": "UDP", "C": "ICMP", "D": "ARP"},
+    "answer": "C",
+    "explanation": "ICMP is used by tools like ping to check the availability of network devices."
+  },
+  {
+    "id": 20,
+    "question": "Which layer converts bits into signals?",
+    "options": {"A": "Physical", "B": "Data Link", "C": "Network", "D": "Transport"},
+    "answer": "A",
+    "explanation": "The Physical Layer transmits raw bits over a physical medium using electrical or optical signals."
+  }
+]

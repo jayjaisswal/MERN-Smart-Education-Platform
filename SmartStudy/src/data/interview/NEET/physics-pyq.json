@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "question": "What is the SI unit of force?",
+    "options": ["Joule", "Watt", "Newton", "Dyne"],
+    "answer": "Newton",
+    "explanation": "Force is measured in Newtons (N) according to Newton's second law."
+  },
+  {
+    "id": 2,
+    "question": "Which organ produces insulin?",
+    "options": ["Liver", "Kidney", "Pancreas", "Heart"],
+    "answer": "Pancreas",
+    "explanation": "The pancreas produces insulin, a hormone that regulates blood sugar."
+  },
+  {
+    "id": 3,
+    "question": "What is the pH of neutral water?",
+    "options": ["5", "6", "7", "8"],
+    "answer": "7",
+    "explanation": "Pure water has a pH of 7, which is neutral."
+  },
+  {
+    "id": 4,
+    "question": "What is the normal blood pressure?",
+    "options": ["120/80 mmHg", "140/90 mmHg", "100/60 mmHg", "110/70 mmHg"],
+    "answer": "120/80 mmHg",
+    "explanation": "Normal blood pressure is typically 120/80 mmHg."
+  },
+  {
+    "id": 5,
+    "question": "Which vitamin is produced by sunlight?",
+    "options": ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"],
+    "answer": "Vitamin D",
+    "explanation": "Vitamin D is produced when skin is exposed to sunlight."
+  },
+  {
+    "id": 6,
+    "question": "What is the largest organ of the human body?",
+    "options": ["Liver", "Skin", "Brain", "Heart"],
+    "answer": "Skin",
+    "explanation": "Skin is the largest organ of the human body."
+  },
+  {
+    "id": 7,
+    "question": "What is the speed of sound in air?",
+    "options": ["330 m/s", "430 m/s", "530 m/s", "230 m/s"],
+    "answer": "330 m/s",
+    "explanation": "The speed of sound in air is approximately 330 m/s at room temperature."
+  },
+  {
+    "id": 8,
+    "question": "Which blood cells fight infections?",
+    "options": ["RBCs", "Platelets", "White Blood Cells", "Plasma"],
+    "answer": "White Blood Cells",
+    "explanation": "White blood cells (WBCs) are part of the immune system."
+  },
+  {
+    "id": 9,
+    "question": "What is the formula for work done?",
+    "options": ["W = F/d", "W = F × d", "W = F/t", "W = F + d"],
+    "answer": "W = F × d",
+    "explanation": "Work done = Force × Displacement in the direction of force."
+  },
+  {
+    "id": 10,
+    "question": "Which gas is most abundant in atmosphere?",
+    "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+    "answer": "Nitrogen",
+    "explanation": "Nitrogen makes up about 78% of the Earth's atmosphere."
+  }
+]

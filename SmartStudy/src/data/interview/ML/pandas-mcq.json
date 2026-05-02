@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "question": "What is Pandas primarily used for?",
+    "options": ["Web development", "Data analysis and manipulation", "Game development", "Image processing"],
+    "answer": "Data analysis and manipulation",
+    "explanation": "Pandas is a powerful data analysis and manipulation library for Python."
+  },
+  {
+    "id": 2,
+    "question": "How do you create a DataFrame from a dictionary?",
+    "options": ["pd.create()", "pd.DataFrame()", "pd.dict()", "pd.make()"],
+    "answer": "pd.DataFrame()",
+    "explanation": "pd.DataFrame() creates a DataFrame from a dictionary or other data structures."
+  },
+  {
+    "id": 3,
+    "question": "Which function reads a CSV file in Pandas?",
+    "options": ["pd.read_file()", "pd.read_csv()", "pd.load()", "pd.import_csv()"],
+    "answer": "pd.read_csv()",
+    "explanation": "pd.read_csv() is used to read CSV files into a DataFrame."
+  },
+  {
+    "id": 4,
+    "question": "How do you select a column in a DataFrame?",
+    "options": ["df.col('name')", "df['name']", "df->name", "df.name"],
+    "answer": "df['name']",
+    "explanation": "You can select a column using df['column_name'] or df.column_name."
+  },
+  {
+    "id": 5,
+    "question": "What does df.head() return?",
+    "options": ["Last 5 rows", "First 5 rows", "Random 5 rows", "Total row count"],
+    "answer": "First 5 rows",
+    "explanation": "df.head() returns the first 5 rows of the DataFrame by default."
+  },
+  {
+    "id": 6,
+    "question": "How do you check for missing values?",
+    "options": ["df.isnull()", "df.isna()", "df.na()", "df.missing()"],
+    "answer": "df.isnull()",
+    "explanation": "df.isnull() or df.isna() returns a DataFrame with True for missing values."
+  },
+  {
+    "id": 7,
+    "question": "Which method fills missing values?",
+    "options": ["df.fill()", "df.fillna()", "df.na_fill()", "df.replace_na()"],
+    "answer": "df.fillna()",
+    "explanation": "df.fillna() fills missing values with a specified value or method."
+  },
+  {
+    "id": 8,
+    "question": "How do you group data by a column?",
+    "options": ["df.group()", "df.groupby()", "df.group_by()", "df.grouping()"],
+    "answer": "df.groupby()",
+    "explanation": "df.groupby() groups data based on one or more columns."
+  },
+  {
+    "id": 9,
+    "question": "What is the index in a DataFrame?",
+    "options": ["Column name", "Row labels", "Data type", "Memory location"],
+    "answer": "Row labels",
+    "explanation": "The index provides labels for each row in a DataFrame."
+  },
+  {
+    "id": 10,
+    "question": "How do you merge two DataFrames?",
+    "options": ["pd.merge()", "pd.concat()", "pd.join()", "pd.combine()"],
+    "answer": "pd.merge()",
+    "explanation": "pd.merge() combines DataFrames using SQL-style joins."
+  }
+]
