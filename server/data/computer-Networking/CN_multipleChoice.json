@@ -1,5 +1,7 @@
 [
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 1,
     "question": "Which layer of the OSI model is responsible for error detection?",
     "options": {
@@ -14,6 +16,8 @@
     "explanation": "The Data Link Layer detects errors that occur during data transmission over the physical medium using techniques like CRC and checksum, ensuring reliable node-to-node delivery."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 2,
     "question": "How many layers are there in the OSI reference model?",
     "options": {
@@ -28,6 +32,8 @@
     "explanation": "The OSI model has seven layers starting from Physical at the bottom to Application at the top, each with a specific role in data communication."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 3,
     "question": "Which device works at the Physical layer of the OSI model?",
     "options": {
@@ -42,6 +48,8 @@
     "explanation": "A hub operates at the Physical Layer and simply broadcasts signals to all devices without filtering or checking data."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 4,
     "question": "Which layer is responsible for logical addressing?",
     "options": {
@@ -56,6 +64,8 @@
     "explanation": "The Network Layer assigns logical addresses (IP addresses) and determines the best path for data transmission."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 5,
     "question": "Which protocol is used to resolve IP address to MAC address?",
     "options": {
@@ -70,6 +80,8 @@
     "explanation": "ARP (Address Resolution Protocol) helps a device find the MAC address associated with a given IP address in a local network."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 6,
     "question": "What type of transmission allows data to flow in both directions but not simultaneously?",
     "options": {
@@ -84,6 +96,8 @@
     "explanation": "Half duplex communication allows two-way communication, but only one direction at a time, similar to walkie-talkies."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 7,
     "question": "Which topology uses a central connecting device?",
     "options": {
@@ -98,6 +112,8 @@
     "explanation": "In star topology, all nodes are connected to a central hub or switch, making fault detection easier."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 8,
     "question": "Which topology has the highest reliability?",
     "options": {
@@ -112,6 +128,8 @@
     "explanation": "Mesh topology provides multiple paths between nodes, so failure of one link does not affect overall communication."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 9,
     "question": "Which protocol is used to send emails?",
     "options": {
@@ -126,6 +144,8 @@
     "explanation": "SMTP (Simple Mail Transfer Protocol) is responsible for sending emails from client to server or between servers."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 10,
     "question": "Which address uniquely identifies a device on a network?",
     "options": {
@@ -140,6 +160,8 @@
     "explanation": "A MAC address is a hardware address that uniquely identifies a device within a local network."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 11,
     "question": "Which layer is responsible for process-to-process communication?",
     "options": {
@@ -154,6 +176,8 @@
     "explanation": "The Transport Layer enables communication between applications running on different devices using port numbers."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 12,
     "question": "Which OSI layer ensures data format compatibility?",
     "options": {
@@ -168,6 +192,8 @@
     "explanation": "The Presentation Layer handles data encryption, compression, and translation to ensure proper data representation."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 13,
     "question": "Which device forwards packets based on IP addresses?",
     "options": {
@@ -182,6 +208,8 @@
     "explanation": "Routers operate at the Network Layer and forward packets using logical IP addresses."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 14,
     "question": "What is the default port number of HTTP?",
     "options": {
@@ -196,6 +224,8 @@
     "explanation": "HTTP protocol communicates over port number 80 by default for web traffic."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 15,
     "question": "Which network type covers a small geographical area?",
     "options": {
@@ -210,6 +240,8 @@
     "explanation": "LAN (Local Area Network) is typically used in homes, offices, or campuses."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 16,
     "question": "Which protocol is used to transfer files over the internet?",
     "options": {
@@ -224,6 +256,8 @@
     "explanation": "FTP (File Transfer Protocol) allows uploading and downloading files between systems."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 17,
     "question": "Which topology uses a single cable to connect all nodes?",
     "options": {
@@ -238,6 +272,8 @@
     "explanation": "In bus topology, all devices share a single communication line, making it inexpensive but less reliable."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 18,
     "question": "Which layer establishes, manages, and terminates sessions?",
     "options": {
@@ -252,6 +288,8 @@
     "explanation": "The Session Layer manages communication sessions between applications."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 19,
     "question": "Which protocol is used to check network connectivity?",
     "options": {
@@ -266,6 +304,8 @@
     "explanation": "ICMP is used by tools like ping to check the availability of network devices."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 20,
     "question": "Which layer converts bits into signals?",
     "options": {
@@ -280,6 +320,8 @@
     "explanation": "The Physical Layer transmits raw bits over a physical medium using electrical or optical signals."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 21,
     "question": "Which type of address is used by switches?",
     "options": {
@@ -294,6 +336,8 @@
     "explanation": "Switches forward frames based on MAC addresses at the Data Link Layer."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 22,
     "question": "Which protocol converts domain names into IP addresses?",
     "options": {
@@ -308,6 +352,8 @@
     "explanation": "DNS resolves human-readable domain names into machine-readable IP addresses."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 23,
     "question": "Which network device amplifies signals?",
     "options": {
@@ -322,6 +368,8 @@
     "explanation": "Repeaters regenerate and amplify weak signals to extend transmission distance."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 24,
     "question": "Which protocol assigns IP addresses automatically?",
     "options": {
@@ -336,6 +384,8 @@
     "explanation": "DHCP dynamically assigns IP addresses to devices, reducing manual configuration."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 25,
     "question": "Which layer interacts directly with the end user?",
     "options": {
@@ -350,6 +400,8 @@
     "explanation": "The Application Layer provides network services directly to user applications like browsers and email clients."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 26,
     "question": "Which protocol provides reliable, connection-oriented communication?",
     "options": {
@@ -364,6 +416,8 @@
     "explanation": "TCP establishes using acknowledgments, sequencing, and retransmission."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 27,
     "question": "Which protocol is connectionless in nature?",
     "options": {
@@ -378,6 +432,8 @@
     "explanation": "UDP sends data without establishing a connection, making it faster but less reliable."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 28,
     "question": "Which port number is used by HTTPS?",
     "options": {
@@ -392,6 +448,8 @@
     "explanation": "HTTPS uses port 443 to provide secure, encrypted communication over the web."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 29,
     "question": "Which IP version uses 128-bit addressing?",
     "options": {
@@ -406,6 +464,8 @@
     "explanation": "IPv6 uses 128-bit addresses to support a massive number of devices compared to IPv4."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 30,
     "question": "What is the size of an IPv4 address?",
     "options": {
@@ -420,6 +480,8 @@
     "explanation": "IPv4 addresses are 32 bits long and are usually written in dotted-decimal format."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 31,
     "question": "Which class of IP address is used for multicast?",
     "options": {
@@ -434,6 +496,8 @@
     "explanation": "Class D IP addresses are reserved for multicast communication."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 32,
     "question": "Which address is used to identify a network uniquely?",
     "options": {
@@ -448,6 +512,8 @@
     "explanation": "A network address identifies an entire network, not individual hosts."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 33,
     "question": "Which protocol helps in logical to physical address mapping?",
     "options": {
@@ -462,6 +528,8 @@
     "explanation": "ARP maps an IP address (logical) to a MAC address (physical) within a local network."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 34,
     "question": "Which routing algorithm uses hop count as a metric?",
     "options": {
@@ -476,6 +544,8 @@
     "explanation": "Distance Vector routing determines the best path based on the number of hops."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 35,
     "question": "Which protocol is used by routers to exchange routing information?",
     "options": {
@@ -490,6 +560,8 @@
     "explanation": "RIP (Routing Information Protocol) is a distance-vector routing protocol."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 36,
     "question": "Which layer of TCP/IP corresponds to the OSI Network layer?",
     "options": {
@@ -504,6 +576,8 @@
     "explanation": "The Internet layer in TCP/IP handles logical addressing and routing, similar to the OSI Network layer."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 37,
     "question": "Which field in TCP ensures correct data ordering?",
     "options": {
@@ -518,6 +592,8 @@
     "explanation": "Sequence numbers allow TCP to rearrange segments in the correct order."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 38,
     "question": "Which port range is reserved for well-known services?",
     "options": {
@@ -532,6 +608,8 @@
     "explanation": "Ports from 0 to 1023 are reserved for standard services like HTTP, FTP, and SMTP."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 39,
     "question": "Which protocol is best suited for real-time applications like video streaming?",
     "options": {
@@ -546,6 +624,8 @@
     "explanation": "UDP provides faster transmission with minimal delay, making it ideal for real-time data."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 40,
     "question": "What does TTL stand for in IP packets?",
     "options": {
@@ -560,6 +640,8 @@
     "explanation": "TTL limits the lifetime of a packet to prevent infinite looping in networks."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 41,
     "question": "Which protocol reports errors and network congestion?",
     "options": {
@@ -574,6 +656,8 @@
     "explanation": "ICMP is used for error reporting and diagnostic functions like ping."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 42,
     "question": "Which IP address is used for loopback testing?",
     "options": {
@@ -588,6 +672,8 @@
     "explanation": "127.0.0.1 is used to test network functionality on the local machine."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 43,
     "question": "Which protocol is used to assign IP addresses dynamically?",
     "options": {
@@ -602,6 +688,8 @@
     "explanation": "DHCP automatically assigns IP configuration to devices in a network."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 44,
     "question": "Which TCP mechanism controls data flow?",
     "options": {
@@ -616,6 +704,8 @@
     "explanation": "Flow control prevents the sender from overwhelming the receiver with too much data."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 45,
     "question": "Which addressing is used at the Transport layer?",
     "options": {
@@ -630,6 +720,8 @@
     "explanation": "The Transport layer uses port numbers to identify specific applications."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 46,
     "question": "Which TCP/IP layer corresponds to OSI Application layer?",
     "options": {
@@ -644,6 +736,8 @@
     "explanation": "The TCP/IP Application layer combines OSI Application, Presentation, and Session layers."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 47,
     "question": "Which address range is private?",
     "options": {
@@ -658,6 +752,8 @@
     "explanation": "This range is reserved for private networks and cannot be routed on the public internet."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 48,
     "question": "Which routing technique sends packets on all paths?",
     "options": {
@@ -672,6 +768,8 @@
     "explanation": "Flooding sends packets through all available routes, ensuring delivery but increasing traffic."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 49,
     "question": "Which TCP flag is used to establish a connection?",
     "options": {
@@ -686,6 +784,8 @@
     "explanation": "TCP uses the SYN flag during the three-way handshake to initiate a connection."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 50,
     "question": "Which mechanism avoids network congestion in TCP?",
     "options": {
@@ -700,6 +800,8 @@
     "explanation": "TCP congestion control adjusts the data transmission rate to prevent network overload."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 51,
     "question": "What is the main purpose of subnetting?",
     "options": {
@@ -714,6 +816,8 @@
     "explanation": "Subnetting divides a large network into smaller logical networks, reducing broadcast traffic and improving security and manageability."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 52,
     "question": "Which subnet mask represents a /26 network?",
     "options": {
@@ -728,6 +832,8 @@
     "explanation": "A /26 subnet uses 26 bits for the network and provides 64 IP addresses (62 usable)."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 53,
     "question": "How many usable hosts are available in a /27 subnet?",
     "options": {
@@ -742,6 +848,8 @@
     "explanation": "A /27 subnet gives 32 total addresses; subtracting network and broadcast leaves 30 usable hosts."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 54,
     "question": "Which routing algorithm has complete knowledge of the network topology?",
     "options": {
@@ -756,6 +864,8 @@
     "explanation": "Link State routing maintains a full map of the network and calculates shortest paths using algorithms like Dijkstra."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 55,
     "question": "Which problem is commonly associated with Distance Vector routing?",
     "options": {
@@ -770,6 +880,8 @@
     "explanation": "Distance Vector routing can suffer from routing loops and slow convergence, known as the count‑to‑infinity problem."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 56,
     "question": "Which technique is used to prevent count‑to‑infinity?",
     "options": {
@@ -784,6 +896,8 @@
     "explanation": "Split Horizon prevents routers from advertising routes back on the same interface they were learned from."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 57,
     "question": "What is congestion in a network?",
     "options": {
@@ -798,6 +912,8 @@
     "explanation": "Congestion occurs when the offered load exceeds network capacity, causing delays and packet loss."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 58,
     "question": "Which TCP mechanism handles congestion control?",
     "options": {
@@ -812,6 +928,8 @@
     "explanation": "Slow Start gradually increases the transmission rate to avoid overwhelming the network."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 59,
     "question": "Which algorithm is used by Link State routing?",
     "options": {
@@ -826,6 +944,8 @@
     "explanation": "Link State routing protocols compute shortest paths using Dijkstra’s algorithm."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 60,
     "question": "Which security attack involves flooding a network with traffic?",
     "options": {
@@ -840,6 +960,8 @@
     "explanation": "DoS attacks overload network resources, making services unavailable to legitimate users."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 61,
     "question": "Which device protects a network by filtering traffic?",
     "options": {
@@ -854,6 +976,8 @@
     "explanation": "Firewalls monitor and control incoming and outgoing network traffic based on security rules."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 62,
     "question": "What does CIDR stand for?",
     "options": {
@@ -868,6 +992,8 @@
     "explanation": "CIDR improves IP address allocation efficiency by removing rigid class boundaries."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 63,
     "question": "Which field in the IP header prevents packet looping?",
     "options": {
@@ -882,6 +1008,8 @@
     "explanation": "TTL (Time To Live) limits the number of hops a packet can take before being discarded."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 64,
     "question": "What is the primary goal of encryption in networking?",
     "options": {
@@ -896,6 +1024,8 @@
     "explanation": "Encryption ensures that only authorized parties can read transmitted data."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 65,
     "question": "Which protocol secures IP communication?",
     "options": {
@@ -910,6 +1040,8 @@
     "explanation": "IPSec provides authentication and encryption at the IP layer."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 66,
     "question": "Which congestion control approach drops packets before congestion occurs?",
     "options": {
@@ -924,6 +1056,8 @@
     "explanation": "RED drops packets probabilistically to signal congestion early and avoid sudden overload."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 67,
     "question": "What is the main disadvantage of static routing?",
     "options": {
@@ -938,6 +1072,8 @@
     "explanation": "Static routes must be configured manually and do not adapt automatically to network changes."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 68,
     "question": "Which protocol is commonly used with Link State routing?",
     "options": {
@@ -952,6 +1088,8 @@
     "explanation": "OSPF is a Link State routing protocol used in large enterprise networks."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 69,
     "question": "Which type of attack impersonates a trusted device?",
     "options": {
@@ -966,6 +1104,8 @@
     "explanation": "Spoofing occurs when an attacker pretends to be a legitimate device or user."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 70,
     "question": "Which mechanism smooths bursty traffic?",
     "options": {
@@ -980,6 +1120,8 @@
     "explanation": "The Leaky Bucket algorithm regulates output rate, preventing sudden bursts."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 71,
     "question": "Which protocol is used for inter-domain routing on the Internet?",
     "options": {
@@ -994,6 +1136,8 @@
     "explanation": "BGP manages routing between autonomous systems on the Internet."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 72,
     "question": "What is the key benefit of CIDR?",
     "options": {
@@ -1008,6 +1152,8 @@
     "explanation": "CIDR aggregates routes, reducing routing table size and improving efficiency."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 73,
     "question": "Which layer is most associated with network security policies?",
     "options": {
@@ -1022,6 +1168,8 @@
     "explanation": "Security mechanisms like firewalls and IPS operate mainly at the Network layer."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 74,
     "question": "Why is UDP unsuitable for file transfer?",
     "options": {
@@ -1036,6 +1184,8 @@
     "explanation": "UDP does not guarantee delivery, order, or retransmission, which are essential for files."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 75,
     "question": "Which security goal ensures data is not altered in transit?",
     "options": {
@@ -1050,6 +1200,8 @@
     "explanation": "Integrity guarantees that data remains unchanged during transmission."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 76,
     "question": "What is the primary purpose of NAT (Network Address Translation)?",
     "options": {
@@ -1064,6 +1216,8 @@
     "explanation": "NAT allows multiple private devices to share a single public IP address, reducing the need for public IPv4 addresses."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 77,
     "question": "Which NAT type maps one public IP to many private IPs using port numbers?",
     "options": {
@@ -1078,6 +1232,8 @@
     "explanation": "PAT (Port Address Translation) uses port numbers to differentiate sessions, allowing many devices to share one public IP."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 78,
     "question": "What is the role of a proxy server?",
     "options": {
@@ -1092,6 +1248,8 @@
     "explanation": "A proxy server handles client requests on behalf of clients, improving security, caching, and privacy."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 79,
     "question": "How is a proxy different from a firewall?",
     "options": {
@@ -1106,6 +1264,8 @@
     "explanation": "A proxy works at the application layer acting as an intermediary, while a firewall enforces access control rules."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 80,
     "question": "What is the main function of a load balancer?",
     "options": {
@@ -1120,6 +1280,8 @@
     "explanation": "Load balancers distribute incoming traffic among servers to improve performance, scalability, and availability."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 81,
     "question": "Which algorithm distributes traffic equally regardless of load?",
     "options": {
@@ -1134,6 +1296,8 @@
     "explanation": "Round Robin assigns each request sequentially to servers without considering current load."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 82,
     "question": "Which load balancing algorithm considers current server connections?",
     "options": {
@@ -1148,6 +1312,8 @@
     "explanation": "Least Connection forwards requests to the server with the fewest active connections."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 83,
     "question": "What is a VPN primarily used for?",
     "options": {
@@ -1162,6 +1328,8 @@
     "explanation": "VPNs create encrypted tunnels ensuring confidentiality and integrity over public networks."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 84,
     "question": "Which VPN technology operates at the Network layer?",
     "options": {
@@ -1176,6 +1344,8 @@
     "explanation": "IPSec secures IP packets at the Network layer using authentication and encryption."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 85,
     "question": "Which firewall filters traffic based on application data?",
     "options": {
@@ -1190,6 +1360,8 @@
     "explanation": "Application layer firewalls inspect payload content rather than just headers."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 86,
     "question": "What information does a stateful firewall track?",
     "options": {
@@ -1204,6 +1376,8 @@
     "explanation": "Stateful firewalls monitor active connections to make intelligent filtering decisions."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 87,
     "question": "Which protocol is commonly used for secure remote login?",
     "options": {
@@ -1218,6 +1392,8 @@
     "explanation": "SSH provides encrypted and secure remote access, unlike Telnet."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 88,
     "question": "What is port forwarding mainly used for?",
     "options": {
@@ -1232,6 +1408,8 @@
     "explanation": "Port forwarding maps external requests to internal devices behind NAT."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 89,
     "question": "If DNS fails but IP works, which issue is likely?",
     "options": {
@@ -1246,6 +1424,8 @@
     "explanation": "If IP access works but domain names fail, DNS is the likely issue."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 90,
     "question": "Which tool checks path and delays across routers?",
     "options": {
@@ -1260,6 +1440,8 @@
     "explanation": "Traceroute shows the path taken by packets and delay at each hop."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 91,
     "question": "What happens if ARP cache is poisoned?",
     "options": {
@@ -1274,6 +1456,8 @@
     "explanation": "ARP poisoning redirects traffic to attackers, enabling MITM attacks."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 92,
     "question": "Which protocol monitors network devices?",
     "options": {
@@ -1288,6 +1472,8 @@
     "explanation": "SNMP collects and organizes information from managed network devices."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 93,
     "question": "Which issue causes packet fragmentation?",
     "options": {
@@ -1302,6 +1488,8 @@
     "explanation": "Packets larger than the MTU are fragmented to fit the transmission medium."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 94,
     "question": "Which protocol resolves IP conflicts?",
     "options": {
@@ -1316,6 +1504,8 @@
     "explanation": "DHCP prevents conflicts by centrally managing IP address allocation."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 95,
     "question": "Which scenario requires a VPN most?",
     "options": {
@@ -1330,6 +1520,8 @@
     "explanation": "VPNs secure sensitive data over untrusted public networks."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 96,
     "question": "Which firewall rule is evaluated first?",
     "options": {
@@ -1344,6 +1536,8 @@
     "explanation": "Firewalls process rules top-down; first match is applied."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 97,
     "question": "What is asymmetric routing?",
     "options": {
@@ -1358,6 +1552,8 @@
     "explanation": "Asymmetric routing occurs when packets take different paths, causing firewall/session issues."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 98,
     "question": "Which NAT breaks protocols that embed IP addresses?",
     "options": {
@@ -1372,6 +1568,8 @@
     "explanation": "PAT modifies port numbers and IPs, breaking protocols that hardcode address info."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 99,
     "question": "Which is the first step in network troubleshooting?",
     "options": {
@@ -1386,6 +1584,8 @@
     "explanation": "Always verify physical connections before complex troubleshooting."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 100,
     "question": "Why are logs critical in network security?",
     "options": {
@@ -1400,6 +1600,8 @@
     "explanation": "Logs help analyze attacks, audit access, and detect abnormal behavior."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 101,
     "question": "Which port number is used by HTTP?",
     "options": {
@@ -1414,6 +1616,8 @@
     "explanation": "HTTP uses port 80 by default for unsecured web communication."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 102,
     "question": "Which port number is used by HTTPS?",
     "options": {
@@ -1428,6 +1632,8 @@
     "explanation": "HTTPS uses port 443 to provide secure, encrypted communication using SSL/TLS."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 103,
     "question": "Which port number is used by DNS?",
     "options": {
@@ -1442,6 +1648,8 @@
     "explanation": "DNS uses port 53, mainly over UDP, to resolve domain names into IP addresses."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 104,
     "question": "Which protocol uses port number 21?",
     "options": {
@@ -1456,6 +1664,8 @@
     "explanation": "FTP uses port 21 for control commands during file transfer."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 105,
     "question": "Which port number is used to send emails?",
     "options": {
@@ -1470,6 +1680,8 @@
     "explanation": "SMTP uses port 25 to send emails from client to server or between mail servers."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 106,
     "question": "Which port number is used by POP3?",
     "options": {
@@ -1484,6 +1696,8 @@
     "explanation": "POP3 uses port 110 to download emails from the mail server to the client."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 107,
     "question": "Which port number is used by IMAP?",
     "options": {
@@ -1498,6 +1712,8 @@
     "explanation": "IMAP uses port 143 and allows emails to remain on the server while being accessed."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 108,
     "question": "Which port number is used by SSH?",
     "options": {
@@ -1512,6 +1728,8 @@
     "explanation": "SSH uses port 22 to provide secure, encrypted remote login."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 109,
     "question": "Which protocol uses port number 23?",
     "options": {
@@ -1526,6 +1744,8 @@
     "explanation": "Telnet uses port 23 but is insecure because it transfers data in plain text."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 110,
     "question": "Which port number is used by SNMP?",
     "options": {
@@ -1540,6 +1760,8 @@
     "explanation": "SNMP uses port 161 to monitor and manage network devices."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 111,
     "question": "Which port range is reserved for well-known services?",
     "options": {
@@ -1554,6 +1776,8 @@
     "explanation": "Ports 0–1023 are reserved for standard services like HTTP, FTP, SMTP, and DNS."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 112,
     "question": "Which protocol uses both TCP and UDP on the same port number?",
     "options": {
@@ -1568,6 +1792,8 @@
     "explanation": "DNS uses UDP for queries and TCP for zone transfers and large responses."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 113,
     "question": "Which secure version of FTP uses port 22?",
     "options": {
@@ -1582,6 +1808,8 @@
     "explanation": "SFTP runs over SSH and uses port 22 for secure file transfer."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 114,
     "question": "Which protocol uses port number 69?",
     "options": {
@@ -1596,6 +1824,8 @@
     "explanation": "TFTP uses port 69 and provides lightweight, connectionless file transfer."
   },
   {
+    "category": "Computer Networking",
+    "type": "multiple-choice",
     "id": 115,
     "question": "Which protocol uses port 3389?",
     "options": {
