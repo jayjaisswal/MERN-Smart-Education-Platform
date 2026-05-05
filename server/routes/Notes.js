@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { auth, isInstructor, isStudent } = require("../middlewares/auth");
+const { auth, isAdmin, isStudent } = require("../middlewares/auth");
 const {
   createNotes,
   getAllNotes,
@@ -12,11 +12,11 @@ const {
   getAllSubjects,
 } = require("../controllers/Notes");
 
-// Instructor routes (Protected - must come before /:id)
-router.post("/create", auth, isInstructor, createNotes);
-router.get("/instructor/my-notes", auth, isInstructor, getInstructorNotes);
-router.put("/:id", auth, isInstructor, updateNotes);
-router.delete("/:id", auth, isInstructor, deleteNotes);
+// Admin routes (Protected - must come before /:id)
+router.post("/create", auth, isAdmin, createNotes);
+router.get("/instructor/my-notes", auth, isAdmin, getInstructorNotes);
+router.put("/:id", auth, isAdmin, updateNotes);
+router.delete("/:id", auth, isAdmin, deleteNotes);
 
 // Student routes (Public - accessible after authentication)
 router.get("/all", auth, getAllNotes);

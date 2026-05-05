@@ -4,15 +4,8 @@ const User = require("../models/User");
 // Create a new note (Instructor only)
 exports.createNotes = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      subject,
-      googleDriveUrl,
-      videoUrl,
-      videoTitle,
-      tags,
-    } = req.body;
+    const { title, description, subject, googleDriveUrl, isPublished } =
+      req.body;
     const instructorId = req.user.id;
 
     // Validate required fields
@@ -25,14 +18,11 @@ exports.createNotes = async (req, res) => {
 
     const newNote = await Notes.create({
       title,
-      description,
-      subject,
+      description: description || "",
+      subject: subject || "General",
       googleDriveUrl,
-      videoUrl,
-      videoTitle,
-      tags: tags || [],
       instructor: instructorId,
-      isPublished: true,
+      isPublished: isPublished !== undefined ? isPublished : true,
     });
 
     // Populate instructor details
@@ -157,16 +147,8 @@ exports.getNote = async (req, res) => {
 exports.updateNotes = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      title,
-      description,
-      subject,
-      googleDriveUrl,
-      videoUrl,
-      videoTitle,
-      isPublished,
-      tags,
-    } = req.body;
+    const { title, description, subject, googleDriveUrl, isPublished } =
+      req.body;
 
     const note = await Notes.findById(id);
 
@@ -189,13 +171,10 @@ exports.updateNotes = async (req, res) => {
       id,
       {
         title: title || note.title,
-        description: description || note.description,
+        description: description !== undefined ? description : note.description,
         subject: subject || note.subject,
         googleDriveUrl: googleDriveUrl || note.googleDriveUrl,
-        videoUrl: videoUrl || note.videoUrl,
-        videoTitle: videoTitle || note.videoTitle,
         isPublished: isPublished !== undefined ? isPublished : note.isPublished,
-        tags: tags || note.tags,
       },
       { new: true },
     ).populate("instructor", "firstName lastName email");

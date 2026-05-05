@@ -43,6 +43,8 @@ import InterviewPage from "./pages/InterviewPage";
 import FreeCourseHome from "./components/FreeCourses/Students/FreeCourseHome";
 import CreateFreeCourse from "./components/FreeCourses/Admin/CreateFreeCourse";
 import Notes from "./components/FreeCourses/Admin/Notes";
+import StudentNotesPage from "./components/FreeCourses/Student/StudentNotesPage";
+import FreeNotesHome from "./components/FreeCourses/Student/FreeNotesHome";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -121,7 +123,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
 
-{/* interview */}
+        {/* interview */}
         <Route path="/interview" element={<InterviewHome />} />
         <Route path="/interview/:category" element={<InterviewTopics />} />
         <Route path="/interview/:category/:topic" element={<InterviewQuestions />} />
@@ -153,9 +155,32 @@ function App() {
         <Route path="/aptitude-questions/:category/:topic" element={<AptitudeQuestions />} />
 
 
-        <Route path="/free-courses" element={<FreeCourseHome />} /> 
-        <Route path="/create-free-courses" element={<CreateFreeCourse />} /> 
-        <Route path="/create-free-notes" element={<Notes />} /> 
+        <Route path="/free-courses" element={<FreeCourseHome />} />
+        <Route path="/free-notes" element={<FreeNotesHome />} />
+        <Route
+          path="/notes"
+          element={
+            <PrivateRoute>
+              <StudentNotesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-free-courses"
+          element={
+            <PrivateRoute>
+              <CreateFreeCourse />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-free-notes"
+          element={
+            <PrivateRoute>
+              <Notes />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="dashboard"

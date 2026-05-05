@@ -153,7 +153,7 @@ export const sidebarLinks = [
   {
     id: 11,
     name: "Notes",
-    path: "/free-Notes",
+    path: "/free-notes",
     type: ACCOUNT_TYPE.STUDENT,
     icon: "VscSymbolEvent",
   },

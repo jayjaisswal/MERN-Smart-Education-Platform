@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { MdClose, MdExpandMore, MdChevronRight } from 'react-icons/md';
 import { AiOutlineFile, AiOutlinePlayCircle } from 'react-icons/ai';
 import { fetchNotesBySubject, fetchSingleNote } from '../../../services/operations/notesAPI';
@@ -6,6 +7,7 @@ import NotesViewer from './NotesViewer';
 import toast from 'react-hot-toast';
 
 const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
+    const { token } = useSelector((state) => state.auth);
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedNote, setSelectedNote] = useState(null);
@@ -13,21 +15,30 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
     const [fullscreenNote, setFullscreenNote] = useState(null);
 
     useEffect(() => {
-        if (selectedSubject) {
+        if (selectedSubject && token) {
             loadNotesBySubject(selectedSubject);
         }
-    }, [selectedSubject]);
+    }, [selectedSubject, token]);
 
     const loadNotesBySubject = async (subject) => {
         setLoading(true);
-        const data = await fetchNotesBySubject(subject);
-        if (data?.data) {
-            setNotes(data.data);
-            if (data.data.length > 0) {
-                setSelectedNote(data.data[0]);
+        try {
+            const data = await fetchNotesBySubject(subject, token);
+            if (data?.data && Array.isArray(data.data)) {
+                setNotes(data.data);
+                if (data.data.length > 0) {
+                    setSelectedNote(data.data[0]);
+                }
+            } else {
+                console.warn('Invalid notes data:', data);
+                setNotes([]);
             }
+        } catch (error) {
+            console.error('Error loading notes:', error);
+            setNotes([]);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const toggleFolder = (folderId) => {
@@ -151,8 +162,8 @@ const NoteItem = ({ note, isSelected, onSelect, onFullscreen }) => {
         <div
             onClick={onSelect}
             className={`p-3 rounded-lg cursor-pointer transition-all mb-2 flex items-start gap-3 ${isSelected
-                    ? 'bg-yellow-600 text-richblack-900'
-                    : 'bg-richblack-800 text-richblack-300 hover:bg-richblack-700'
+                ? 'bg-yellow-600 text-richblack-900'
+                : 'bg-richblack-800 text-richblack-300 hover:bg-richblack-700'
                 }`}
         >
             {/* Icon */}

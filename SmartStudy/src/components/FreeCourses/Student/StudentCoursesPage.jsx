@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { MdSearch, MdPlayCircle, MdPerson } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import { fetchAllFreeCourses } from '../../../services/operations/freeCoursesAPI';
-import FreeCourseViewer from '../Student/FreeCourseViewer';
+import FreeCourseViewer from './FreeCourseViewer';
 import toast from 'react-hot-toast';
 
-const FreeCourseHome = () => {
+const StudentCoursesPage = () => {
     const { token } = useSelector((state) => state.auth);
     const [courses, setCourses] = useState([]);
     const [filteredCourses, setFilteredCourses] = useState([]);
@@ -223,4 +223,4 @@ const FreeCourseHome = () => {
     );
 };
 
-export default FreeCourseHome;
+export default StudentCoursesPage;

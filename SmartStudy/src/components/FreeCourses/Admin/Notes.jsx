@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AiOutlinePlus, AiOutlineDelete, AiOutlineFile } from 'react-icons/ai';
-import { MdClose, MdViewWeek } from 'react-icons/md';
+import { MdClose, MdViewWeek, MdEdit, MdOpenInNew } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { createNote, updateNote, deleteNote, fetchInstructorNotes } from '../../../services/operations/notesAPI';
 import { useSelector } from 'react-redux';
+import AllNotesManager from './AllNotesManager';
 
 const SUBJECTS = [
     'Physics', 'Chemistry', 'Biology', 'Mathematics',
@@ -17,38 +18,58 @@ const Notes = () => {
     const [selectedNote, setSelectedNote] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showAllNotesManager, setShowAllNotesManager] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         subject: 'General',
         googleDriveUrl: '',
-        videoUrl: '',
-        videoTitle: '',
-        tags: '',
         isPublished: true
     });
     const [fullScreenMode, setFullScreenMode] = useState(false);
 
-    // Load instructor's notes on mount
-    useEffect(() => {
-        if (token) {
-            loadNotes();
+    // Load instructor's notes using useCallback
+    const loadNotes = useCallback(async () => {
+        if (!token) {
+            console.warn('No token available');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            console.log('Fetching instructor notes with token:', token.substring(0, 20) + '...');
+            const data = await fetchInstructorNotes(token);
+            console.log('Fetched notes data:', data);
+
+            if (data && data.data && Array.isArray(data.data)) {
+                setNotes(data.data);
+                if (data.data.length > 0) {
+                    setSelectedNote(data.data[0]);
+                }
+            } else if (Array.isArray(data)) {
+                // Handle case where data is directly an array
+                setNotes(data);
+                if (data.length > 0) {
+                    setSelectedNote(data[0]);
+                }
+            } else {
+                console.warn('Unexpected data format:', data);
+                setNotes([]);
+                toast.error('Failed to load notes - unexpected data format');
+            }
+        } catch (error) {
+            console.error('Error loading notes:', error);
+            setNotes([]);
+            toast.error('Failed to load your notes');
+        } finally {
+            setLoading(false);
         }
     }, [token]);
 
-    const loadNotes = async () => {
-        setLoading(true);
-        const data = await fetchInstructorNotes(token);
-        if (data?.data) {
-            setNotes(data.data);
-            if (data.data.length > 0) {
-                setSelectedNote(data.data[0]);
-            }
-        }
-        setLoading(false);
-    };
-
-    // Convert Google Drive URL to embed format
+    // Load instructor's notes on mount
+    useEffect(() => {
+        loadNotes();
+    }, [loadNotes]);
     const convertGoogleDriveUrl = (url) => {
         let fileId = '';
         let isFolder = false;
@@ -105,51 +126,70 @@ const Notes = () => {
             description: formData.description.trim(),
             subject: formData.subject,
             googleDriveUrl: formData.googleDriveUrl.trim(),
-            videoUrl: formData.videoUrl.trim() || null,
-            videoTitle: formData.videoTitle.trim() || null,
-            tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
             isPublished: formData.isPublished
         };
 
         if (selectedNote && isAdding) {
             // Update existing note
+            console.log('Updating note:', selectedNote._id);
             const response = await updateNote(selectedNote._id, notePayload, token);
-            if (response?.data) {
-                setNotes(notes.map(n => n._id === selectedNote._id ? response.data : n));
+            console.log('Update response:', response);
+
+            if (response?.data?.success && response?.data?.data) {
+                const updatedNote = response.data.data;
+                setNotes(notes.map(n => n._id === selectedNote._id ? updatedNote : n));
+                setSelectedNote(updatedNote);
+                setFormData({
+                    title: '',
+                    description: '',
+                    subject: 'General',
+                    googleDriveUrl: '',
+                    isPublished: true
+                });
+                setIsAdding(false);
                 toast.success('Note updated successfully');
+            } else {
+                toast.error(response?.data?.message || 'Failed to update note');
             }
         } else {
             // Create new note
+            console.log('Creating new note');
             const response = await createNote(notePayload, token);
-            if (response?.data) {
-                setNotes([...notes, response.data]);
-                setSelectedNote(response.data);
+            console.log('Create response:', response);
+
+            if (response?.data?.success && response?.data?.data) {
+                const newNote = response.data.data;
+                setNotes([...notes, newNote]);
+                setSelectedNote(newNote);
+                setFormData({
+                    title: '',
+                    description: '',
+                    subject: 'General',
+                    googleDriveUrl: '',
+                    isPublished: true
+                });
+                setIsAdding(false);
                 toast.success('Note created successfully');
+            } else {
+                console.error('Create failed:', response?.data?.message);
+                toast.error(response?.data?.message || 'Failed to create note');
             }
         }
-
-        setFormData({
-            title: '',
-            description: '',
-            subject: 'General',
-            googleDriveUrl: '',
-            videoUrl: '',
-            videoTitle: '',
-            tags: '',
-            isPublished: true
-        });
-        setIsAdding(false);
     };
 
     // Delete note
     const handleDeleteNote = async (id) => {
         if (window.confirm('Are you sure you want to delete this note?')) {
             const response = await deleteNote(id, token);
-            if (response?.success !== false) {
+            console.log('Delete response:', response);
+            if (response?.data?.success) {
                 setNotes(notes.filter(note => note._id !== id));
                 if (selectedNote?._id === id) {
                     setSelectedNote(null);
                 }
+                toast.success('Note deleted successfully');
+            } else {
+                toast.error(response?.data?.message || 'Failed to delete note');
             }
         }
     };
@@ -161,14 +201,28 @@ const Notes = () => {
             description: note.description || '',
             subject: note.subject,
             googleDriveUrl: note.googleDriveUrl,
-            videoUrl: note.videoUrl || '',
-            videoTitle: note.videoTitle || '',
-            tags: note.tags?.join(', ') || '',
             isPublished: note.isPublished
         });
         setSelectedNote(note);
         setIsAdding(true);
     };
+
+    // Handle edit note from AllNotesManager
+    const handleEditFromManager = (note) => {
+        handleEditNote(note);
+        setShowAllNotesManager(false);
+    };
+
+    // Handle delete note from AllNotesManager
+    const handleDeleteFromManager = (noteId) => {
+        setNotes(notes.filter(note => note._id !== noteId));
+        if (selectedNote?._id === noteId) {
+            setSelectedNote(null);
+        }
+    };
+
+    // Get only 5 latest notes for sidebar
+    const latestNotes = notes.slice(-5).reverse();
 
     return (
         <div className="min-h-screen bg-richblack-900">
@@ -188,12 +242,18 @@ const Notes = () => {
 
                     {/* PDF Viewer - Full Height */}
                     <div className="flex-1 overflow-hidden">
-                        <iframe
-                            src={selectedNote.embedUrl}
-                            title={selectedNote.title}
-                            className="w-full h-full border-none"
-                            sandbox="allow-same-origin allow-scripts"
-                        />
+                        {selectedNote?.googleDriveUrl ? (
+                            <iframe
+                                src={convertGoogleDriveUrl(selectedNote.googleDriveUrl)}
+                                title={selectedNote.title}
+                                className="w-full h-full border-none"
+                                sandbox="allow-same-origin allow-scripts"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-richblack-400">
+                                No document available
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -222,7 +282,20 @@ const Notes = () => {
                                 </div>
 
                                 <button
-                                    onClick={() => setIsAdding(!isAdding)}
+                                    onClick={() => {
+                                        setIsAdding(!isAdding);
+                                        if (!isAdding) {
+                                            // Clear form when starting to add a new note
+                                            setSelectedNote(null);
+                                            setFormData({
+                                                title: '',
+                                                description: '',
+                                                subject: 'General',
+                                                googleDriveUrl: '',
+                                                isPublished: true
+                                            });
+                                        }
+                                    }}
                                     className="w-full bg-yellow-400 hover:bg-yellow-500 text-richblack-900 font-semibold py-2 rounded-lg mb-4 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <AiOutlinePlus /> Add Note
@@ -238,6 +311,17 @@ const Notes = () => {
                                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                             className="w-full bg-richblack-600 text-richblack-5 placeholder-richblack-400 rounded px-3 py-2 text-sm border border-richblack-500 focus:border-yellow-400 focus:outline-none"
                                         />
+                                        <select
+                                            value={formData.subject}
+                                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                            className="w-full bg-richblack-600 text-richblack-5 rounded px-3 py-2 text-sm border border-richblack-500 focus:border-yellow-400 focus:outline-none"
+                                        >
+                                            {SUBJECTS.map((subject) => (
+                                                <option key={subject} value={subject}>
+                                                    {subject}
+                                                </option>
+                                            ))}
+                                        </select>
                                         <textarea
                                             placeholder="Description (optional)"
                                             value={formData.description}
@@ -257,13 +341,23 @@ const Notes = () => {
                                         </p>
                                         <div className="flex gap-2">
                                             <button
-                                                onClick={handleAddNote}
+                                                onClick={handleSaveNote}
                                                 className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-medium text-sm"
                                             >
                                                 Save
                                             </button>
                                             <button
-                                                onClick={() => setIsAdding(false)}
+                                                onClick={() => {
+                                                    setIsAdding(false);
+                                                    setSelectedNote(null);
+                                                    setFormData({
+                                                        title: '',
+                                                        description: '',
+                                                        subject: 'General',
+                                                        googleDriveUrl: '',
+                                                        isPublished: true
+                                                    });
+                                                }}
                                                 className="flex-1 bg-richblack-600 hover:bg-richblack-500 text-richblack-300 py-2 rounded font-medium text-sm"
                                             >
                                                 Cancel
@@ -273,48 +367,76 @@ const Notes = () => {
                                 )}
 
                                 {/* Notes List */}
-                                <div className="space-y-2 max-h-96 overflow-y-auto">
-                                    {notes.length === 0 ? (
-                                        <p className="text-richblack-400 text-center py-4 text-sm">
-                                            No notes yet
-                                        </p>
-                                    ) : (
-                                        notes.map((note) => (
-                                            <div
-                                                key={note.id}
-                                                className={`p-3 rounded-lg cursor-pointer transition-all group ${selectedNote?.id === note.id
-                                                    ? 'bg-yellow-600'
-                                                    : 'bg-richblack-700 hover:bg-richblack-600'
-                                                    }`}
-                                                onClick={() => setSelectedNote(note)}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h3 className="text-sm font-semibold text-richblack-300">
+                                            Latest Notes ({latestNotes.length})
+                                        </h3>
+                                        {notes.length > 5 && (
+                                            <button
+                                                onClick={() => setShowAllNotesManager(true)}
+                                                className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded transition-colors"
+                                                title={`Manage all ${notes.length} notes`}
                                             >
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-2">
-                                                            <AiOutlineFile className="flex-shrink-0 text-blue-400" />
-                                                            <p className="text-richblack-5 text-sm font-medium truncate">
-                                                                {note.title}
-                                                            </p>
+                                                <MdOpenInNew size={14} />
+                                                All ({notes.length})
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="max-h-96 overflow-y-auto">
+                                        {latestNotes.length === 0 ? (
+                                            <p className="text-richblack-400 text-center py-4 text-sm">
+                                                No notes yet
+                                            </p>
+                                        ) : (
+                                            latestNotes.map((note) => (
+                                                <div
+                                                    key={note._id}
+                                                    className={`p-3 rounded-lg cursor-pointer transition-all group ${selectedNote?._id === note._id
+                                                        ? 'bg-yellow-600'
+                                                        : 'bg-richblack-700 hover:bg-richblack-600'
+                                                        }`}
+                                                >
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setSelectedNote(note)}>
+                                                            <div className="flex items-center gap-2">
+                                                                <AiOutlineFile className="flex-shrink-0 text-blue-400" />
+                                                                <p className="text-richblack-5 text-sm font-medium truncate">
+                                                                    {note.title}
+                                                                </p>
+                                                            </div>
+                                                            {note.description && (
+                                                                <p className="text-richblack-400 text-xs mt-1 line-clamp-2">
+                                                                    {note.description}
+                                                                </p>
+                                                            )}
                                                         </div>
-                                                        {note.description && (
-                                                            <p className="text-richblack-400 text-xs mt-1 line-clamp-2">
-                                                                {note.description}
-                                                            </p>
-                                                        )}
+                                                        <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleEditNote(note);
+                                                                }}
+                                                                className="p-1 bg-blue-600 hover:bg-blue-700 rounded"
+                                                                title="Edit"
+                                                            >
+                                                                <MdEdit className="text-white" size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDeleteNote(note._id);
+                                                                }}
+                                                                className="p-1 bg-red-600 hover:bg-red-700 rounded opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                                                            >
+                                                                <AiOutlineDelete className="text-white" size={14} />
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDeleteNote(note.id);
-                                                        }}
-                                                        className="p-1 bg-red-600 hover:bg-red-700 rounded opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                                                    >
-                                                        <AiOutlineDelete className="text-white" size={14} />
-                                                    </button>
                                                 </div>
-                                            </div>
-                                        ))
-                                    )}
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -344,12 +466,18 @@ const Notes = () => {
 
                                         {/* PDF Iframe */}
                                         <div className="flex-1 bg-richblack-900">
-                                            <iframe
-                                                src={selectedNote.embedUrl}
-                                                title={selectedNote.title}
-                                                className="w-full h-full border-none"
-                                                sandbox="allow-same-origin allow-scripts"
-                                            />
+                                            {selectedNote.googleDriveUrl ? (
+                                                <iframe
+                                                    src={convertGoogleDriveUrl(selectedNote.googleDriveUrl)}
+                                                    title={selectedNote.title}
+                                                    className="w-full h-full border-none"
+                                                    sandbox="allow-same-origin allow-scripts"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-richblack-400">
+                                                    No document available
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ) : (
@@ -366,6 +494,17 @@ const Notes = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* All Notes Manager Modal */}
+            {showAllNotesManager && (
+                <AllNotesManager
+                    notes={notes}
+                    token={token}
+                    onClose={() => setShowAllNotesManager(false)}
+                    onEdit={handleEditFromManager}
+                    onDelete={handleDeleteFromManager}
+                />
             )}
         </div>
     );

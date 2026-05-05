@@ -10,6 +10,7 @@ const notesSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
+      default: "",
     },
     subject: {
       type: String,
@@ -37,40 +38,9 @@ const notesSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    // For video lectures
-    videoUrl: {
-      type: String,
-      default: null,
-    },
-    videoTitle: {
-      type: String,
-      default: null,
-    },
-    // Access control
     isPublished: {
       type: Boolean,
-      default: false,
-    },
-    accessibleTo: {
-      type: [String],
-      enum: ["All", "VIP"],
-      default: ["All"],
-    },
-    // Statistics
-    views: {
-      type: Number,
-      default: 0,
-    },
-    rating: {
-      type: Number,
-      min: 0,
-      max: 5,
-      default: 0,
-    },
-    // Tags for search
-    tags: {
-      type: [String],
-      default: [],
+      default: true,
     },
   },
   { timestamps: true },
