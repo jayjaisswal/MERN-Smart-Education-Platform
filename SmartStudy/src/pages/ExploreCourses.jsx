@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { apiConnector } from "../services/apiConnector";
 import { courseEndpoints } from "../services/apis";
-import { addToCart } from "../slices/CartSlice";
 import Footer from "../components/common/Footer";
-import { FaShoppingCart, FaSearch } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 const ExploreCourses = () => {
@@ -24,7 +22,6 @@ const ExploreCourses = () => {
     const [sortBy, setSortBy] = useState("name");
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const observerTarget = useRef(null);
     const coursesPerPage = 12;
 
@@ -127,10 +124,7 @@ const ExploreCourses = () => {
         setHasMore(endIdx < filteredCourses.length);
     }, [page, filteredCourses, coursesPerPage]);
 
-    const handleAddToCart = (course) => {
-        dispatch(addToCart(course));
-        navigate(`/courses/${course._id}`);
-    };
+
 
     return (
         <>
@@ -138,19 +132,19 @@ const ExploreCourses = () => {
                 <div className="w-11/12 max-w-maxContent mx-auto">
                     {/* Header */}
                     <div className="mb-8">
-                        <h1 className="text-4xl font-bold text-richblack-5 mb-4">
+                        <h1 className="text-2xl md:text-4xl font-bold text-richblack-5 mb-4">
                             Explore Courses
                         </h1>
-                        <p className="text-richblack-300">
+                        <p className="text-richblack-300 text-sm md:text-base">
                             {query
                                 ? `Search results for "${query}"`
                                 : "Browse all available courses"}
                         </p>
                     </div>
 
-                    <div className="flex gap-6">
+                    <div className="flex flex-col lg:flex-row gap-6">
                         {/* Sidebar Filters */}
-                        <div className="w-80 bg-richblack-800 rounded-lg p-6 h-fit sticky top-24">
+                        <div className="w-full lg:w-80 bg-richblack-800 rounded-lg p-6 h-fit lg:sticky lg:top-24">
                             <h2 className="text-xl font-bold text-richblack-5 mb-6">
                                 Filters
                             </h2>
@@ -256,7 +250,7 @@ const ExploreCourses = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
                                         {displayedCourses.map((course) => (
                                             <div
                                                 key={course._id}
@@ -281,53 +275,16 @@ const ExploreCourses = () => {
                                                         {course.courseDescription}
                                                     </p>
 
-                                                    {/* Tags */}
-                                                    {course.tag && course.tag.length > 0 && (
-                                                        <div className="flex gap-1 mb-3 flex-wrap">
-                                                            {course.tag.slice(0, 2).map((tag) => (
-                                                                <span
-                                                                    key={tag._id}
-                                                                    className="text-xs bg-yellow-600 text-white px-2 py-1 rounded"
-                                                                >
-                                                                    {tag.name}
-                                                                </span>
-                                                            ))}
-                                                            {course.tag.length > 2 && (
-                                                                <span className="text-xs text-richblack-400">
-                                                                    +{course.tag.length - 2}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    {/* Rating */}
-                                                    <div className="text-richblack-300 text-sm mb-4">
-                                                        {course.ratingAndReviews?.length > 0 ? (
-                                                            <span>
-                                                                ⭐{" "}
-                                                                {(
-                                                                    course.ratingAndReviews.reduce(
-                                                                        (acc, review) => acc + review.rating,
-                                                                        0
-                                                                    ) / course.ratingAndReviews.length
-                                                                ).toFixed(1)}{" "}
-                                                                ({course.ratingAndReviews.length} reviews)
-                                                            </span>
-                                                        ) : (
-                                                            <span>No ratings yet</span>
-                                                        )}
-                                                    </div>
-
                                                     {/* Footer */}
                                                     <div className="mt-auto flex items-center justify-between">
                                                         <span className="text-yellow-400 font-bold text-lg">
                                                             ₹{course.price}
                                                         </span>
                                                         <button
-                                                            onClick={() => handleAddToCart(course)}
+                                                            onClick={() => navigate(`/courses/${course._id}`)}
                                                             className="bg-yellow-400 hover:bg-yellow-500 text-richblack-900 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors"
                                                         >
-                                                            <FaShoppingCart /> Add
+                                                            View Details
                                                         </button>
                                                     </div>
                                                 </div>

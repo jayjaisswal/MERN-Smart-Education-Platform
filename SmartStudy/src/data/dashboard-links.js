@@ -70,20 +70,20 @@ export const sidebarLinks = [
     subItems: [
       {
         id: 61,
-        name: "Verbal",
-        path: "/aptitude/verbal",
+        name: "Verbal Ability",
+        path: "/aptitude-topics/verbal_ability",
         icon: "VscBook",
       },
       {
         id: 62,
-        name: "Quantitative",
-        path: "/aptitude/quantitative",
+        name: "Arithmetic",
+        path: "/aptitude-topics/arithmetic",
         icon: "VscBook",
       },
       {
         id: 63,
         name: "Logical Reasoning",
-        path: "/aptitude/logical-reasoning",
+        path: "/aptitude-topics/logical_reasoning",
         icon: "VscBook",
       },
     ],
@@ -135,5 +135,26 @@ export const sidebarLinks = [
         icon: "VscFileText",
       },
     ],
+  },
+  {
+    id: 9,
+    name: "Interview Prep",
+    path: "/interview",
+    type: ACCOUNT_TYPE.STUDENT,
+    icon: "VscSymbolEvent",
+  },
+  {
+    id: 10,
+    name: "Free Courses",
+    path: "/free-courses",
+    type: ACCOUNT_TYPE.STUDENT,
+    icon: "VscSymbolEvent",
+  },
+  {
+    id: 11,
+    name: "Create Free Courses",
+    path: "/create-free-courses",
+    type: ACCOUNT_TYPE.ADMIN,
+    icon: "VscSymbolEvent",
   },
 ];

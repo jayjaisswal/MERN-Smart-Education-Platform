@@ -40,6 +40,8 @@ import InterviewHome from "./components/Interview/InterviewHome";
 import InterviewTopics from "./components/Interview/InterviewTopics";
 import InterviewQuestions from "./components/Interview/InterviewQuestions";
 import InterviewPage from "./pages/InterviewPage";
+import FreeCourseHome from "./components/FreeCourses/Students/FreeCourseHome";
+import CreateFreeCourse from "./components/FreeCourses/Admin/CreateFreeCourse";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -148,6 +150,10 @@ function App() {
         <Route path="/aptitude" element={<AptitudePractice />} />
         <Route path="/aptitude-topics/:category" element={<AptitudeTopics />} />
         <Route path="/aptitude-questions/:category/:topic" element={<AptitudeQuestions />} />
+
+
+        <Route path="/free-courses" element={<FreeCourseHome />} /> 
+        <Route path="/create-free-courses" element={<CreateFreeCourse />} /> 
 
         <Route
           path="dashboard"
