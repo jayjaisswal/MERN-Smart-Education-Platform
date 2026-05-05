@@ -1,29 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AiOutlinePlus, AiOutlineDelete, AiOutlineFile } from 'react-icons/ai';
 import { MdClose, MdViewWeek } from 'react-icons/md';
 import toast from 'react-hot-toast';
+import { createNote, updateNote, deleteNote, fetchInstructorNotes } from '../../../services/operations/notesAPI';
+import { useSelector } from 'react-redux';
+
+const SUBJECTS = [
+    'Physics', 'Chemistry', 'Biology', 'Mathematics',
+    'English', 'History', 'Geography', 'Economics',
+    'Computer Science', 'General'
+];
 
 const Notes = () => {
+    const { token } = useSelector((state) => state.auth);
     const [notes, setNotes] = useState([]);
     const [selectedNote, setSelectedNote] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
-    const [formData, setFormData] = useState({ title: '', googleDriveUrl: '', description: '' });
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        subject: 'General',
+        googleDriveUrl: '',
+        videoUrl: '',
+        videoTitle: '',
+        tags: '',
+        isPublished: true
+    });
     const [fullScreenMode, setFullScreenMode] = useState(false);
+
+    // Load instructor's notes on mount
+    useEffect(() => {
+        if (token) {
+            loadNotes();
+        }
+    }, [token]);
+
+    const loadNotes = async () => {
+        setLoading(true);
+        const data = await fetchInstructorNotes(token);
+        if (data?.data) {
+            setNotes(data.data);
+            if (data.data.length > 0) {
+                setSelectedNote(data.data[0]);
+            }
+        }
+        setLoading(false);
+    };
 
     // Convert Google Drive URL to embed format
     const convertGoogleDriveUrl = (url) => {
         let fileId = '';
         let isFolder = false;
 
-        // Extract file/folder ID from different Google Drive URL formats
         if (url.includes('drive.google.com')) {
-            // Try to match file pattern first: /d/FILE_ID/
             let match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
             if (match) {
                 fileId = match[1];
                 isFolder = false;
             } else {
-                // Try to match folder pattern: /folders/FOLDER_ID
                 match = url.match(/\/folders\/([a-zA-Z0-9-_]+)/);
                 if (match) {
                     fileId = match[1];
@@ -31,9 +66,8 @@ const Notes = () => {
                 }
             }
         } else if (url.length > 20 && /^[a-zA-Z0-9-_]+$/.test(url)) {
-            // Direct ID (file or folder)
             fileId = url;
-            isFolder = false; // Assume file by default
+            isFolder = false;
         }
 
         if (!fileId) {
@@ -41,20 +75,21 @@ const Notes = () => {
             return null;
         }
 
-        // Return appropriate embed URL based on type
         if (isFolder) {
-            // For folders
             return `https://drive.google.com/embeddedfolderview?id=${fileId}`;
         } else {
-            // For files - preview mode (read-only)
             return `https://drive.google.com/file/d/${fileId}/preview`;
         }
     };
 
-    // Add new note
-    const handleAddNote = () => {
+    // Add or update note
+    const handleSaveNote = async () => {
         if (!formData.title.trim()) {
             toast.error('Please enter note title');
+            return;
+        }
+        if (!formData.subject) {
+            toast.error('Please select a subject');
             return;
         }
         if (!formData.googleDriveUrl.trim()) {
@@ -65,27 +100,74 @@ const Notes = () => {
         const embedUrl = convertGoogleDriveUrl(formData.googleDriveUrl);
         if (!embedUrl) return;
 
-        const newNote = {
-            id: Date.now(),
-            title: formData.title,
-            description: formData.description,
-            embedUrl,
-            createdAt: new Date().toISOString(),
+        const notePayload = {
+            title: formData.title.trim(),
+            description: formData.description.trim(),
+            subject: formData.subject,
+            googleDriveUrl: formData.googleDriveUrl.trim(),
+            videoUrl: formData.videoUrl.trim() || null,
+            videoTitle: formData.videoTitle.trim() || null,
+            tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+            isPublished: formData.isPublished
         };
 
-        setNotes([...notes, newNote]);
-        setFormData({ title: '', googleDriveUrl: '', description: '' });
+        if (selectedNote && isAdding) {
+            // Update existing note
+            const response = await updateNote(selectedNote._id, notePayload, token);
+            if (response?.data) {
+                setNotes(notes.map(n => n._id === selectedNote._id ? response.data : n));
+                toast.success('Note updated successfully');
+            }
+        } else {
+            // Create new note
+            const response = await createNote(notePayload, token);
+            if (response?.data) {
+                setNotes([...notes, response.data]);
+                setSelectedNote(response.data);
+                toast.success('Note created successfully');
+            }
+        }
+
+        setFormData({
+            title: '',
+            description: '',
+            subject: 'General',
+            googleDriveUrl: '',
+            videoUrl: '',
+            videoTitle: '',
+            tags: '',
+            isPublished: true
+        });
         setIsAdding(false);
-        toast.success('Note added successfully!');
     };
 
     // Delete note
-    const handleDeleteNote = (id) => {
-        setNotes(notes.filter(note => note.id !== id));
-        if (selectedNote?.id === id) {
-            setSelectedNote(null);
+    const handleDeleteNote = async (id) => {
+        if (window.confirm('Are you sure you want to delete this note?')) {
+            const response = await deleteNote(id, token);
+            if (response?.success !== false) {
+                setNotes(notes.filter(note => note._id !== id));
+                if (selectedNote?._id === id) {
+                    setSelectedNote(null);
+                }
+            }
         }
-        toast.success('Note deleted');
+    };
+
+    // Handle edit note
+    const handleEditNote = (note) => {
+        setFormData({
+            title: note.title,
+            description: note.description || '',
+            subject: note.subject,
+            googleDriveUrl: note.googleDriveUrl,
+            videoUrl: note.videoUrl || '',
+            videoTitle: note.videoTitle || '',
+            tags: note.tags?.join(', ') || '',
+            isPublished: note.isPublished
+        });
+        setSelectedNote(note);
+        setIsAdding(true);
     };
 
     return (
