@@ -7,6 +7,7 @@ import { sidebarLinks } from "../../../data/dashboard-links"
 import { logout } from "../../../services/operations/authAPI"
 import ConfirmationModal from "../../common/ConfirmationModal"
 import SidebarLink from "./SidebarLink"
+import DropdownSidebarLink from "./DropdownSidebarLink"
 import Spinner from "../../../spinner/Spinner"
 
 export default function Sidebar() {
@@ -37,16 +38,24 @@ export default function Sidebar() {
   }, [isSidebarOpen])
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-x-hidden">
       <div className="flex flex-col gap-1 px-2 flex-1">
         {sidebarLinks.map((link) => {
           if (link.type && user?.accountType !== link.type) return null
           return (
-            <SidebarLink
-              key={link.id}
-              link={link}
-              iconName={link.icon}
-            />
+            <div key={link.id}>
+              {link.isDropdown ? (
+                <DropdownSidebarLink
+                  link={link}
+                  iconName={link.icon}
+                />
+              ) : (
+                <SidebarLink
+                  link={link}
+                  iconName={link.icon}
+                />
+              )}
+            </div>
           )
         })}
       </div>
@@ -70,7 +79,7 @@ export default function Sidebar() {
               btn2Handler: () => setConfirmationModal(null),
             })
           }
-          className="flex items-center gap-x-2 px-6 py-2 text-sm font-medium text-richblack-300 hover:bg-richblack-700 hover:text-richblack-5 transition-all duration-200 rounded-md"
+          className="flex items-center gap-x-2 px-6 py-2 text-sm font-medium text-richblack-300 hover:bg-richblack-700 hover:text-richblack-5 transition-all duration-200 rounded-md mb-6"
         >
           <VscSignOut className="text-lg" />
           <span>Logout</span>
@@ -90,15 +99,15 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Menu Button - Floating */}
-      <button 
-        onClick={() => setIsSidebarOpen(true)} 
+      <button
+        onClick={() => setIsSidebarOpen(true)}
         className="md:hidden fixed top-20 left-4 z-30  text-richblack-100 hover:text-richblack-5 p-3 rounded-lg hover:bg-richblack-700 transition-all duration-200 shadow-lg border border-richblack-600"
       >
         <VscThreeBars className="text-xl" />
       </button>
 
-      {/* Desktop Sidebar */} 
-      <div className="hidden md:flex h-[calc(100vh-3.5rem)] min-w-[220px] lg:min-w-[240px] flex-col border-r-[1px] border-r-richblack-700  py-10">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex h-[calc(100vh-3.5rem)] min-w-[220px] lg:min-w-[240px] flex-col border-r-[1px] border-r-richblack-700 py-10 overflow-y-auto overflow-x-hidden">
         <SidebarContent />
       </div>
 
@@ -108,12 +117,12 @@ export default function Sidebar() {
         bg-richblack-800 border-r border-richblack-700 
         transform transition-transform duration-300 ease-in-out
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:hidden
+        md:hidden overflow-y-auto overflow-x-hidden
       `}>
         <div className="flex justify-between items-center px-6 py-4 border-b border-richblack-700">
           <h2 className="text-richblack-5 text-lg font-semibold">Menu</h2>
-          <button 
-            onClick={() => setIsSidebarOpen(false)} 
+          <button
+            onClick={() => setIsSidebarOpen(false)}
             className="text-richblack-100 hover:text-richblack-5 p-2 rounded-md hover:bg-richblack-700 transition-all duration-200"
           >
             <VscChromeClose className="text-lg" />
