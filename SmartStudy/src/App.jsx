@@ -42,6 +42,7 @@ import InterviewQuestions from "./components/Interview/InterviewQuestions";
 import InterviewPage from "./pages/InterviewPage";
 import FreeCourseHome from "./components/FreeCourses/Students/FreeCourseHome";
 import CreateFreeCourse from "./components/FreeCourses/Admin/CreateFreeCourse";
+import Notes from "./components/FreeCourses/Admin/Notes";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -154,6 +155,7 @@ function App() {
 
         <Route path="/free-courses" element={<FreeCourseHome />} /> 
         <Route path="/create-free-courses" element={<CreateFreeCourse />} /> 
+        <Route path="/create-free-notes" element={<Notes />} /> 
 
         <Route
           path="dashboard"

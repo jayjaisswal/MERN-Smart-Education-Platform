@@ -152,8 +152,22 @@ export const sidebarLinks = [
   },
   {
     id: 11,
+    name: "Notes",
+    path: "/free-Notes",
+    type: ACCOUNT_TYPE.STUDENT,
+    icon: "VscSymbolEvent",
+  },
+  {
+    id: 12,
     name: "Create Free Courses",
     path: "/create-free-courses",
+    type: ACCOUNT_TYPE.ADMIN,
+    icon: "VscSymbolEvent",
+  },
+  {
+    id: 13,
+    name: "Create Notes",
+    path: "/create-free-notes",
     type: ACCOUNT_TYPE.ADMIN,
     icon: "VscSymbolEvent",
   },
