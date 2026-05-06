@@ -156,6 +156,7 @@ function App() {
 
 
         <Route path="/free-courses" element={<FreeCourseHome />} />
+        <Route path="/free-courses/" element={<FreeCourseHome />} />
         <Route path="/free-notes" element={<FreeNotesHome />} />
         {/* <Route path="/free-notes/:noteId" element={<FreeNotesHome />} /> */}
         <Route

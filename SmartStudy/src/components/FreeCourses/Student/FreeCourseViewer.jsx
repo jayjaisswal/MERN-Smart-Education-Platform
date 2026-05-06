@@ -1,236 +1,228 @@
 import React, { useState, useEffect } from 'react';
-import { MdClose, MdChevronRight, MdChevronLeft, MdPlayCircle, MdPerson, MdDateRange } from 'react-icons/md';
+import { 
+    MdClose, MdMenu, MdFolder, MdInsertDriveFile, 
+    MdPlayCircleOutline, MdKeyboardArrowDown, MdKeyboardArrowRight 
+} from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import { fetchFreeCourseDetails } from '../../../services/operations/freeCoursesAPI';
-import YouTubePlayer from './YouTubePlayer';
 import toast from 'react-hot-toast';
 
-const FreeCourseViewer = ({ courseId, onClose, allCourses = [], currentCourseIndex = 0 }) => {
+const SidebarItem = ({ item, level = 0, onSelect, selectedId, closeMobileSidebar }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const isFolder = item.type === 'folder';
+    const isSelected = selectedId === item.id;
+
+    const handleToggle = () => {
+        if (isFolder) {
+            setIsOpen(!isOpen);
+        } else {
+            onSelect(item);
+            // Close sidebar on mobile after selection
+            if (window.innerWidth < 768) closeMobileSidebar();
+        }
+    };
+
+    return (
+        <div className="w-full">
+            <div
+                onClick={handleToggle}
+                className={`flex items-center gap-2 py-3 px-3 cursor-pointer transition-all duration-200 rounded-md my-1
+                    ${isSelected 
+                        ? 'bg-yellow-100 text-richblack-900 font-bold shadow-md' 
+                        : 'text-richblack-300 hover:bg-richblack-800 hover:text-richblack-5'}
+                `}
+                style={{ paddingLeft: `${level * 12 + 12}px` }}
+            >
+                {isFolder ? (
+                    <>
+                        {isOpen ? <MdKeyboardArrowDown size={18} /> : <MdKeyboardArrowRight size={18} />}
+                        <MdFolder className="text-yellow-400 flex-shrink-0" size={20} />
+                    </>
+                ) : (
+                    <div className="w-5 flex justify-center">
+                        {item.contentType === 'video' || item.link?.includes('youtube') 
+                            ? <MdPlayCircleOutline size={20} className="text-caribbeangreen-200" /> 
+                            : <MdInsertDriveFile size={18} className="text-blue-200" />
+                        }
+                    </div>
+                )}
+                <span className="truncate text-sm select-none">{item.name}</span>
+            </div>
+
+            {isFolder && isOpen && item.children && (
+                <div className="border-l border-richblack-700 ml-4">
+                    {item.children.map((child) => (
+                        <SidebarItem 
+                            key={child.id} 
+                            item={child} 
+                            level={level + 1} 
+                            onSelect={onSelect} 
+                            selectedId={selectedId}
+                            closeMobileSidebar={closeMobileSidebar}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const FreeCourseViewer = ({ courseId, onClose }) => {
     const { token } = useSelector((state) => state.auth);
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
-    const [fullscreen, setFullscreen] = useState(false);
+    const [selectedResource, setSelectedResource] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed on mobile
 
     useEffect(() => {
-        loadCourseDetails();
-    }, [courseId]);
-
-    const loadCourseDetails = async () => {
-        try {
-            setLoading(true);
-            console.log('Loading course details for:', courseId);
-            const data = await fetchFreeCourseDetails(courseId, token);
-            console.log('Course details received:', data);
-
-            if (data?.success && data?.data) {
-                setCourse(data.data);
-                setSelectedVideoIndex(0);
-            } else if (data?.data) {
-                setCourse(data.data);
-                setSelectedVideoIndex(0);
-            } else {
-                toast.error('Failed to load course details');
+        // Open sidebar by default only on large screens
+        if (window.innerWidth >= 1024) setIsSidebarOpen(true);
+        
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetchFreeCourseDetails(courseId, token);
+                if (response?.data) {
+                    setCourse(response.data);
+                    const firstFile = findFirstFile(response.data.structure);
+                    setSelectedResource(firstFile);
+                }
+            } catch (err) {
+                toast.error("Error loading course content");
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error('Error loading course details:', error);
-            toast.error('Failed to load course details');
-        } finally {
-            setLoading(false);
+        };
+        loadData();
+    }, [courseId, token]);
+
+    const findFirstFile = (nodes) => {
+        if (!nodes) return null;
+        for (let node of nodes) {
+            if (node.type === 'file') return node;
+            if (node.children) {
+                const found = findFirstFile(node.children);
+                if (found) return found;
+            }
         }
+        return null;
     };
 
-    const handleNavigateVideo = (direction) => {
-        if (!course?.structure) return;
-
-        const newIndex = selectedVideoIndex + direction;
-        if (newIndex >= 0 && newIndex < course.structure.length) {
-            setSelectedVideoIndex(newIndex);
+    const getEmbedUrl = (resource) => {
+        if (!resource) return null;
+        const url = resource.videoUrl || resource.link || "";
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            const videoId = (match && match[2].length === 11) ? match[2] : null;
+            if (videoId) {
+                const origin = window.location.origin;
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
+            }
         }
+        if (url.includes('drive.google.com')) {
+            return url.replace(/\/view.*|\/edit.*/, '/preview');
+        }
+        return url;
     };
 
-    const handleNavigateCourse = (direction) => {
-        const newIndex = currentCourseIndex + direction;
-        if (newIndex >= 0 && newIndex < allCourses.length) {
-            const newCourse = allCourses[newIndex];
-            // Update courseId and reload
-            window.location.hash = `course-${newCourse._id}`;
-            // In a real app, you'd use a routing mechanism here
-        }
-    };
-
-    const currentVideo = course?.structure?.[selectedVideoIndex];
+    if (loading) return (
+        <div className="fixed inset-0 z-[100] bg-richblack-900 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-yellow-100"></div>
+        </div>
+    );
 
     return (
-        <div className="fixed inset-0 z-50 bg-richblack-900/95 overflow-auto">
-            {/* Close Button */}
-            <button
-                onClick={onClose}
-                className="fixed top-4 right-4 z-50 bg-richblack-800 hover:bg-richblack-700 text-richblack-5 p-2 rounded-full transition-colors shadow-lg"
-            >
-                <MdClose size={28} />
-            </button>
+        <div className="fixed inset-0 z-[100] flex bg-richblack-900 text-white overflow-hidden font-inter">
+            
+            {/* MOBILE OVERLAY BACKDROP */}
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/60 z-[110] md:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
 
-            {loading ? (
-                <div className="flex justify-center items-center h-screen">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-richblack-700 border-t-yellow-400" />
+            {/* SIDEBAR */}
+            <div className={`
+                fixed md:relative z-[120] md:z-auto
+                h-full transition-all duration-300 ease-in-out
+                ${isSidebarOpen ? 'translate-x-0 w-[280px]' : '-translate-x-full md:translate-x-0 md:w-0'}
+                border-r border-richblack-700 bg-richblack-800 flex flex-col overflow-hidden
+            `}>
+                <div className="p-4 border-b border-richblack-700 bg-richblack-900 h-14 flex items-center justify-between">
+                    <h2 className="font-bold text-yellow-50 truncate">Course Content</h2>
+                    <button className="md:hidden text-richblack-200" onClick={() => setIsSidebarOpen(false)}>
+                        <MdClose size={20} />
+                    </button>
                 </div>
-            ) : (
-                course && (
-                    <div className="max-w-7xl mx-auto p-4 md:p-8">
-                        {/* Header */}
-                        <div className="mb-8">
-                            <h1 className="text-3xl md:text-4xl font-bold text-richblack-5 mb-3">{course.title}</h1>
-                            <p className="text-richblack-300 text-lg mb-4">{course.description}</p>
+                <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
+                    {course?.structure?.map((item) => (
+                        <SidebarItem 
+                            key={item.id} 
+                            item={item} 
+                            onSelect={setSelectedResource} 
+                            selectedId={selectedResource?.id}
+                            closeMobileSidebar={() => setIsSidebarOpen(false)}
+                        />
+                    ))}
+                </div>
+            </div>
 
-                            {/* Course Info */}
-                            <div className="flex flex-wrap gap-6 text-richblack-300">
-                                {course.instructor && (
-                                    <div className="flex items-center gap-2">
-                                        <MdPerson className="text-yellow-400 text-xl flex-shrink-0" />
-                                        <span>
-                                            {course.instructor.firstName} {course.instructor.lastName}
-                                        </span>
-                                    </div>
-                                )}
+            {/* MAIN CONTENT AREA */}
+            <div className="flex-1 flex flex-col relative min-w-0 bg-richblack-900">
+                
+                {/* Header Nav */}
+                <div className="h-14 border-b border-richblack-700 flex items-center justify-between px-4 bg-richblack-800 shadow-md">
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+                            className="p-2 hover:bg-richblack-700 rounded-lg text-richblack-100"
+                        >
+                            <MdMenu size={24} />
+                        </button>
+                        <p className="text-sm font-medium text-richblack-50 truncate max-w-[150px] sm:max-w-[300px]">
+                            {course?.title}
+                        </p>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-pink-700/20 text-richblack-5 rounded-full transition-all">
+                        <MdClose size={24} />
+                    </button>
+                </div>
 
-                                <div className="flex items-center gap-2">
-                                    <MdDateRange className="text-yellow-400 text-xl flex-shrink-0" />
-                                    <span>
-                                        {new Date(course.createdAt).toLocaleDateString('en-US', {
-                                            month: 'long',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                        })}
-                                    </span>
+                {/* Player container */}
+                <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-10">
+                    <div className="max-w-4xl mx-auto w-full">
+                        {/* Responsive Video Container */}
+                        <div className="relative w-full aspect-video bg-black rounded-lg sm:rounded-xl overflow-hidden border border-richblack-700 shadow-2xl">
+                            {selectedResource ? (
+                                <iframe
+                                    key={selectedResource.id}
+                                    src={getEmbedUrl(selectedResource)}
+                                    className="absolute inset-0 w-full h-full border-0"
+                                    allow="autoplay; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                                    title={selectedResource.name}
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-richblack-400 font-medium px-4 text-center">
+                                    Select a lesson from the menu to begin
                                 </div>
-
-                                <div className="flex items-center gap-2">
-                                    <MdPlayCircle className="text-yellow-400 text-xl flex-shrink-0" />
-                                    <span>{course.structure?.length || 0} videos</span>
-                                </div>
-                            </div>
+                            )}
                         </div>
 
-                        {/* Main Content */}
-                        {course.structure && course.structure.length > 0 ? (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* Video Player */}
-                                <div className="lg:col-span-2 space-y-4">
-                                    {currentVideo?.videoUrl ? (
-                                        <YouTubePlayer
-                                            url={currentVideo.videoUrl}
-                                            title={currentVideo.title || `Video ${selectedVideoIndex + 1}`}
-                                            onClose={() => setFullscreen(!fullscreen)}
-                                            fullscreen={fullscreen}
-                                        />
-                                    ) : (
-                                        <div className="aspect-video bg-richblack-800 rounded-lg border border-richblack-700 flex items-center justify-center">
-                                            <p className="text-richblack-400">Video not available</p>
-                                        </div>
-                                    )}
-
-                                    {/* Video Navigation */}
-                                    <div className="flex items-center justify-between gap-4">
-                                        <button
-                                            onClick={() => handleNavigateVideo(-1)}
-                                            disabled={selectedVideoIndex === 0}
-                                            className="flex items-center gap-2 px-4 py-2 bg-richblack-700 hover:bg-richblack-600 disabled:opacity-50 disabled:cursor-not-allowed text-richblack-5 rounded-lg transition-colors"
-                                        >
-                                            <MdChevronLeft size={20} />
-                                            Previous
-                                        </button>
-
-                                        <span className="text-richblack-300">
-                                            Video {selectedVideoIndex + 1} of {course.structure.length}
-                                        </span>
-
-                                        <button
-                                            onClick={() => handleNavigateVideo(1)}
-                                            disabled={selectedVideoIndex === course.structure.length - 1}
-                                            className="flex items-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed text-richblack-900 rounded-lg transition-colors font-semibold"
-                                        >
-                                            Next
-                                            <MdChevronRight size={20} />
-                                        </button>
-                                    </div>
-
-                                    {/* Video Details */}
-                                    {currentVideo?.title && (
-                                        <div className="bg-richblack-800 rounded-lg p-4 border border-richblack-700">
-                                            <h3 className="text-lg font-semibold text-richblack-5 mb-2">{currentVideo.title}</h3>
-                                            {currentVideo.description && (
-                                                <p className="text-richblack-400">{currentVideo.description}</p>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Playlist Sidebar */}
-                                <div className="bg-richblack-800 rounded-lg border border-richblack-700 p-4 h-fit">
-                                    <h3 className="text-lg font-bold text-richblack-5 mb-4">Course Content</h3>
-
-                                    <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                                        {course.structure.map((video, index) => (
-                                            <button
-                                                key={index}
-                                                onClick={() => setSelectedVideoIndex(index)}
-                                                className={`w-full text-left px-3 py-2 rounded-lg transition-colors border ${index === selectedVideoIndex
-                                                    ? 'bg-yellow-400/20 border-yellow-400 text-yellow-400'
-                                                    : 'border-richblack-700 text-richblack-300 hover:bg-richblack-700'
-                                                    }`}
-                                            >
-                                                <div className="flex items-start gap-2">
-                                                    <MdPlayCircle className="flex-shrink-0 mt-0.5" />
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-medium truncate">
-                                                            {video.title || `Video ${index + 1}`}
-                                                        </p>
-                                                        <p className="text-xs opacity-75">
-                                                            {index === selectedVideoIndex ? 'Playing' : `Video ${index + 1}`}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="text-center py-16 bg-richblack-800 rounded-lg border border-richblack-700">
-                                <p className="text-richblack-400 text-lg">No videos added to this course yet</p>
-                            </div>
-                        )}
-
-                        {/* Course Navigation (if multiple courses) */}
-                        {allCourses.length > 1 && (
-                            <div className="mt-8 flex items-center justify-between gap-4 pt-6 border-t border-richblack-700">
-                                <button
-                                    onClick={() => handleNavigateCourse(-1)}
-                                    disabled={currentCourseIndex === 0}
-                                    className="flex items-center gap-2 px-4 py-2 bg-richblack-700 hover:bg-richblack-600 disabled:opacity-50 disabled:cursor-not-allowed text-richblack-5 rounded-lg transition-colors"
-                                >
-                                    <MdChevronLeft size={20} />
-                                    Previous Course
-                                </button>
-
-                                <span className="text-richblack-300 text-sm">
-                                    Course {currentCourseIndex + 1} of {allCourses.length}
-                                </span>
-
-                                <button
-                                    onClick={() => handleNavigateCourse(1)}
-                                    disabled={currentCourseIndex === allCourses.length - 1}
-                                    className="flex items-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed text-richblack-900 rounded-lg transition-colors font-semibold"
-                                >
-                                    Next Course
-                                    <MdChevronRight size={20} />
-                                </button>
-                            </div>
-                        )}
+                        {/* Content Info */}
+                        <div className="mt-4 sm:mt-6 bg-richblack-800 p-4 sm:p-6 rounded-xl border border-richblack-700">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-richblack-5">
+                                {selectedResource?.name || "Welcome"}
+                            </h2>
+                            <div className="h-[1px] bg-richblack-700 my-3 sm:my-4"></div>
+                            <p className="text-richblack-300 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
+                                {course?.description}
+                            </p>
+                        </div>
                     </div>
-                )
-            )}
+                </div>
+            </div>
         </div>
     );
 };
