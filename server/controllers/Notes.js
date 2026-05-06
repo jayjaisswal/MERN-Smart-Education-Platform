@@ -4,23 +4,49 @@ const User = require("../models/User");
 // Create a new note (Instructor only)
 exports.createNotes = async (req, res) => {
   try {
-    const { title, description, subject, googleDriveUrl, isPublished } =
-      req.body;
+    const {
+      title,
+      description,
+      subject,
+      googleDriveUrl,
+      chapters,
+      isPublished,
+    } = req.body;
     const instructorId = req.user.id;
 
     // Validate required fields
-    if (!title || !googleDriveUrl) {
+    if (!title || (!googleDriveUrl && (!chapters || chapters.length === 0))) {
       return res.status(400).json({
         success: false,
-        message: "Please provide all required fields",
+        message:
+          "Please provide either a Google Drive URL or at least one chapter with notes",
       });
+    }
+
+    // If chapters are provided, validate chapter structure
+    let processedChapters = [];
+    if (chapters && Array.isArray(chapters)) {
+      processedChapters = chapters.filter((chapter) => {
+        // Ensure chapter has notes
+        if (!chapter.notes || chapter.notes.length === 0) return false;
+        // Validate each note has title and URL
+        return chapter.notes.every((note) => note.title && note.googleDriveUrl);
+      });
+
+      if (processedChapters.length === 0 && !googleDriveUrl) {
+        return res.status(400).json({
+          success: false,
+          message: "Please provide valid chapters with notes",
+        });
+      }
     }
 
     const newNote = await Notes.create({
       title,
       description: description || "",
       subject: subject || "General",
-      googleDriveUrl,
+      googleDriveUrl: googleDriveUrl || null,
+      chapters: processedChapters,
       instructor: instructorId,
       isPublished: isPublished !== undefined ? isPublished : true,
     });
@@ -147,8 +173,14 @@ exports.getNote = async (req, res) => {
 exports.updateNotes = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, subject, googleDriveUrl, isPublished } =
-      req.body;
+    const {
+      title,
+      description,
+      subject,
+      googleDriveUrl,
+      chapters,
+      isPublished,
+    } = req.body;
 
     const note = await Notes.findById(id);
 
@@ -167,17 +199,28 @@ exports.updateNotes = async (req, res) => {
       });
     }
 
-    const updatedNote = await Notes.findByIdAndUpdate(
-      id,
-      {
-        title: title || note.title,
-        description: description !== undefined ? description : note.description,
-        subject: subject || note.subject,
-        googleDriveUrl: googleDriveUrl || note.googleDriveUrl,
-        isPublished: isPublished !== undefined ? isPublished : note.isPublished,
-      },
-      { new: true },
-    ).populate("instructor", "firstName lastName email");
+    // Process chapters if provided
+    let updateData = {
+      title: title || note.title,
+      description: description !== undefined ? description : note.description,
+      subject: subject || note.subject,
+      googleDriveUrl:
+        googleDriveUrl !== undefined ? googleDriveUrl : note.googleDriveUrl,
+      isPublished: isPublished !== undefined ? isPublished : note.isPublished,
+    };
+
+    if (chapters !== undefined) {
+      // Validate and process chapters
+      const processedChapters = chapters.filter((chapter) => {
+        if (!chapter.notes || chapter.notes.length === 0) return false;
+        return chapter.notes.every((note) => note.title && note.googleDriveUrl);
+      });
+      updateData.chapters = processedChapters;
+    }
+
+    const updatedNote = await Notes.findByIdAndUpdate(id, updateData, {
+      new: true,
+    }).populate("instructor", "firstName lastName email");
 
     res.status(200).json({
       success: true,

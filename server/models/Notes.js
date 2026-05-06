@@ -1,5 +1,35 @@
 const mongoose = require("mongoose");
 
+// Chapter schema with nested notes
+const chapterSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    trim: true,
+    default: null,
+  },
+  notes: [
+    {
+      title: {
+        type: String,
+        required: [true, "Please provide a note title"],
+        trim: true,
+      },
+      googleDriveUrl: {
+        type: String,
+        required: [true, "Please provide Google Drive URL"],
+      },
+      order: {
+        type: Number,
+        default: 0,
+      },
+    },
+  ],
+  order: {
+    type: Number,
+    default: 0,
+  },
+});
+
 const notesSchema = new mongoose.Schema(
   {
     title: {
@@ -29,10 +59,13 @@ const notesSchema = new mongoose.Schema(
       ],
       default: "General",
     },
+    // Keep for backward compatibility - single note without chapters
     googleDriveUrl: {
       type: String,
-      required: [true, "Please provide Google Drive URL"],
+      default: null,
     },
+    // New: nested chapters structure
+    chapters: [chapterSchema],
     instructor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

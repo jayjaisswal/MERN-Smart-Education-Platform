@@ -11,6 +11,8 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedNote, setSelectedNote] = useState(null);
+    const [selectedChapter, setSelectedChapter] = useState(null);
+    const [selectedChapterNote, setSelectedChapterNote] = useState(null);
     const [expandedFolders, setExpandedFolders] = useState(new Set());
     const [fullscreenNote, setFullscreenNote] = useState(null);
 
@@ -28,6 +30,8 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
                 setNotes(data.data);
                 if (data.data.length > 0) {
                     setSelectedNote(data.data[0]);
+                    setSelectedChapter(null);
+                    setSelectedChapterNote(null);
                 }
             } else {
                 console.warn('Invalid notes data:', data);
@@ -96,7 +100,11 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
                                 key={note._id}
                                 note={note}
                                 isSelected={selectedNote?._id === note._id}
-                                onSelect={() => setSelectedNote(note)}
+                                onSelect={() => {
+                                    setSelectedNote(note);
+                                    setSelectedChapter(null);
+                                    setSelectedChapterNote(null);
+                                }}
                                 onFullscreen={() => setFullscreenNote(note)}
                             />
                         ))
@@ -109,6 +117,10 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
                 <div className="hidden lg:flex flex-1 flex-col bg-richblack-800">
                     <NotesViewer
                         note={selectedNote}
+                        selectedChapter={selectedChapter}
+                        selectedChapterNote={selectedChapterNote}
+                        onSelectChapter={setSelectedChapter}
+                        onSelectChapterNote={setSelectedChapterNote}
                         onFullscreen={() => setFullscreenNote(selectedNote)}
                     />
                 </div>
@@ -126,7 +138,14 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
                         </button>
                     </div>
                     <div className="flex-1 overflow-auto">
-                        <NotesViewer note={fullscreenNote} fullscreen />
+                        <NotesViewer
+                            note={fullscreenNote}
+                            fullscreen
+                            selectedChapter={selectedChapter}
+                            selectedChapterNote={selectedChapterNote}
+                            onSelectChapter={setSelectedChapter}
+                            onSelectChapterNote={setSelectedChapterNote}
+                        />
                     </div>
                 </div>
             )}
@@ -146,6 +165,10 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
                     <div className="flex-1 overflow-auto">
                         <NotesViewer
                             note={selectedNote}
+                            selectedChapter={selectedChapter}
+                            selectedChapterNote={selectedChapterNote}
+                            onSelectChapter={setSelectedChapter}
+                            onSelectChapterNote={setSelectedChapterNote}
                             onFullscreen={() => setFullscreenNote(selectedNote)}
                         />
                     </div>
@@ -157,6 +180,7 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
 
 const NoteItem = ({ note, isSelected, onSelect, onFullscreen }) => {
     const hasVideo = note.videoUrl;
+    const hasChapters = note.chapters && note.chapters.length > 0;
 
     return (
         <div
@@ -185,6 +209,11 @@ const NoteItem = ({ note, isSelected, onSelect, onFullscreen }) => {
                         {note.description}
                     </p>
                 )}
+                {hasChapters && (
+                    <p className={`text-xs mt-1 ${isSelected ? 'text-richblack-900 font-semibold' : 'text-yellow-300'}`}>
+                        📂 {note.chapters.length} chapters
+                    </p>
+                )}
             </div>
 
             {/* Status Badge */}
@@ -199,3 +228,5 @@ const NoteItem = ({ note, isSelected, onSelect, onFullscreen }) => {
 };
 
 export default NotesExplorer;
+
+
