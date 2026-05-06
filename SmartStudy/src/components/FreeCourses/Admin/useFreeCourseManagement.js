@@ -7,6 +7,10 @@ import {
   updateLinkInTree,
   detectContentType,
 } from "./courseUtils";
+import {
+  createFreeCourse,
+  updateFreeCourse,
+} from "../../../services/operations/freeCoursesAPI";
 
 export const useFreeCourseManagement = () => {
   const [courseName, setCourseName] = useState("");
@@ -21,6 +25,40 @@ export const useFreeCourseManagement = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [editingCourseId, setEditingCourseId] = useState(null);
 
+  const token =
+    localStorage.getItem("token")
+      ? JSON.parse(localStorage.getItem("token"))
+      : null;
+
+  const mapStructureForBackend = (structure = []) => {
+    // Backend expects items like { videoUrl, ... } (controller validates videoUrl if present)
+    // UI uses { link, contentType }
+    const mapNode = (node) => {
+      if (!node) return node;
+
+      if (node.type === "file") {
+        return {
+          ...node,
+          videoUrl: node.link || "",
+          // keep link too so UI remains consistent
+        };
+      }
+
+      if (node.type === "folder") {
+        return {
+          ...node,
+          children: Array.isArray(node.children)
+            ? node.children.map(mapNode)
+            : [],
+        };
+      }
+
+      return node;
+    };
+
+    return Array.isArray(structure) ? structure.map(mapNode) : [];
+  };
+
   // Load courses from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("freeCourses");
@@ -28,6 +66,7 @@ export const useFreeCourseManagement = () => {
       setMyCourses(JSON.parse(saved));
     }
   }, []);
+
 
   // Toggle folder expansion
   const toggleFolder = (id) => {
@@ -108,7 +147,7 @@ export const useFreeCourseManagement = () => {
     setCourseStructure(updated);
   };
 
-  // Save course
+  // Save course (localStorage + backend)
   const saveCourse = async () => {
     if (!courseName.trim()) {
       toast.error("Please enter course name");
@@ -119,34 +158,84 @@ export const useFreeCourseManagement = () => {
       return;
     }
 
-    const courseData = {
-      id: editingCourseId || generateId(),
-      name: courseName,
-      description: courseDescription,
-      isPublic,
-      structure: courseStructure,
-      createdAt: editingCourseId
-        ? myCourses.find((c) => c.id === editingCourseId)?.createdAt
-        : new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    let updated;
-    if (editingCourseId) {
-      updated = myCourses.map((c) =>
-        c.id === editingCourseId ? courseData : c,
-      );
-      toast.success("Course updated successfully!");
-    } else {
-      updated = [...myCourses, courseData];
-      toast.success("Course created successfully!");
+    if (!token) {
+      toast.error("Please login as Instructor/Admin first");
+      return;
     }
 
-    setMyCourses(updated);
-    localStorage.setItem("freeCourses", JSON.stringify(updated));
+    const backendPayload = {
+      title: courseName,
+      description: courseDescription,
+      isPublic,
+      structure: mapStructureForBackend(courseStructure),
+    };
 
-    // Reset form
-    resetForm();
+    try {
+      // Sync with backend
+      if (editingCourseId) {
+        const response = await updateFreeCourse(
+          editingCourseId,
+          backendPayload,
+          token,
+        );
+
+        if (!response?.success) {
+          toast.error(response?.message || "Failed to update course");
+          return;
+        }
+
+        const savedCourse = response?.data || response;
+        const updated = myCourses.map((c) =>
+          c.id === editingCourseId
+            ? {
+                ...c,
+                // replace with backend fields for consistency
+                id: savedCourse._id || editingCourseId,
+                name: savedCourse.title || c.name,
+                description: savedCourse.description ?? c.description,
+                isPublic: savedCourse.isPublic ?? c.isPublic,
+                structure:
+                  savedCourse.structure || mapStructureForBackend(courseStructure),
+                createdAt: savedCourse.createdAt || c.createdAt,
+                updatedAt: savedCourse.updatedAt || new Date().toISOString(),
+              }
+            : c,
+        );
+
+        setMyCourses(updated);
+        localStorage.setItem("freeCourses", JSON.stringify(updated));
+        toast.success("Course updated successfully!");
+      } else {
+        const response = await createFreeCourse(backendPayload, token);
+
+        if (!response?.success) {
+          toast.error(response?.message || "Failed to create course");
+          return;
+        }
+
+        const savedCourse = response?.data || response;
+        const newCourseLocal = {
+          id: savedCourse._id,
+          name: savedCourse.title,
+          description: savedCourse.description,
+          isPublic: savedCourse.isPublic,
+          structure: savedCourse.structure || mapStructureForBackend(courseStructure),
+          createdAt: savedCourse.createdAt || new Date().toISOString(),
+          updatedAt: savedCourse.updatedAt || new Date().toISOString(),
+        };
+
+        const updated = [...myCourses, newCourseLocal];
+        setMyCourses(updated);
+        localStorage.setItem("freeCourses", JSON.stringify(updated));
+        toast.success("Course created successfully!");
+      }
+
+      // Reset form
+      resetForm();
+    } catch (err) {
+      console.error("saveCourse error:", err);
+      toast.error("Something went wrong while saving course");
+    }
   };
 
   // Edit course
