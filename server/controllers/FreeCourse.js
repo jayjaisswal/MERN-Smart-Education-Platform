@@ -1,6 +1,6 @@
 const FreeCourse = require("../models/FreeCourse");
 const User = require("../models/User");
-const toast = require("react-hot-toast");
+
 
 // Get all public free courses
 exports.getAllFreeCourses = async (req, res) => {

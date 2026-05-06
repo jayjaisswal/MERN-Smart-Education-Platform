@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { createNote, updateNote, deleteNote, fetchInstructorNotes } from '../../../services/operations/notesAPI';
 import { useSelector } from 'react-redux';
 import AllNotesManager from './AllNotesManager';
+import NestedNoteForm from "./NestedNoteForm";
 
 const SUBJECTS = [
     'Physics', 'Chemistry', 'Biology', 'Mathematics',
@@ -303,68 +304,21 @@ const Notes = () => {
 
                                 {/* Add Note Form */}
                                 {isAdding && (
-                                    <div className="bg-richblack-700 p-4 rounded-lg mb-4 space-y-3">
-                                        <input
-                                            type="text"
-                                            placeholder="Note title"
-                                            value={formData.title}
-                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                            className="w-full bg-richblack-600 text-richblack-5 placeholder-richblack-400 rounded px-3 py-2 text-sm border border-richblack-500 focus:border-yellow-400 focus:outline-none"
-                                        />
-                                        <select
-                                            value={formData.subject}
-                                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                            className="w-full bg-richblack-600 text-richblack-5 rounded px-3 py-2 text-sm border border-richblack-500 focus:border-yellow-400 focus:outline-none"
-                                        >
-                                            {SUBJECTS.map((subject) => (
-                                                <option key={subject} value={subject}>
-                                                    {subject}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <textarea
-                                            placeholder="Description (optional)"
-                                            value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            rows="2"
-                                            className="w-full bg-richblack-600 text-richblack-5 placeholder-richblack-400 rounded px-3 py-2 text-sm border border-richblack-500 focus:border-yellow-400 focus:outline-none"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Google Drive File ID or URL"
-                                            value={formData.googleDriveUrl}
-                                            onChange={(e) => setFormData({ ...formData, googleDriveUrl: e.target.value })}
-                                            className="w-full bg-richblack-600 text-richblack-5 placeholder-richblack-400 rounded px-3 py-2 text-sm border border-richblack-500 focus:border-yellow-400 focus:outline-none"
-                                        />
-                                        <p className="text-xs text-richblack-400">
-                                            Paste: https://drive.google.com/file/d/FILE_ID/view
-                                        </p>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={handleSaveNote}
-                                                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-medium text-sm"
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setIsAdding(false);
-                                                    setSelectedNote(null);
-                                                    setFormData({
-                                                        title: '',
-                                                        description: '',
-                                                        subject: 'General',
-                                                        googleDriveUrl: '',
-                                                        isPublished: true
-                                                    });
-                                                }}
-                                                className="flex-1 bg-richblack-600 hover:bg-richblack-500 text-richblack-300 py-2 rounded font-medium text-sm"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+  <NestedNoteForm
+    onSave={async (noteData) => {
+      const response = await createNote(noteData, token);
+
+      if (response?.data?.success && response?.data?.data) {
+        const newNote = response.data.data;
+        setNotes((prev) => [...prev, newNote]);
+        setSelectedNote(newNote);
+      }
+    }}
+    onCancel={() => {
+      setIsAdding(false);
+    }}
+  />
+)}
 
                                 {/* Notes List */}
                                 <div className="space-y-2">

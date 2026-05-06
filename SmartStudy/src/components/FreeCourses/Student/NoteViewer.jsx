@@ -1,209 +1,291 @@
-import React, { useState } from 'react';
-import { MdClose, MdViewWeek, MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import React, { useState, useMemo } from "react";
+import {
+  MdClose,
+  MdChevronLeft,
+  MdChevronRight,
+  MdFullscreen,
+  MdMenu,
+} from "react-icons/md";
 
 const NoteViewer = ({ note, onClose, allNotes, onSelectNote }) => {
-    const [fullScreenMode, setFullScreenMode] = useState(false);
+  const [fullScreenMode, setFullScreenMode] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState(
+    note?.subject || null
+  );
+  const [showSidebar, setShowSidebar] = useState(false);
 
-    const convertGoogleDriveUrl = (url) => {
-        let fileId = '';
-        let isFolder = false;
+  // 🔥 Convert Google Drive URL
+  const convertGoogleDriveUrl = (url) => {
+    let fileId = "";
 
-        if (url.includes('drive.google.com')) {
-            let match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-            if (match) {
-                fileId = match[1];
-                isFolder = false;
-            } else {
-                match = url.match(/\/folders\/([a-zA-Z0-9-_]+)/);
-                if (match) {
-                    fileId = match[1];
-                    isFolder = true;
-                }
-            }
-        } else if (url.length > 20 && /^[a-zA-Z0-9-_]+$/.test(url)) {
-            fileId = url;
-            isFolder = false;
-        }
-
-        if (!fileId) {
-            return null;
-        }
-
-        if (isFolder) {
-            return `https://drive.google.com/embeddedfolderview?id=${fileId}`;
-        } else {
-            return `https://drive.google.com/file/d/${fileId}/preview`;
-        }
-    };
-
-    const currentIndex = allNotes.findIndex(n => n._id === note._id);
-    const hasPrevious = currentIndex > 0;
-    const hasNext = currentIndex < allNotes.length - 1;
-
-    const handlePrevious = () => {
-        if (hasPrevious) {
-            onSelectNote(allNotes[currentIndex - 1]);
-        }
-    };
-
-    const handleNext = () => {
-        if (hasNext) {
-            onSelectNote(allNotes[currentIndex + 1]);
-        }
-    };
-
-    const embedUrl = convertGoogleDriveUrl(note.googleDriveUrl);
-
-    // Fullscreen Mode
-    if (fullScreenMode) {
-        return (
-            <div className="fixed inset-0 z-50 bg-richblack-900 flex flex-col">
-                {/* Header */}
-                <div className="bg-richblack-800 border-b border-richblack-700 p-4 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-white font-bold text-lg">{note.title}</h2>
-                        <p className="text-richblack-400 text-sm mt-1">{note.subject}</p>
-                    </div>
-                    <button
-                        onClick={() => setFullScreenMode(false)}
-                        className="p-2 hover:bg-richblack-700 rounded-lg transition-colors"
-                    >
-                        <MdClose size={24} className="text-white" />
-                    </button>
-                </div>
-
-                {/* PDF Viewer */}
-                <div className="flex-1 overflow-hidden">
-                    {embedUrl ? (
-                        <iframe
-                            src={embedUrl}
-                            title={note.title}
-                            className="w-full h-full border-none"
-                            sandbox="allow-same-origin allow-scripts"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-richblack-400">
-                            Unable to load document
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
+    if (url.includes("drive.google.com")) {
+      const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (match) fileId = match[1];
+    } else if (/^[a-zA-Z0-9-_]+$/.test(url)) {
+      fileId = url;
     }
 
-    // Normal View
-    return (
-        <div className="fixed inset-0 z-50 bg-richblack-900/95 flex items-center justify-center p-4">
-            <div className="bg-richblack-800 rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
-                {/* Header */}
-                <div className="bg-richblack-700 border-b border-richblack-600 px-6 py-4 flex items-center justify-between">
-                    <div className="flex-1">
-                        <h2 className="text-2xl font-bold text-richblack-5 mb-2">
-                            {note.title}
-                        </h2>
-                        <div className="flex items-center gap-3 text-sm text-richblack-400">
-                            <span className="px-3 py-1 bg-yellow-400/20 text-yellow-400 rounded-full">
-                                {note.subject}
-                            </span>
-                            <span>📅 {new Date(note.createdAt).toLocaleDateString()}</span>
-                            <span>👤 {note.instructor?.firstName} {note.instructor?.lastName}</span>
-                        </div>
-                        {note.description && (
-                            <p className="text-richblack-300 mt-3">{note.description}</p>
-                        )}
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-richblack-600 rounded-lg transition-colors ml-4"
-                    >
-                        <MdClose size={24} className="text-white" />
-                    </button>
-                </div>
+    if (!fileId) return null;
 
-                {/* Body */}
-                <div className="flex-1 flex gap-6 overflow-hidden">
-                    {/* PDF Viewer */}
-                    <div className="flex-1 bg-richblack-900 flex flex-col">
-                        <div className="flex items-center justify-between px-6 py-3 bg-richblack-700 border-b border-richblack-600">
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={handlePrevious}
-                                    disabled={!hasPrevious}
-                                    className={`p-2 rounded-lg transition-colors ${hasPrevious
-                                            ? 'bg-richblack-600 hover:bg-richblack-500 text-white'
-                                            : 'bg-richblack-700 text-richblack-500 cursor-not-allowed'
-                                        }`}
-                                    title="Previous note"
-                                >
-                                    <MdChevronLeft size={20} />
-                                </button>
-                                <span className="text-richblack-400 text-sm font-medium">
-                                    {currentIndex + 1} / {allNotes.length}
-                                </span>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={!hasNext}
-                                    className={`p-2 rounded-lg transition-colors ${hasNext
-                                            ? 'bg-richblack-600 hover:bg-richblack-500 text-white'
-                                            : 'bg-richblack-700 text-richblack-500 cursor-not-allowed'
-                                        }`}
-                                    title="Next note"
-                                >
-                                    <MdChevronRight size={20} />
-                                </button>
-                            </div>
-                            <button
-                                onClick={() => setFullScreenMode(true)}
-                                className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-richblack-900 px-4 py-2 rounded-lg font-medium transition-colors"
-                            >
-                                <MdViewWeek /> Fullscreen
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-hidden">
-                            {embedUrl ? (
-                                <iframe
-                                    src={embedUrl}
-                                    title={note.title}
-                                    className="w-full h-full border-none"
-                                    sandbox="allow-same-origin allow-scripts"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-richblack-400">
-                                    Unable to load document
-                                </div>
-                            )}
-                        </div>
-                    </div>
+    return `https://drive.google.com/file/d/${fileId}/preview?embedded=true&rm=minimal`;
+  };
 
-                    {/* Sidebar - Other Notes */}
-                    <div className="w-72 bg-richblack-900 border-l border-richblack-700 flex flex-col overflow-hidden">
-                        <div className="px-4 py-3 border-b border-richblack-700">
-                            <h3 className="text-lg font-bold text-richblack-5">
-                                Related Notes ({allNotes.length})
-                            </h3>
-                        </div>
-                        <div className="flex-1 overflow-y-auto">
-                            {allNotes.map((n, index) => (
-                                <div
-                                    key={n._id}
-                                    onClick={() => onSelectNote(n)}
-                                    className={`p-3 border-b border-richblack-700 cursor-pointer transition-all ${n._id === note._id
-                                            ? 'bg-yellow-400/20 border-l-4 border-l-yellow-400'
-                                            : 'hover:bg-richblack-800'
-                                        }`}
-                                >
-                                    <p className="text-sm font-medium text-richblack-5 line-clamp-2">
-                                        {index + 1}. {n.title}
-                                    </p>
-                                    <p className="text-xs text-richblack-400 mt-1">{n.subject}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  const embedUrl = convertGoogleDriveUrl(note.googleDriveUrl);
+
+  // 🔥 Get all subjects
+  const subjects = [...new Set(allNotes.map((n) => n.subject))];
+
+  // 🔥 Group ONLY selected subject
+  const groupedNotes = useMemo(() => {
+    if (!selectedSubject) return {};
+
+    const data = {};
+
+    allNotes
+      .filter((n) => n.subject === selectedSubject)
+      .forEach((n) => {
+        const chapter = n.chapter || "General";
+
+        if (!data[chapter]) data[chapter] = [];
+        data[chapter].push(n);
+      });
+
+    return data;
+  }, [allNotes, selectedSubject]);
+
+  // 🔥 Sort chapters
+  const sortedChapters = Object.entries(groupedNotes).sort(([a], [b]) => {
+    const numA = parseInt(a.match(/\d+/));
+    const numB = parseInt(b.match(/\d+/));
+    return (numA || 0) - (numB || 0);
+  });
+
+  // 🔥 Navigation inside chapter
+  const filteredNotes = useMemo(() => {
+    if (!note.chapter) return [note];
+
+    return allNotes.filter(
+      (n) =>
+        n.subject === note.subject &&
+        n.chapter === note.chapter
     );
+  }, [note, allNotes]);
+
+  const currentIndex = filteredNotes.findIndex((n) => n._id === note._id);
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      onSelectNote(filteredNotes[currentIndex - 1]);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < filteredNotes.length - 1) {
+      onSelectNote(filteredNotes[currentIndex + 1]);
+    }
+  };
+
+  // 🔥 FULLSCREEN MODE
+  if (fullScreenMode) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black flex flex-col">
+        <div className="flex justify-between items-center p-3 border-b border-richblack-700">
+          <h2 className="text-white text-sm">{note.title}</h2>
+
+          <button onClick={() => setFullScreenMode(false)}>
+            <MdClose className="text-white" size={22} />
+          </button>
+        </div>
+
+        <iframe
+          src={embedUrl}
+          className="w-full h-full"
+          sandbox="allow-same-origin allow-scripts"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-richblack-900 flex flex-col">
+
+      {/* 🔥 SUBJECT SELECTOR (hidden when viewing PDF) */}
+      {!note && (
+        <div className="flex gap-2 p-3 border-b border-richblack-700 overflow-x-auto">
+          {subjects.map((subject) => (
+            <button
+              key={subject}
+              onClick={() => setSelectedSubject(subject)}
+              className={`px-4 py-1.5 rounded-full text-sm transition ${
+                selectedSubject === subject
+                  ? "bg-indigo-500 text-white"
+                  : "bg-richblack-800 text-richblack-300 hover:bg-richblack-700"
+              }`}
+            >
+              {subject}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="flex flex-1">
+
+        {/* 🔥 DESKTOP SIDEBAR */}
+        <div className="hidden md:flex w-72 flex-col border-r border-richblack-700 bg-richblack-900 overflow-y-auto">
+
+          <div className="p-4 border-b border-richblack-700">
+            <h3 className="text-sm text-richblack-400">
+              📂 {selectedSubject || "Select Subject"}
+            </h3>
+          </div>
+
+          {sortedChapters.map(([chapter, notes]) => (
+            <div key={chapter} className="ml-2">
+
+              <div className="px-4 py-1 text-sm text-indigo-300">
+                📘 {chapter}
+              </div>
+
+              {notes.map((n) => (
+                <div
+                  key={n._id}
+                  onClick={() => onSelectNote(n)}
+                  className={`px-6 py-2 cursor-pointer text-sm transition ${
+                    n._id === note._id
+                      ? "bg-indigo-500/20 text-indigo-300 border-l-2 border-indigo-400"
+                      : "text-richblack-300 hover:bg-richblack-800"
+                  }`}
+                >
+                  📄 {n.title}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* 🔥 MOBILE SIDEBAR DRAWER */}
+        {showSidebar && (
+          <div className="fixed inset-0 z-50 bg-black/70 md:hidden">
+            <div className="w-72 h-full bg-richblack-900 p-4 overflow-y-auto">
+
+              <button
+                onClick={() => setShowSidebar(false)}
+                className="mb-3 text-white"
+              >
+                <MdClose size={22} />
+              </button>
+
+              <h3 className="text-richblack-400 mb-3">
+                📂 {selectedSubject}
+              </h3>
+
+              {sortedChapters.map(([chapter, notes]) => (
+                <div key={chapter}>
+
+                  <div className="text-indigo-300 text-sm">
+                    📘 {chapter}
+                  </div>
+
+                  {notes.map((n) => (
+                    <div
+                      key={n._id}
+                      onClick={() => {
+                        onSelectNote(n);
+                        setShowSidebar(false);
+                      }}
+                      className="text-sm py-1 text-richblack-300"
+                    >
+                      📄 {n.title}
+                    </div>
+                  ))}
+
+                </div>
+              ))}
+
+            </div>
+          </div>
+        )}
+
+        {/* 🔥 MAIN CONTENT */}
+        <div className="flex-1 flex flex-col">
+
+          {/* HEADER */}
+          <div className="flex justify-between items-center p-4 border-b border-richblack-700">
+
+            {/* MOBILE MENU */}
+            <button
+              className="md:hidden p-2 bg-richblack-800 rounded"
+              onClick={() => setShowSidebar(true)}
+            >
+              <MdMenu className="text-white" size={22} />
+            </button>
+
+            <div className="flex-1 ml-3">
+              <h2 className="text-white font-semibold">{note.title}</h2>
+              <p className="text-xs text-richblack-400">
+                {note.subject} • {note.chapter}
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={handlePrevious}
+                className="p-2 bg-richblack-800 rounded"
+              >
+                <MdChevronLeft />
+              </button>
+
+              <button
+                onClick={handleNext}
+                className="p-2 bg-richblack-800 rounded"
+              >
+                <MdChevronRight />
+              </button>
+
+              <button
+                onClick={() => setFullScreenMode(true)}
+                className="p-2 bg-indigo-500/20 text-indigo-300 rounded"
+              >
+                <MdFullscreen />
+              </button>
+
+              <button
+                onClick={onClose}
+                className="p-2 text-red-400"
+              >
+                <MdClose />
+              </button>
+            </div>
+          </div>
+
+          {/* PDF VIEW */}
+          <div className="flex-1">
+            {embedUrl ? (
+              <iframe
+                src={embedUrl}
+                className="w-full h-full"
+                sandbox="allow-same-origin allow-scripts"
+              />
+            ) : (
+              <div className="h-full flex items-center justify-center text-richblack-400">
+                Failed to load PDF
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* MOBILE FULLSCREEN BUTTON */}
+      <div className="md:hidden fixed bottom-5 right-5">
+        <button
+          onClick={() => setFullScreenMode(true)}
+          className="px-4 py-2 bg-indigo-500 text-white rounded-full"
+        >
+          Fullscreen
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default NoteViewer;
