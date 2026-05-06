@@ -9,6 +9,7 @@ const aptitudeRoutes = require("./routes/Aptitude");
 const interviewRoutes = require("./routes/Interview");
 const notesRoutes = require("./routes/Notes");
 const freeCourseRoutes = require("./routes/FreeCourse");
+const chemistryJeeMainsRoutes = require("./routes/ChemistryJeeMains");
 
 const database = require("./config/database");
 const cors = require("cors");
@@ -64,7 +65,7 @@ app.use("/api/v1/aptitude", aptitudeRoutes);
 app.use("/api/v1/interview", interviewRoutes);
 app.use("/api/v1/notes", notesRoutes);
 app.use("/api/v1/free-courses", freeCourseRoutes);
-
+app.use("/api/v1/chemistry-jee-mains", chemistryJeeMainsRoutes);
 // default route
 app.get("/", (req, res) => {
   return res.json({

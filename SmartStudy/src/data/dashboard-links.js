@@ -98,19 +98,19 @@ export const sidebarLinks = [
       {
         id: 71,
         name: "JEE Main PYQ",
-        path: "/aptitude/jee-main-pyq",
+        path: "/jee-main-pyq",
         icon: "VscFileText",
       },
       {
         id: 72,
         name: "Chemistry",
-        path: "/aptitude/jee-chemistry",
+        path: "/jee-chemistry",
         icon: "VscFileText",
       },
       {
         id: 73,
         name: "Maths",
-        path: "/aptitude/jee-maths",
+        path: "/jee-maths",
         icon: "VscFileText",
       },
     ],

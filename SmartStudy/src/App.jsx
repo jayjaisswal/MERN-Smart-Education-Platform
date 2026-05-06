@@ -45,6 +45,11 @@ import CreateFreeCourse from "./components/FreeCourses/Admin/CreateFreeCourse";
 import Notes from "./components/FreeCourses/Admin/Notes";
 import StudentNotesPage from "./components/FreeCourses/Student/StudentNotesPage";
 import FreeNotesHome from "./components/FreeCourses/Student/FreeNotesHome";
+
+import ChaptersCards from "./components/IITJEE/jee-chemistry/ChaptersCards";
+import JeeChemistryQuestions from "./components/IITJEE/jee-chemistry/JeeChemistryQuestions";
+import JeeChemistrySolveQuestion from "./components/IITJEE/jee-chemistry/JeeChemistrySolveQuestion";
+
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -154,8 +159,17 @@ function App() {
         <Route path="/aptitude-topics/:category" element={<AptitudeTopics />} />
         <Route path="/aptitude-questions/:category/:topic" element={<AptitudeQuestions />} />
 
+        {/* IIT/JEE Chemistry */}
+        <Route path="/jee-chemistry" element={<ChaptersCards />} />
+        <Route path="/jee-chemistry/:chapterName" element={<JeeChemistryQuestions />} />
+        <Route
+          path="/jee-chemistry/solve/:questionId"
+          element={<JeeChemistrySolveQuestion />}
+        />
+
 
         <Route path="/free-courses" element={<FreeCourseHome />} />
+
         <Route path="/free-courses/" element={<FreeCourseHome />} />
         <Route path="/free-notes" element={<FreeNotesHome />} />
         {/* <Route path="/free-notes/:noteId" element={<FreeNotesHome />} /> */}
