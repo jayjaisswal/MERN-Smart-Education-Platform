@@ -150,27 +150,7 @@ MERN-Smart-Education-Platform/
 
 3. **Create `.env` file** with the following:
 
-   ```env
-   PORT=4000
-   MONGODB_URL=your_mongodb_atlas_url
-   JWT_SECRET=your_jwt_secret
-   JWT_EXPIRE=7d
-
-   # Cloudinary
-   CLOUDINARY_NAME=your_cloudinary_name
-   CLOUDINARY_API_KEY=your_api_key
-   CLOUDINARY_API_SECRET=your_api_secret
-
-   # Razorpay
-   RAZORPAY_KEY_ID=your_razorpay_key
-   RAZORPAY_KEY_SECRET=your_razorpay_secret
-
-   # Email Configuration
-   MAIL_HOST=your_email_host
-   MAIL_USER=your_email
-   MAIL_PASS=your_email_password
-   ```
-
+  
 4. **Start development server**
    ```bash
    npm run dev
