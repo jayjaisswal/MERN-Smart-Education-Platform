@@ -48,7 +48,7 @@ import FreeNotesHome from "./components/FreeCourses/Student/FreeNotesHome";
 
 import ChaptersCards from "./components/IITJEE/jee-chemistry/ChaptersCards";
 import JeeChemistryQuestions from "./components/IITJEE/jee-chemistry/JeeChemistryQuestions";
-import JeeChemistrySolveQuestion from "./components/IITJEE/jee-chemistry/JeeChemistrySolveQuestion";
+// import JeeChemistrySolveQuestion from "./components/IITJEE/jee-chemistry/JeeChemistrySolveQuestion";
 
 function App() {
   const dispatch = useDispatch();
@@ -162,10 +162,10 @@ function App() {
         {/* IIT/JEE Chemistry */}
         <Route path="/jee-chemistry" element={<ChaptersCards />} />
         <Route path="/jee-chemistry/:chapterName" element={<JeeChemistryQuestions />} />
-        <Route
+        {/* <Route
           path="/jee-chemistry/solve/:questionId"
           element={<JeeChemistrySolveQuestion />}
-        />
+        /> */}
 
 
         <Route path="/free-courses" element={<FreeCourseHome />} />
