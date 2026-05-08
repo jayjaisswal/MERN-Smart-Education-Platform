@@ -103,7 +103,7 @@ export const sidebarLinks = [
       },
       {
         id: 72,
-        name: "Chemistry",
+        name: "Chemistry Chapter-wise PYQ ",
         path: "/jee-chemistry",
         icon: "VscFileText",
       },
