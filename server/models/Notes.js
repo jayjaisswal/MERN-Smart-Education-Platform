@@ -42,23 +42,6 @@ const notesSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-    subject: {
-      type: String,
-      required: [true, "Please select a subject"],
-      enum: [
-        "Physics",
-        "Chemistry",
-        "Biology",
-        "Mathematics",
-        "English",
-        "History",
-        "Geography",
-        "Economics",
-        "Computer Science",
-        "General",
-      ],
-      default: "General",
-    },
     // Keep for backward compatibility - single note without chapters
     googleDriveUrl: {
       type: String,

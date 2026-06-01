@@ -1,166 +1,232 @@
-import React, { useState } from 'react';
-import { MdViewWeek, MdVolumeOff, MdVolumeMute } from 'react-icons/md';
+import React, { useState, useMemo, useEffect } from "react";
+import {
+    MdClose,
+    MdChevronLeft,
+    MdChevronRight,
+    MdFullscreen,
+    MdFullscreenExit,
+    MdMenu,
+    MdExpandMore,
+    MdChevronRight as MdChevronRightIcon,
+} from "react-icons/md";
 
-const NotesViewer = ({ note, fullscreen = false, onFullscreen }) => {
-    const [videoMuted, setVideoMuted] = useState(false);
+const NotesViewer = ({ note, onClose, allNotes, onSelectNote }) => {
+    const [fullScreenMode, setFullScreenMode] = useState(false);
+    const [showSidebar, setShowSidebar] = useState(false);
+    const [expandedChapters, setExpandedChapters] = useState({});
 
-    // Format drive URL for embed
-    const getEmbedUrl = (url) => {
-        if (url.includes('/folders/')) {
-            const match = url.match(/\/folders\/([a-zA-Z0-9-_]+)/);
-            if (match) return `https://drive.google.com/embeddedfolderview?id=${match[1]}`;
+    // 🔥 1. Group Data for the Accordion
+    const groupedNotes = useMemo(() => {
+        const data = {};
+        allNotes.forEach((mainNote) => {
+            if (mainNote.chapters && mainNote.chapters.length > 0) {
+                mainNote.chapters.forEach((ch) => {
+                    if (!data[ch.name]) data[ch.name] = [];
+                    ch.notes.forEach((subNote) => {
+                        data[ch.name].push({
+                            ...subNote,
+                            chapterName: ch.name
+                        });
+                    });
+                });
+            } else {
+                const chapter = "General";
+                if (!data[chapter]) data[chapter] = [];
+                data[chapter].push(mainNote);
+            }
+        });
+        return data;
+    }, [allNotes]);
+
+    const sortedChapters = Object.entries(groupedNotes).sort(([a], [b]) => {
+        const numA = parseInt(a.match(/\d+/));
+        const numB = parseInt(b.match(/\d+/));
+        return (numA || 0) - (numB || 0);
+    });
+
+    // 🔥 2. NAVIGATION & AUTO-LOAD LOGIC
+    const flatViewableNotes = useMemo(() => {
+        const list = [];
+        allNotes.forEach((mainNote) => {
+            if (mainNote.chapters && mainNote.chapters.length > 0) {
+                mainNote.chapters.forEach(ch =>
+                    ch.notes.forEach(sn => list.push({ ...sn, chapterName: ch.name }))
+                );
+            } else {
+                list.push(mainNote);
+            }
+        });
+        return list;
+    }, [allNotes]);
+
+    // FIX: If 'note' is passed but it's just a container, auto-select the first PDF
+    useEffect(() => {
+        if (note && !note.googleDriveUrl && flatViewableNotes.length > 0) {
+            onSelectNote(flatViewableNotes[0]);
         }
-        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
-        return url;
+    }, [note, flatViewableNotes, onSelectNote]);
+
+    const currentIndex = flatViewableNotes.findIndex((n) => n._id === note?._id);
+    const handlePrevious = () => currentIndex > 0 && onSelectNote(flatViewableNotes[currentIndex - 1]);
+    const handleNext = () => currentIndex < flatViewableNotes.length - 1 && onSelectNote(flatViewableNotes[currentIndex + 1]);
+
+    // 🔥 3. Default Chapter 1 Open
+    useEffect(() => {
+        if (sortedChapters.length > 0) {
+            const firstChapterName = sortedChapters[0][0];
+            setExpandedChapters(prev => ({ ...prev, [firstChapterName]: true }));
+        }
+    }, [allNotes]);
+
+    // 🔥 4. URL Conversion & Security
+    const convertGoogleDriveUrl = (url) => {
+        if (!url) return null;
+        let fileId = "";
+        if (url.includes("/d/")) {
+            fileId = url.split("/d/")[1].split("/")[0];
+        } else if (url.includes("id=")) {
+            fileId = url.split("id=")[1].split("&")[0];
+        } else {
+            fileId = url;
+        }
+        return `https://drive.google.com/file/d/${fileId}/preview?embedded=true&rm=minimal`;
     };
 
-    const embedUrl = getEmbedUrl(note.googleDriveUrl);
+    const embedUrl = convertGoogleDriveUrl(note?.googleDriveUrl);
+    const toggleChapter = (name) => setExpandedChapters(prev => ({ ...prev, [name]: !prev[name] }));
 
-    return (
-        <div className="h-full w-full flex flex-col bg-richblack-900">
-            {/* Header */}
-            {!fullscreen && (
-                <div className="bg-richblack-800 border-b border-richblack-700 px-6 py-4">
-                    <div className="mb-4">
-                        <h2 className="text-xl font-bold text-richblack-5 mb-1">{note.title}</h2>
-                        {note.description && (
-                            <p className="text-richblack-400 text-sm">{note.description}</p>
+    const SidebarContent = () => (
+        <div className="flex flex-col h-full bg-richblack-900">
+            <div className="p-4 border-b border-richblack-700 bg-richblack-800 flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                    <h3 className="text-richblack-5 font-bold text-lg truncate">Notes Explorer</h3>
+                </div>
+                <button className="md:hidden text-richblack-200" onClick={() => setShowSidebar(false)}>
+                    <MdClose size={24} />
+                </button>
+            </div>
+
+            <div className="py-2 overflow-y-auto flex-1">
+                {sortedChapters.map(([name, notes]) => (
+                    <div key={name} className="border-b border-richblack-800 last:border-0">
+                        <button
+                            onClick={() => toggleChapter(name)}
+                            className="w-full flex items-center justify-between px-4 py-3 hover:bg-richblack-800 transition"
+                        >
+                            <div className="flex items-center gap-2 text-indigo-300 font-medium text-sm text-left">
+                                {expandedChapters[name] ? <MdExpandMore size={20} className="shrink-0" /> : <MdChevronRightIcon size={20} className="shrink-0" />}
+                                <span className="truncate">📘 {name}</span>
+                            </div>
+                        </button>
+                        {expandedChapters[name] && (
+                            <div className="bg-richblack-900/40">
+                                {notes.map((n) => (
+                                    <div
+                                        key={n._id}
+                                        onClick={() => { onSelectNote(n); setShowSidebar(false); }}
+                                        className={`px-10 py-2.5 cursor-pointer text-sm flex items-center gap-3 transition-all ${n._id === note?._id
+                                                ? "bg-indigo-500/20 text-indigo-200 border-l-4 border-indigo-500"
+                                                : "text-richblack-400 hover:text-richblack-5 hover:bg-richblack-800"
+                                            }`}
+                                    >
+                                        📄 {n.title}
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
+                ))}
+            </div>
+        </div>
+    );
 
-                    {note.instructor && (
-                        <div className="flex items-center gap-2 text-sm">
-                            <span className="text-richblack-400">By</span>
-                            <span className="text-yellow-400 font-medium">
-                                {note.instructor.firstName} {note.instructor.lastName}
-                            </span>
-                            <span className="text-richblack-500">•</span>
-                            <span className="text-richblack-400">{note.views} views</span>
-                        </div>
-                    )}
-                </div>
-            )}
+    return (
+        <div className="fixed inset-0 z-50 bg-richblack-900 flex flex-col overflow-hidden">
+            <div className="flex flex-1 relative overflow-hidden">
 
-            {/* Content Area */}
-            <div className="flex-1 flex gap-4 p-4 overflow-hidden">
-                {/* PDF Viewer */}
-                {note.googleDriveUrl && (
-                    <div className={`rounded-lg overflow-hidden border border-richblack-700 ${note.videoUrl ? 'w-3/5' : 'w-full'
-                        } flex flex-col h-full`}>
-                        <div className="flex-1 bg-richblack-800">
-                            <iframe
-                                src={embedUrl}
-                                title={note.title}
-                                className="w-full h-full border-none"
-                                sandbox="allow-same-origin allow-scripts"
-                            />
-                        </div>
-                    </div>
+                {/* MOBILE SIDEBAR OVERLAY */}
+                {showSidebar && (
+                    <div className="fixed inset-0 bg-black/70 md:hidden z-[60]" onClick={() => setShowSidebar(false)} />
                 )}
 
-                {/* Video Player */}
-                {note.videoUrl && (
-                    <div className={`rounded-lg overflow-hidden border border-richblack-700 ${note.googleDriveUrl ? 'w-2/5' : 'w-full h-full'
-                        } flex flex-col`}>
-                        <div className="relative bg-richblack-800 flex-1">
-                            {note.videoUrl.includes('youtube.com') || note.videoUrl.includes('youtu.be') ? (
-                                <YoutubePlayer
-                                    url={note.videoUrl}
-                                    muted={videoMuted}
-                                    title={note.videoTitle || note.title}
-                                />
-                            ) : (
-                                <VideoPlayer
-                                    url={note.videoUrl}
-                                    muted={videoMuted}
-                                    title={note.videoTitle || note.title}
-                                />
-                            )}
+                {/* SIDEBAR */}
+                <div className={`fixed md:relative z-[70] w-72 h-full border-r border-richblack-700 transition-transform duration-300 ease-in-out
+          ${showSidebar ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+                    <SidebarContent />
+                </div>
+
+                {/* MAIN VIEWER AREA */}
+                <div className={`flex-1 flex flex-col h-full bg-black transition-all duration-300 ${fullScreenMode ? "fixed inset-0 z-[80]" : "relative"}`}>
+
+                    {/* TOP NAV BAR */}
+                    <div className="flex justify-between items-center p-2.5 md:p-3 border-b border-richblack-700 bg-richblack-900">
+                        <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                            <button className="md:hidden p-2 bg-richblack-800 rounded text-white hover:bg-richblack-700 shrink-0" onClick={() => setShowSidebar(true)}>
+                                <MdMenu size={20} />
+                            </button>
+                            <div className="truncate">
+                                <h2 className="text-white font-semibold text-xs md:text-sm truncate leading-tight">
+                                    {note?.title || "Select a note"}
+                                </h2>
+                                <p className="text-[9px] md:text-[10px] text-richblack-400 uppercase tracking-tighter truncate">
+                                    {note?.chapterName ? `📘 ${note?.chapterName}` : ""}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 md:gap-3 shrink-0">
+                            <div className="flex items-center bg-richblack-800 rounded-lg p-0.5">
+                                <button onClick={handlePrevious} className="p-1.5 hover:bg-richblack-700 rounded text-white transition disabled:opacity-30" disabled={currentIndex <= 0}>
+                                    <MdChevronLeft size={18} />
+                                </button>
+                                <div className="w-[1px] h-4 bg-richblack-600 mx-0.5" />
+                                <button onClick={handleNext} className="p-1.5 hover:bg-richblack-700 rounded text-white transition disabled:opacity-30" disabled={currentIndex >= flatViewableNotes.length - 1}>
+                                    <MdChevronRight size={18} />
+                                </button>
+                            </div>
+
                             <button
-                                onClick={() => setVideoMuted(!videoMuted)}
-                                className="absolute top-4 right-4 p-2 bg-richblack-900 hover:bg-richblack-800 rounded-lg transition-colors z-10"
-                                title={videoMuted ? 'Unmute' : 'Mute'}
+                                onClick={() => setFullScreenMode(!fullScreenMode)}
+                                className="p-2 bg-indigo-500/10 text-indigo-300 rounded-lg hover:bg-indigo-500/20 transition hidden md:flex"
+                                title="Desktop Fullscreen"
                             >
-                                {videoMuted ? (
-                                    <MdVolumeMute size={20} className="text-yellow-400" />
-                                ) : (
-                                    <MdVolumeOff size={20} className="text-richblack-400" />
-                                )}
+                                {fullScreenMode ? <MdFullscreenExit size={18} /> : <MdFullscreen size={18} />}
+                            </button>
+
+                            <button onClick={onClose} className="p-2 text-pink-400 hover:bg-pink-900/10 rounded-lg transition">
+                                <MdClose size={18} />
                             </button>
                         </div>
                     </div>
-                )}
-            </div>
 
-            {/* Footer Stats */}
-            {!fullscreen && (
-                <div className="bg-richblack-800 border-t border-richblack-700 px-6 py-3 text-sm text-richblack-400 flex justify-between items-center">
-                    <div className="space-x-4">
-                        <span>📅 {new Date(note.createdAt).toLocaleDateString()}</span>
-                        {note.tags.length > 0 && (
-                            <span>🏷️ {note.tags.join(', ')}</span>
+                    {/* IFRAME CONTAINER */}
+                    <div className="flex-1 bg-richblack-900 relative">
+                        {embedUrl ? (
+                            <iframe
+                                src={embedUrl}
+                                className="w-full h-full border-0"
+                                title={note?.title}
+                                sandbox="allow-scripts allow-same-origin allow-forms"
+                            />
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center text-richblack-400 gap-3 p-4 text-center">
+                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-indigo-500 border-r-2" />
+                                <p className="text-sm">Please select a chapter file to view...</p>
+                            </div>
                         )}
                     </div>
-                    {onFullscreen && (
-                        <button
-                            onClick={onFullscreen}
-                            className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-richblack-900 px-3 py-2 rounded font-medium transition-colors text-xs"
-                        >
-                            <MdViewWeek /> Fullscreen
-                        </button>
-                    )}
+
+                    {/* 🔥 MOBILE-ONLY FULLSCREEN TOGGLE (Float) */}
+                    <button
+                        onClick={() => setFullScreenMode(!fullScreenMode)}
+                        className="md:hidden fixed bottom-6 right-6 z-[90] p-4 bg-indigo-600 text-white rounded-full shadow-2xl active:scale-90 transition-transform"
+                    >
+                        {fullScreenMode ? <MdFullscreenExit size={24} /> : <MdFullscreen size={24} />}
+                    </button>
                 </div>
-            )}
-        </div>
-    );
-};
 
-const YoutubePlayer = ({ url, muted, title }) => {
-    let videoId = '';
-
-    if (url.includes('youtube.com')) {
-        const match = url.match(/[?&]v=([^&]+)/);
-        videoId = match ? match[1] : '';
-    } else if (url.includes('youtu.be')) {
-        const match = url.match(/youtu\.be\/([^?]+)/);
-        videoId = match ? match[1] : '';
-    }
-
-    if (!videoId) {
-        return (
-            <div className="w-full h-full flex items-center justify-center">
-                <p className="text-richblack-400">Invalid YouTube URL</p>
             </div>
-        );
-    }
-
-    return (
-        <iframe
-            width="100%"
-            height="100%"
-            src={`https://www.youtube.com/embed/${videoId}?mute=${muted ? 1 : 0}`}
-            title={title}
-            frame Border="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="border-none"
-        />
-    );
-};
-
-const VideoPlayer = ({ url, muted, title }) => {
-    return (
-        <video
-            width="100%"
-            height="100%"
-            controls
-            muted={muted}
-            className="w-full h-full object-contain"
-        >
-            <source src={url} type="video/mp4" />
-            Your browser does not support the video tag.
-        </video>
+        </div>
     );
 };
 

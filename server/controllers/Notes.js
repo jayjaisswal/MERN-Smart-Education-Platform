@@ -4,14 +4,8 @@ const User = require("../models/User");
 // Create a new note (Instructor only)
 exports.createNotes = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      subject,
-      googleDriveUrl,
-      chapters,
-      isPublished,
-    } = req.body;
+    const { title, description, googleDriveUrl, chapters, isPublished } =
+      req.body;
     const instructorId = req.user.id;
 
     // Validate required fields
@@ -44,7 +38,6 @@ exports.createNotes = async (req, res) => {
     const newNote = await Notes.create({
       title,
       description: description || "",
-      subject: subject || "General",
       googleDriveUrl: googleDriveUrl || null,
       chapters: processedChapters,
       instructor: instructorId,
@@ -70,14 +63,9 @@ exports.createNotes = async (req, res) => {
 // Get all published notes (Students)
 exports.getAllNotes = async (req, res) => {
   try {
-    const { subject, search, sortBy } = req.query;
+    const { search, sortBy } = req.query;
 
     let filter = { isPublished: true };
-
-    // Filter by subject
-    if (subject) {
-      filter.subject = subject;
-    }
 
     // Search by title or description
     if (search) {
@@ -98,32 +86,6 @@ exports.getAllNotes = async (req, res) => {
     const notes = await Notes.find(filter)
       .populate("instructor", "firstName lastName email profileImage")
       .sort(sortOption)
-      .lean();
-
-    res.status(200).json({
-      success: true,
-      data: notes,
-      count: notes.length,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-// Get notes by subject
-exports.getNotesBySubject = async (req, res) => {
-  try {
-    const { subject } = req.params;
-
-    const notes = await Notes.find({
-      subject,
-      isPublished: true,
-    })
-      .populate("instructor", "firstName lastName email")
-      .sort({ createdAt: -1 })
       .lean();
 
     res.status(200).json({
@@ -173,14 +135,8 @@ exports.getNote = async (req, res) => {
 exports.updateNotes = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      title,
-      description,
-      subject,
-      googleDriveUrl,
-      chapters,
-      isPublished,
-    } = req.body;
+    const { title, description, googleDriveUrl, chapters, isPublished } =
+      req.body;
 
     const note = await Notes.findById(id);
 
@@ -203,7 +159,6 @@ exports.updateNotes = async (req, res) => {
     let updateData = {
       title: title || note.title,
       description: description !== undefined ? description : note.description,
-      subject: subject || note.subject,
       googleDriveUrl:
         googleDriveUrl !== undefined ? googleDriveUrl : note.googleDriveUrl,
       isPublished: isPublished !== undefined ? isPublished : note.isPublished,
@@ -271,12 +226,16 @@ exports.deleteNotes = async (req, res) => {
   }
 };
 
-// Get instructor's notes
-exports.getInstructorNotes = async (req, res) => {
+// Get notes by subject
+exports.getNotesBySubject = async (req, res) => {
   try {
-    const instructorId = req.user.id;
+    const { subject } = req.params;
 
-    const notes = await Notes.find({ instructor: instructorId })
+    const notes = await Notes.find({
+      subject,
+      isPublished: true,
+    })
+      .populate("instructor", "firstName lastName email")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -306,6 +265,8 @@ exports.getAllSubjects = async (req, res) => {
       "Geography",
       "Economics",
       "Computer Science",
+      "AI-ML",
+      "CSS",
       "General",
     ];
 
@@ -322,6 +283,28 @@ exports.getAllSubjects = async (req, res) => {
     res.status(200).json({
       success: true,
       data: subjectsWithCount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Get instructor's notes
+exports.getInstructorNotes = async (req, res) => {
+  try {
+    const instructorId = req.user.id;
+
+    const notes = await Notes.find({ instructor: instructorId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: notes,
+      count: notes.length,
     });
   } catch (error) {
     res.status(500).json({

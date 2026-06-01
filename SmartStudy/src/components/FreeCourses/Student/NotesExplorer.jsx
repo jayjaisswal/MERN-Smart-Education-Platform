@@ -1,71 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { MdClose, MdExpandMore, MdChevronRight } from 'react-icons/md';
-import { AiOutlineFile, AiOutlinePlayCircle } from 'react-icons/ai';
-import { fetchNotesBySubject, fetchSingleNote } from '../../../services/operations/notesAPI';
-import NotesViewer from './NotesViewer';
+import { MdClose } from 'react-icons/md';
+import { AiOutlineFile } from 'react-icons/ai';
+import { fetchAllNotes } from '../../../services/operations/notesAPI';
+import NoteViewer from './NoteViewer';
 import toast from 'react-hot-toast';
 
 const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
     const { token } = useSelector((state) => state.auth);
-    const [notes, setNotes] = useState([]);
+    const [allNotes, setAllNotes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedNote, setSelectedNote] = useState(null);
-    const [selectedChapter, setSelectedChapter] = useState(null);
-    const [selectedChapterNote, setSelectedChapterNote] = useState(null);
-    const [expandedFolders, setExpandedFolders] = useState(new Set());
-    const [fullscreenNote, setFullscreenNote] = useState(null);
 
     useEffect(() => {
-        if (selectedSubject && token) {
-            loadNotesBySubject(selectedSubject);
+        if (token) {
+            loadAllNotes();
         }
-    }, [selectedSubject, token]);
+    }, [token]);
 
-    const loadNotesBySubject = async (subject) => {
+    const loadAllNotes = async () => {
         setLoading(true);
         try {
-            const data = await fetchNotesBySubject(subject, token);
+            const data = await fetchAllNotes({}, token);
             if (data?.data && Array.isArray(data.data)) {
-                setNotes(data.data);
+                setAllNotes(data.data);
                 if (data.data.length > 0) {
                     setSelectedNote(data.data[0]);
-                    setSelectedChapter(null);
-                    setSelectedChapterNote(null);
                 }
             } else {
-                console.warn('Invalid notes data:', data);
-                setNotes([]);
+                setAllNotes([]);
             }
         } catch (error) {
             console.error('Error loading notes:', error);
-            setNotes([]);
+            toast.error('Failed to load notes');
+            setAllNotes([]);
         } finally {
             setLoading(false);
         }
     };
 
-    const toggleFolder = (folderId) => {
-        const newExpanded = new Set(expandedFolders);
-        if (newExpanded.has(folderId)) {
-            newExpanded.delete(folderId);
-        } else {
-            newExpanded.add(folderId);
-        }
-        setExpandedFolders(newExpanded);
-    };
-
     return (
         <div className="fixed inset-0 z-40 bg-richblack-900 bg-opacity-50 lg:bg-opacity-0 flex">
-            {/* Sidebar */}
+            {/* Sidebar - Notes List */}
             <div className="w-full md:w-96 bg-richblack-900 border-r border-richblack-700 flex flex-col h-full overflow-y-auto">
                 {/* Header */}
                 <div className="sticky top-0 bg-richblack-800 border-b border-richblack-700 px-6 py-4 flex items-center justify-between">
                     <div>
-                        <h3 className="text-richblack-5 font-bold text-lg">
-                            📂 {selectedSubject || 'Subjects'}
-                        </h3>
-                        <p className="text-richblack-400 text-sm">{notes.length} notes available</p>
+                        <h3 className="text-richblack-5 font-bold text-lg">📚 Notes</h3>
+                        <p className="text-richblack-400 text-sm">{allNotes.length} notes</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -75,111 +57,43 @@ const NotesExplorer = ({ selectedSubject, onClose, onSubjectSelect }) => {
                     </button>
                 </div>
 
-                {/* Search/Filter would go here */}
-                <div className="px-4 py-3 bg-richblack-800">
-                    <input
-                        type="text"
-                        placeholder="Filter notes..."
-                        className="w-full bg-richblack-700 text-richblack-5 placeholder-richblack-500 rounded px-3 py-2 text-sm border border-richblack-600 focus:border-yellow-400 focus:outline-none"
-                    />
-                </div>
-
-                {/* Notes List - VS Code Explorer Style */}
+                {/* Notes List */}
                 <div className="flex-1 overflow-y-auto px-2 py-4">
                     {loading ? (
                         <div className="flex justify-center py-8">
                             <div className="animate-spin rounded-full h-8 w-8 border-2 border-richblack-700 border-t-yellow-400" />
                         </div>
-                    ) : notes.length === 0 ? (
-                        <p className="text-richblack-400 text-center py-8 text-sm">
-                            No notes in this subject
-                        </p>
+                    ) : allNotes.length === 0 ? (
+                        <p className="text-richblack-400 text-center py-8 text-sm">No notes available</p>
                     ) : (
-                        notes.map((note) => (
+                        allNotes.map((note) => (
                             <NoteItem
                                 key={note._id}
                                 note={note}
                                 isSelected={selectedNote?._id === note._id}
-                                onSelect={() => {
-                                    setSelectedNote(note);
-                                    setSelectedChapter(null);
-                                    setSelectedChapterNote(null);
-                                }}
-                                onFullscreen={() => setFullscreenNote(note)}
+                                onSelect={() => setSelectedNote(note)}
                             />
                         ))
                     )}
                 </div>
             </div>
 
-            {/* Main Viewer Area - Desktop Only */}
-            {selectedNote && !fullscreenNote && (
+            {/* Main Viewer - Desktop Only */}
+            {selectedNote && (
                 <div className="hidden lg:flex flex-1 flex-col bg-richblack-800">
-                    <NotesViewer
+                    <NoteViewer
                         note={selectedNote}
-                        selectedChapter={selectedChapter}
-                        selectedChapterNote={selectedChapterNote}
-                        onSelectChapter={setSelectedChapter}
-                        onSelectChapterNote={setSelectedChapterNote}
-                        onFullscreen={() => setFullscreenNote(selectedNote)}
+                        allNotes={allNotes}
+                        onSelectNote={setSelectedNote}
+                        onClose={onClose}
                     />
-                </div>
-            )}
-
-            {/* Fullscreen Viewer */}
-            {fullscreenNote && (
-                <div className="fixed inset-0 z-50 bg-richblack-900 flex flex-col">
-                    <div className="flex items-center justify-end px-6 py-4 bg-richblack-800 border-b border-richblack-700">
-                        <button
-                            onClick={() => setFullscreenNote(null)}
-                            className="p-2 hover:bg-richblack-700 rounded-lg transition-colors"
-                        >
-                            <MdClose size={24} className="text-richblack-400 hover:text-richblack-200" />
-                        </button>
-                    </div>
-                    <div className="flex-1 overflow-auto">
-                        <NotesViewer
-                            note={fullscreenNote}
-                            fullscreen
-                            selectedChapter={selectedChapter}
-                            selectedChapterNote={selectedChapterNote}
-                            onSelectChapter={setSelectedChapter}
-                            onSelectChapterNote={setSelectedChapterNote}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {/* Mobile Viewer - Show when note is selected */}
-            {selectedNote && !fullscreenNote && (
-                <div className="lg:hidden fixed inset-0 z-50 bg-richblack-900 flex flex-col">
-                    <div className="flex items-center justify-between px-4 py-3 bg-richblack-800 border-b border-richblack-700">
-                        <h4 className="text-richblack-5 font-semibold truncate">{selectedNote.title}</h4>
-                        <button
-                            onClick={() => setSelectedNote(null)}
-                            className="p-2 hover:bg-richblack-700 rounded-lg"
-                        >
-                            <MdClose size={20} />
-                        </button>
-                    </div>
-                    <div className="flex-1 overflow-auto">
-                        <NotesViewer
-                            note={selectedNote}
-                            selectedChapter={selectedChapter}
-                            selectedChapterNote={selectedChapterNote}
-                            onSelectChapter={setSelectedChapter}
-                            onSelectChapterNote={setSelectedChapterNote}
-                            onFullscreen={() => setFullscreenNote(selectedNote)}
-                        />
-                    </div>
                 </div>
             )}
         </div>
     );
 };
 
-const NoteItem = ({ note, isSelected, onSelect, onFullscreen }) => {
-    const hasVideo = note.videoUrl;
+const NoteItem = ({ note, isSelected, onSelect }) => {
     const hasChapters = note.chapters && note.chapters.length > 0;
 
     return (
@@ -190,16 +104,10 @@ const NoteItem = ({ note, isSelected, onSelect, onFullscreen }) => {
                 : 'bg-richblack-800 text-richblack-300 hover:bg-richblack-700'
                 }`}
         >
-            {/* Icon */}
             <div className="flex-shrink-0 pt-1">
-                {hasVideo ? (
-                    <AiOutlinePlayCircle size={18} className="text-blue-400" />
-                ) : (
-                    <AiOutlineFile size={18} className="text-yellow-400" />
-                )}
+                <AiOutlineFile size={18} className="text-yellow-400" />
             </div>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
                 <p className={`font-medium text-sm truncate ${isSelected ? 'text-richblack-900' : 'text-richblack-5'}`}>
                     {note.title}
@@ -215,18 +123,11 @@ const NoteItem = ({ note, isSelected, onSelect, onFullscreen }) => {
                     </p>
                 )}
             </div>
-
-            {/* Status Badge */}
-            {hasVideo && (
-                <div className={`text-xs px-2 py-1 rounded whitespace-nowrap flex-shrink-0 ${isSelected ? 'bg-richblack-900 text-yellow-400' : 'bg-richblack-700 text-blue-400'
-                    }`}>
-                    📹
-                </div>
-            )}
         </div>
     );
 };
 
 export default NotesExplorer;
+
 
 

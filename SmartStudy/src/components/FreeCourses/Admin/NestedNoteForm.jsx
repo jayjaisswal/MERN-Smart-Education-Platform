@@ -3,21 +3,7 @@ import { AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import toast from "react-hot-toast";
 
-const SUBJECTS = [
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Mathematics",
-  "English",
-  "History",
-  "Geography",
-  "Economics",
-  "Computer Science",
-  "General",
-];
-
 const NestedNoteForm = ({ onSave, onCancel, initialData, isEditing }) => {
-  const [subject, setSubject] = useState(initialData?.subject || "Physics");
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [useChapters, setUseChapters] = useState(
@@ -176,7 +162,6 @@ const NestedNoteForm = ({ onSave, onCancel, initialData, isEditing }) => {
       onSave({
         title: title.trim(),
         description: description.trim(),
-        subject,
         chapters: finalChapters,
         isPublished: true,
       });
@@ -190,7 +175,6 @@ const NestedNoteForm = ({ onSave, onCancel, initialData, isEditing }) => {
       onSave({
         title: title.trim(),
         description: description.trim(),
-        subject,
         googleDriveUrl: singleNote.url.trim(),
         chapters: [],
         isPublished: true,
@@ -223,20 +207,6 @@ const NestedNoteForm = ({ onSave, onCancel, initialData, isEditing }) => {
           rows="2"
           className="w-full mt-1 bg-richblack-600 text-white p-2 rounded text-sm"
         />
-      </div>
-
-      {/* SUBJECT */}
-      <div>
-        <label className="text-xs text-richblack-300">Subject *</label>
-        <select
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          className="w-full mt-1 bg-richblack-600 text-white p-2 rounded text-sm"
-        >
-          {SUBJECTS.map((sub) => (
-            <option key={sub}>{sub}</option>
-          ))}
-        </select>
       </div>
 
       {/* TOGGLE CHAPTERS VS SINGLE NOTE */}

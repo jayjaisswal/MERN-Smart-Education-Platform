@@ -3,22 +3,8 @@ import { MdSearch, MdClose, MdEdit, MdDelete, MdClear } from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { deleteNote } from '../../../services/operations/notesAPI';
 
-const SUBJECT_ENUMS = [
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "Mathematics",
-    "English",
-    "History",
-    "Geography",
-    "Economics",
-    "Computer Science",
-    "General",
-];
-
 const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedSubject, setSelectedSubject] = useState('All');
     const [sortBy, setSortBy] = useState('recent');
     const [dateFilter, setDateFilter] = useState('All');
     const [publishedFilter, setPublishedFilter] = useState('All');
@@ -55,11 +41,6 @@ const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
     const filteredNotes = useMemo(() => {
         let filtered = [...notes];
 
-        // Filter by subject
-        if (selectedSubject !== 'All') {
-            filtered = filtered.filter(note => note.subject === selectedSubject);
-        }
-
         // Filter by published status
         if (publishedFilter !== 'All') {
             const isPublished = publishedFilter === 'published';
@@ -89,7 +70,7 @@ const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
         }
 
         return filtered;
-    }, [notes, searchQuery, selectedSubject, sortBy, dateFilter, publishedFilter]);
+    }, [notes, searchQuery, sortBy, dateFilter, publishedFilter]);
 
     // Pagination
     const totalPages = Math.ceil(filteredNotes.length / itemsPerPage);
@@ -112,11 +93,10 @@ const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
     };
 
     // Check if any filters are active
-    const hasActiveFilters = searchQuery || selectedSubject !== 'All' || dateFilter !== 'All' || publishedFilter !== 'All';
+    const hasActiveFilters = searchQuery || dateFilter !== 'All' || publishedFilter !== 'All';
 
     const resetFilters = () => {
         setSearchQuery('');
-        setSelectedSubject('All');
         setDateFilter('All');
         setPublishedFilter('All');
         setCurrentPage(1);
@@ -158,28 +138,8 @@ const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
                         />
                     </div>
 
-                    {/* Filters Grid - 2 columns layout */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {/* Subject Filter */}
-                        <div>
-                            <label className="text-richblack-300 text-xs font-semibold block mb-2 uppercase tracking-wide">Subject</label>
-                            <select
-                                value={selectedSubject}
-                                onChange={(e) => {
-                                    setSelectedSubject(e.target.value);
-                                    setCurrentPage(1);
-                                }}
-                                className="w-full px-3 py-2 bg-richblack-700 text-richblack-5 rounded-lg border border-richblack-600 focus:border-yellow-400 focus:outline-none text-sm hover:border-richblack-500 transition-colors"
-                            >
-                                <option value="All">All Subjects</option>
-                                {SUBJECT_ENUMS.map((subject) => (
-                                    <option key={subject} value={subject}>
-                                        {subject}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
+                    {/* Filters Grid - 3 columns layout */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {/* Date Filter */}
                         <div>
                             <label className="text-richblack-300 text-xs font-semibold block mb-2 uppercase tracking-wide">Date Created</label>
@@ -251,7 +211,6 @@ const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
                         <thead className="sticky top-0 bg-richblack-700 z-10">
                             <tr className="border-b-2 border-yellow-400/30">
                                 <th className="px-6 py-3 text-left text-richblack-300 font-semibold">Title</th>
-                                <th className="px-6 py-3 text-left text-richblack-300 font-semibold min-w-[100px]">Subject</th>
                                 <th className="px-6 py-3 text-left text-richblack-300 font-semibold min-w-[80px]">Status</th>
                                 <th className="px-6 py-3 text-left text-richblack-300 font-semibold min-w-[120px]">Date</th>
                                 <th className="px-6 py-3 text-center text-richblack-300 font-semibold min-w-[100px]">Actions</th>
@@ -263,11 +222,6 @@ const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
                                     <tr key={note._id} className="border-b border-richblack-700 hover:bg-richblack-700/50 transition-colors">
                                         <td className="px-6 py-4 text-richblack-5 font-medium max-w-sm truncate">
                                             {note.title}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className="px-3 py-1 bg-yellow-400/20 text-yellow-400 text-xs font-semibold rounded-full">
-                                                {note.subject}
-                                            </span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${note.isPublished
@@ -306,7 +260,7 @@ const AllNotesManager = ({ notes, token, onClose, onEdit, onDelete }) => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-12 text-center text-richblack-400">
+                                    <td colSpan="4" className="px-6 py-12 text-center text-richblack-400">
                                         No notes found matching your filters
                                     </td>
                                 </tr>
