@@ -158,22 +158,24 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
     };
 
     const getEmbedUrl = (resource) => {
-        if (!resource) return null;
-        const url = resource.videoUrl || resource.link || "";
-        if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            const videoId = (match && match[2].length === 11) ? match[2] : null;
-            if (videoId) {
-                const origin = window.location.origin;
-                return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
-            }
+    if (!resource) return null;
+    const url = resource.videoUrl || resource.link || "";
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        const videoId = (match && match[2].length === 11) ? match[2] : null;
+        if (videoId) {
+            const origin = window.location.origin;
+            
+            // ADDED: &vq=hd1080 to hint the player to boot up directly into High Definition
+            return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&vq=hd1080&origin=${encodeURIComponent(origin)}`;
         }
-        if (url.includes('drive.google.com')) {
-            return url.replace(/\/view.*|\/edit.*/, '/preview');
-        }
-        return url;
-    };
+    }
+    if (url.includes('drive.google.com')) {
+        return url.replace(/\/view.*|\/edit.*/, '/preview');
+    }
+    return url;
+};
 
     const postToIframe = (command, args = []) => {
         if (iframeRef.current) {
