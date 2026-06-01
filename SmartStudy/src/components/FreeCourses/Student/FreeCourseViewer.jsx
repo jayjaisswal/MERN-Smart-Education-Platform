@@ -75,19 +75,29 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
     const [selectedResource, setSelectedResource] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
-    // UI Player Custom States
+    // UI Player States
     const [isPlaying, setIsPlaying] = useState(true);
     const [volume, setVolume] = useState(50);
     const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [videoDuration, setVideoDuration] = useState(0); // Added to store total video length in seconds
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const [showSpeedMenu, setShowSpeedMenu] = useState(false);
     
     const playerContainerRef = useRef(null);
-    const iframeRef = useRef(null);
     const speedMenuRef = useRef(null);
-    const progressBarRef = useRef(null); // Added to target bounds for timeline navigation coordinates
+    const progressBarRef = useRef(null);
+    
+    // API instances
+    const playerRef = useRef(null); 
+    const intervalRef = useRef(null);
+
+    // Clean up tracking timer on unmount
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            if (playerRef.current && playerRef.current.destroy) playerRef.current.destroy();
+        };
+    }, []);
 
     useEffect(() => {
         if (window.innerWidth >= 1024) setIsSidebarOpen(true);
@@ -110,6 +120,7 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         loadData();
     }, [courseId, token]);
 
+    // Close speed dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (speedMenuRef.current && !speedMenuRef.current.contains(event.target)) {
@@ -120,42 +131,79 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Reset player states on video switch
+    // Load/Reinitialize YouTube API Player when selected resource changes
     useEffect(() => {
+        if (!selectedResource) return;
+        
+        // Reset local controller states
         setIsPlaying(true);
         setProgress(0);
-        setVideoDuration(0);
         setPlaybackSpeed(1);
         setShowSpeedMenu(false);
-    }, [selectedResource]);
+        if (intervalRef.current) clearInterval(intervalRef.current);
 
-    // Handle incoming tracking analytics frame messages from YouTube embed
-    useEffect(() => {
-        const handlePlayerMessages = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                if (data.event === 'infoDelivery' && data.info) {
-                    // Update total duration if received from the API stream
-                    if (data.info.duration) {
-                        setVideoDuration(data.info.duration);
-                    }
-                    // Update current live progress visual slider line
-                    if (data.info.currentTime && data.info.duration) {
-                        const currentProgress = (data.info.currentTime / data.info.duration) * 100;
-                        setProgress(currentProgress);
-                    } else if (data.info.currentTime && videoDuration) {
-                        const currentProgress = (data.info.currentTime / videoDuration) * 100;
-                        setProgress(currentProgress);
+        const videoId = getYouTubeId(selectedResource.videoUrl || selectedResource.link || "");
+        if (!videoId) return;
+
+        const initPlayer = () => {
+            if (playerRef.current && playerRef.current.destroy) {
+                playerRef.current.destroy();
+            }
+
+            playerRef.current = new window.YT.Player(`yt-player-${selectedResource.id}`, {
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    rel: 0,
+                    modestbranding: 1,
+                    showinfo: 0,
+                    iv_load_policy: 3,
+                    disablekb: 1,
+                    vq: 'hd1080'
+                },
+                events: {
+                    onReady: (event) => {
+                        event.target.setVolume(volume);
+                        event.target.playVideo();
+                        
+                        // Start an interval timer to update the progress bar securely
+                        intervalRef.current = setInterval(() => {
+                            if (playerRef.current && playerRef.current.getCurrentTime && playerRef.current.getDuration) {
+                                const current = playerRef.current.getCurrentTime();
+                                const total = playerRef.current.getDuration();
+                                if (total > 0) {
+                                    setProgress((current / total) * 100);
+                                }
+                            }
+                        }, 250);
+                    },
+                    onStateChange: (event) => {
+                        // Keep track of internal player state pauses
+                        if (event.data === window.YT.PlayerState.PLAYING) setIsPlaying(true);
+                        if (event.data === window.YT.PlayerState.PAUSED) setIsPlaying(false);
                     }
                 }
-            } catch (e) {
-                // Ignore safe noise
-            }
+            });
         };
 
-        window.addEventListener('message', handlePlayerMessages);
-        return () => window.removeEventListener('message', handlePlayerMessages);
-    }, [videoDuration]);
+        // Inject the official script if it hasn't been loaded yet
+        if (!window.YT) {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            window.onYouTubeIframeAPIReady = initPlayer;
+        } else {
+            initPlayer();
+        }
+    }, [selectedResource]);
+
+    const getYouTubeId = (url) => {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    };
 
     const findFirstFile = (nodes) => {
         if (!nodes) return null;
@@ -169,39 +217,13 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         return null;
     };
 
-    const getEmbedUrl = (resource) => {
-        if (!resource) return null;
-        const url = resource.videoUrl || resource.link || "";
-        if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            const videoId = (match && match[2].length === 11) ? match[2] : null;
-            if (videoId) {
-                const origin = window.location.origin;
-                return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&vq=hd1080&origin=${encodeURIComponent(origin)}`;
-            }
-        }
-        if (url.includes('drive.google.com')) {
-            return url.replace(/\/view.*|\/edit.*/, '/preview');
-        }
-        return url;
-    };
-
-    const postToIframe = (command, args = []) => {
-        if (iframeRef.current) {
-            iframeRef.current.contentWindow.postMessage(
-                JSON.stringify({ event: 'command', func: command, args: args }),
-                '*'
-            );
-        }
-    };
-
     const handlePlayPause = () => {
+        if (!playerRef.current) return;
         if (isPlaying) {
-            postToIframe('pauseVideo');
+            playerRef.current.pauseVideo();
             setIsPlaying(false);
         } else {
-            postToIframe('playVideo');
+            playerRef.current.playVideo();
             setIsPlaying(true);
         }
     };
@@ -210,46 +232,48 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         const val = parseInt(e.target.value);
         setVolume(val);
         setIsMuted(val === 0);
-        postToIframe('setVolume', [val]);
+        if (playerRef.current && playerRef.current.setVolume) {
+            playerRef.current.setVolume(val);
+        }
     };
 
     const handleToggleMute = () => {
+        if (!playerRef.current) return;
         if (isMuted) {
-            postToIframe('unMute');
+            playerRef.current.unMute();
             setIsMuted(false);
-            postToIframe('setVolume', [volume || 50]);
+            playerRef.current.setVolume(volume || 50);
         } else {
-            postToIframe('mute');
+            playerRef.current.mute();
             setIsMuted(true);
         }
     };
 
     const changeSpeed = (speed) => {
         setPlaybackSpeed(speed);
-        postToIframe('setPlaybackRate', [speed]);
+        if (playerRef.current && playerRef.current.setPlaybackRate) {
+            playerRef.current.setPlaybackRate(speed);
+        }
         setShowSpeedMenu(false);
     };
 
-    // ADDED: Navigation click handler function to rewrite active timestamp on hidden player
+    // FIXED: Guarantees navigation seeking happens smoothly via the internal Player reference API
     const handleTimelineNavigation = (e) => {
-        if (!progressBarRef.current || !videoDuration) return;
+        if (!progressBarRef.current || !playerRef.current || !playerRef.current.getDuration) return;
 
-        // Get bounding geometry of custom tracking bar container
         const rect = progressBarRef.current.getBoundingClientRect();
-        // Calculate dynamic horizontal distance coordinate from starting boundary point
         const clickX = e.clientX - rect.left;
-        // Turn positional coordinate into percentage factor
         const clickPercentage = Math.max(0, Math.min(1, clickX / rect.width));
-        // Compute corresponding timeline target match location point index
-        const seekToSeconds = clickPercentage * videoDuration;
+        
+        const totalDuration = playerRef.current.getDuration();
+        const seekToSeconds = clickPercentage * totalDuration;
 
-        // Instantly seek video frame to chosen location timestamp through background API
-        postToIframe('seekTo', [seekToSeconds, true]);
+        // Force a hard jump update directly to the player instance
+        playerRef.current.seekTo(seekToSeconds, true);
         setProgress(clickPercentage * 100);
         
-        // Force track layout back into absolute streaming pattern state automatically
         if (!isPlaying) {
-            postToIframe('playVideo');
+            playerRef.current.playVideo();
             setIsPlaying(true);
         }
     };
@@ -341,13 +365,10 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                         >
                             {selectedResource ? (
                                 <>
-                                    <iframe
-                                        ref={iframeRef}
-                                        key={selectedResource.id}
-                                        src={getEmbedUrl(selectedResource)}
-                                        className="absolute inset-0 w-full h-full border-0 select-none pointer-events-none"
-                                        allow="autoplay; fullscreen; encrypted-media; gyroscope; picture-in-picture"
-                                        title={selectedResource.name}
+                                    {/* FIXED: Target placeholder node element used to bind the native JavaScript API script anchor instantiation */}
+                                    <div 
+                                        id={`yt-player-${selectedResource.id}`} 
+                                        className="absolute inset-0 w-full h-full pointer-events-none select-none" 
                                     />
                                     
                                     {/* ABSOLUTE 100% BLANKET SHIELD LAYER */}
@@ -356,17 +377,16 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                                     {/* UI CUSTOM PANEL TOOLBAR OVERLAY */}
                                     <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/95 via-black/70 to-transparent p-4 pt-10 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
                                         
-                                        {/* CHANGED: Clickable Progress Tracking Timeline Wrapper Container bar */}
+                                        {/* Clickable Progress Tracking Timeline */}
                                         <div 
                                             ref={progressBarRef}
                                             onClick={handleTimelineNavigation}
                                             className="w-full bg-richblack-600 h-2 hover:h-2.5 rounded-full relative cursor-pointer group/timeline transition-all"
                                         >
                                             <div 
-                                                className="bg-yellow-50 h-full rounded-full transition-all duration-100 ease-linear relative"
+                                                className="bg-yellow-50 h-full rounded-full relative"
                                                 style={{ width: `${progress}%` }}
                                             >
-                                                {/* Visual scrubber handle indicator node tip circle */}
                                                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white border border-yellow-50 rounded-full scale-0 group-hover/timeline:scale-100 transition-transform shadow-md" />
                                             </div>
                                         </div>
