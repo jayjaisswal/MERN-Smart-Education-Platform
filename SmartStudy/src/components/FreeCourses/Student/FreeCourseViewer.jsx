@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
     MdClose, MdMenu, MdFolder, MdInsertDriveFile, 
-    MdPlayCircleOutline, MdKeyboardArrowDown, MdKeyboardArrowRight 
+    MdPlayCircleOutline, MdKeyboardArrowDown, MdKeyboardArrowRight,
+    MdPlayArrow, MdPause, MdFullscreen
 } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import { fetchFreeCourseDetails } from '../../../services/operations/freeCoursesAPI';
@@ -17,7 +18,6 @@ const SidebarItem = ({ item, level = 0, onSelect, selectedId, closeMobileSidebar
             setIsOpen(!isOpen);
         } else {
             onSelect(item);
-            // Close sidebar on mobile after selection
             if (window.innerWidth < 768) closeMobileSidebar();
         }
     };
@@ -72,10 +72,14 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedResource, setSelectedResource] = useState(null);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed on mobile
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    
+    // Custom states to handle player controls cleanly over our shield
+    const [isPlaying, setIsPlaying] = useState(true);
+    const playerContainerRef = useRef(null);
+    const iframeRef = useRef(null);
 
     useEffect(() => {
-        // Open sidebar by default only on large screens
         if (window.innerWidth >= 1024) setIsSidebarOpen(true);
         
         const loadData = async () => {
@@ -95,6 +99,11 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         };
         loadData();
     }, [courseId, token]);
+
+    // Reset play status when changing lessons
+    useEffect(() => {
+        setIsPlaying(true);
+    }, [selectedResource]);
 
     const findFirstFile = (nodes) => {
         if (!nodes) return null;
@@ -117,7 +126,7 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
             const videoId = (match && match[2].length === 11) ? match[2] : null;
             if (videoId) {
                 const origin = window.location.origin;
-                // Added parameters to remove controls, recommended links, keyboard triggers, info-bars, and annotations
+                // STRICTLY DISABLING KATIVE CONTROLS (controls=0) to keep elements completely hidden
                 return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
             }
         }
@@ -125,6 +134,38 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
             return url.replace(/\/view.*|\/edit.*/, '/preview');
         }
         return url;
+    };
+
+    // Safe interaction post-messaging handlers to control hidden YouTube iframe directly
+    const postToIframe = (command) => {
+        if (iframeRef.current) {
+            iframeRef.current.contentWindow.postMessage(
+                JSON.stringify({ event: 'command', func: command, args: [] }),
+                '*'
+            );
+        }
+    };
+
+    const handlePlayPause = () => {
+        if (isPlaying) {
+            postToIframe('pauseVideo');
+            setIsPlaying(false);
+        } else {
+            postToIframe('playVideo');
+            setIsPlaying(true);
+        }
+    };
+
+    const handleFullscreen = () => {
+        if (playerContainerRef.current) {
+            if (!document.fullscreenElement) {
+                playerContainerRef.current.requestFullscreen().catch((err) => {
+                    toast.error("Error enabling fullscreen mode");
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
     };
 
     if (loading) return (
@@ -194,17 +235,50 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                 {/* Player container */}
                 <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-10">
                     <div className="max-w-4xl mx-auto w-full">
-                        {/* Responsive Video Container */}
-                        {/* Added 'pointer-events-none' to the iframe container to disable clicking on title, share links, and watermarks */}
-                        <div className="relative w-full aspect-video bg-black rounded-lg sm:rounded-xl overflow-hidden border border-richblack-700 shadow-2xl">
+                        
+                        {/* Responsive Video Container Frame */}
+                        <div 
+                            ref={playerContainerRef}
+                            className="relative w-full aspect-video bg-black rounded-lg sm:rounded-xl overflow-hidden border border-richblack-700 shadow-2xl group"
+                        >
                             {selectedResource ? (
-                                <iframe
-                                    key={selectedResource.id}
-                                    src={getEmbedUrl(selectedResource)}
-                                    className="absolute inset-0 w-full h-full border-0 pointer-events-none"
-                                    allow="autoplay; fullscreen; encrypted-media; gyroscope; picture-in-picture"
-                                    title={selectedResource.name}
-                                />
+                                <>
+                                    <iframe
+                                        ref={iframeRef}
+                                        key={selectedResource.id}
+                                        src={getEmbedUrl(selectedResource)}
+                                        className="absolute inset-0 w-full h-full border-0 select-none pointer-events-none"
+                                        allow="autoplay; fullscreen; encrypted-media; gyroscope; picture-in-picture"
+                                        title={selectedResource.name}
+                                    />
+                                    
+                                    {/* ABSOLUTE 100% BLANKET CLICK SHIELD */}
+                                    {/* This blocks ALL right clicks, left clicks, settings link captures, popups, and share menus entirely */}
+                                    <div className="absolute inset-0 bg-transparent z-40 cursor-default" />
+
+                                    {/* CUSTOM OVERLAY INTERFACE BUTTONS */}
+                                    {/* Renders safely inside your control hierarchy above the protective layer shield */}
+                                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+                                        <div className="flex items-center gap-4">
+                                            <button 
+                                                onClick={handlePlayPause}
+                                                className="p-2 bg-yellow-100 text-richblack-900 rounded-full hover:scale-105 transition-transform"
+                                            >
+                                                {isPlaying ? <MdPause size={22} /> : <MdPlayArrow size={22} />}
+                                            </button>
+                                            <span className="text-sm font-medium text-richblack-25 select-none truncate max-w-[200px] sm:max-w-md">
+                                                {selectedResource.name}
+                                            </span>
+                                        </div>
+
+                                        <button 
+                                            onClick={handleFullscreen}
+                                            className="p-2 text-richblack-100 hover:text-yellow-50 hover:bg-richblack-700/50 rounded-lg transition-colors"
+                                        >
+                                            <MdFullscreen size={24} />
+                                        </button>
+                                    </div>
+                                </>
                             ) : (
                                 <div className="flex items-center justify-center h-full text-richblack-400 font-medium px-4 text-center">
                                     Select a lesson from the menu to begin
