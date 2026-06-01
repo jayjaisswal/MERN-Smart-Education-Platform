@@ -117,7 +117,8 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
             const videoId = (match && match[2].length === 11) ? match[2] : null;
             if (videoId) {
                 const origin = window.location.origin;
-                return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
+                // Added parameters to remove controls, recommended links, keyboard triggers, info-bars, and annotations
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
             }
         }
         if (url.includes('drive.google.com')) {
@@ -194,12 +195,13 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                 <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-10">
                     <div className="max-w-4xl mx-auto w-full">
                         {/* Responsive Video Container */}
+                        {/* Added 'pointer-events-none' to the iframe container to disable clicking on title, share links, and watermarks */}
                         <div className="relative w-full aspect-video bg-black rounded-lg sm:rounded-xl overflow-hidden border border-richblack-700 shadow-2xl">
                             {selectedResource ? (
                                 <iframe
                                     key={selectedResource.id}
                                     src={getEmbedUrl(selectedResource)}
-                                    className="absolute inset-0 w-full h-full border-0"
+                                    className="absolute inset-0 w-full h-full border-0 pointer-events-none"
                                     allow="autoplay; fullscreen; encrypted-media; gyroscope; picture-in-picture"
                                     title={selectedResource.name}
                                 />

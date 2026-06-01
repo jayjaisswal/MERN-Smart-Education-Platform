@@ -29,20 +29,35 @@ database.connect();
 app.use(express.json());
 app.use(cookieParser());
 
+// app.use(
+//   cors({
+//     // origin: [
+//     // "http://localhost:5173",
+//     // "https://padho-india.vercel.app",
+//     // "https://super-spoon-5w56w75g5vgcwwr-5173.app.github.dev/",
+
+//     // ],
+//     origin: "*",
+//     credentials: true,
+
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], //  Required
+//   }),
+// );
+
 app.use(
   cors({
-    // origin: [
-    // "http://localhost:5173",
-    // "https://padho-india.vercel.app",
-    // "https://super-spoon-5w56w75g5vgcwwr-5173.app.github.dev/",
-
-    // ],
-    origin: "*",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or postman)
+      if (!origin) return callback(null, true);
+      
+      // Dynamically allow any origin (mimics "*" but safely works with credentials)
+      callback(null, true);
+    },
     credentials: true,
-
     allowedHeaders: ["Content-Type", "Authorization"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], //  Required
-  }),
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  })
 );
 
 app.use(
