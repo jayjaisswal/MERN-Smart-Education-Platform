@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
     MdClose, MdMenu, MdFolder, MdInsertDriveFile, 
     MdPlayCircleOutline, MdKeyboardArrowDown, MdKeyboardArrowRight,
-    MdPlayArrow, MdPause, MdFullscreen
+    MdPlayArrow, MdPause, MdFullscreen, MdVolumeUp, MdVolumeMute,
+    MdSpeed
 } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import { fetchFreeCourseDetails } from '../../../services/operations/freeCoursesAPI';
@@ -74,10 +75,17 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
     const [selectedResource, setSelectedResource] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
-    // Custom states to handle player controls cleanly over our shield
+    // UI Player Custom States
     const [isPlaying, setIsPlaying] = useState(true);
+    const [volume, setVolume] = useState(50);
+    const [isMuted, setIsMuted] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [playbackSpeed, setPlaybackSpeed] = useState(1);
+    const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+    
     const playerContainerRef = useRef(null);
     const iframeRef = useRef(null);
+    const speedMenuRef = useRef(null);
 
     useEffect(() => {
         if (window.innerWidth >= 1024) setIsSidebarOpen(true);
@@ -100,10 +108,42 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         loadData();
     }, [courseId, token]);
 
-    // Reset play status when changing lessons
+    // Close speed dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (speedMenuRef.current && !speedMenuRef.current.contains(event.target)) {
+                setShowSpeedMenu(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Reset player timeline indicators on lesson swap
     useEffect(() => {
         setIsPlaying(true);
+        setProgress(0);
+        setPlaybackSpeed(1);
+        setShowSpeedMenu(false);
     }, [selectedResource]);
+
+    // Handle incoming tracking analytics frame messages from YouTube embed
+    useEffect(() => {
+        const handlePlayerMessages = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.event === 'infoDelivery' && data.info?.currentTime && data.info?.duration) {
+                    const currentProgress = (data.info.currentTime / data.info.duration) * 100;
+                    setProgress(currentProgress);
+                }
+            } catch (e) {
+                // Ignore noise
+            }
+        };
+
+        window.addEventListener('message', handlePlayerMessages);
+        return () => window.removeEventListener('message', handlePlayerMessages);
+    }, []);
 
     const findFirstFile = (nodes) => {
         if (!nodes) return null;
@@ -126,7 +166,6 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
             const videoId = (match && match[2].length === 11) ? match[2] : null;
             if (videoId) {
                 const origin = window.location.origin;
-                // STRICTLY DISABLING KATIVE CONTROLS (controls=0) to keep elements completely hidden
                 return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
             }
         }
@@ -136,11 +175,10 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         return url;
     };
 
-    // Safe interaction post-messaging handlers to control hidden YouTube iframe directly
-    const postToIframe = (command) => {
+    const postToIframe = (command, args = []) => {
         if (iframeRef.current) {
             iframeRef.current.contentWindow.postMessage(
-                JSON.stringify({ event: 'command', func: command, args: [] }),
+                JSON.stringify({ event: 'command', func: command, args: args }),
                 '*'
             );
         }
@@ -156,11 +194,35 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         }
     };
 
+    const handleVolumeChange = (e) => {
+        const val = parseInt(e.target.value);
+        setVolume(val);
+        setIsMuted(val === 0);
+        postToIframe('setVolume', [val]);
+    };
+
+    const handleToggleMute = () => {
+        if (isMuted) {
+            postToIframe('unMute');
+            setIsMuted(false);
+            postToIframe('setVolume', [volume || 50]);
+        } else {
+            postToIframe('mute');
+            setIsMuted(true);
+        }
+    };
+
+    const changeSpeed = (speed) => {
+        setPlaybackSpeed(speed);
+        postToIframe('setPlaybackRate', [speed]);
+        setShowSpeedMenu(false);
+    };
+
     const handleFullscreen = () => {
         if (playerContainerRef.current) {
             if (!document.fullscreenElement) {
-                playerContainerRef.current.requestFullscreen().catch((err) => {
-                    toast.error("Error enabling fullscreen mode");
+                playerContainerRef.current.requestFullscreen().catch(() => {
+                    toast.error("Error enabling fullscreen");
                 });
             } else {
                 document.exitFullscreen();
@@ -236,7 +298,7 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                 <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-10">
                     <div className="max-w-4xl mx-auto w-full">
                         
-                        {/* Responsive Video Container Frame */}
+                        {/* Responsive Video Container */}
                         <div 
                             ref={playerContainerRef}
                             className="relative w-full aspect-video bg-black rounded-lg sm:rounded-xl overflow-hidden border border-richblack-700 shadow-2xl group"
@@ -252,31 +314,87 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                                         title={selectedResource.name}
                                     />
                                     
-                                    {/* ABSOLUTE 100% BLANKET CLICK SHIELD */}
-                                    {/* This blocks ALL right clicks, left clicks, settings link captures, popups, and share menus entirely */}
+                                    {/* ABSOLUTE 100% BLANKET SHIELD LAYER */}
                                     <div className="absolute inset-0 bg-transparent z-40 cursor-default" />
 
-                                    {/* CUSTOM OVERLAY INTERFACE BUTTONS */}
-                                    {/* Renders safely inside your control hierarchy above the protective layer shield */}
-                                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
-                                        <div className="flex items-center gap-4">
-                                            <button 
-                                                onClick={handlePlayPause}
-                                                className="p-2 bg-yellow-100 text-richblack-900 rounded-full hover:scale-105 transition-transform"
-                                            >
-                                                {isPlaying ? <MdPause size={22} /> : <MdPlayArrow size={22} />}
-                                            </button>
-                                            <span className="text-sm font-medium text-richblack-25 select-none truncate max-w-[200px] sm:max-w-md">
-                                                {selectedResource.name}
-                                            </span>
+                                    {/* UI CUSTOM PANEL TOOLBAR OVERLAY */}
+                                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/95 via-black/70 to-transparent p-4 pt-10 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
+                                        
+                                        {/* Custom Progress Tracking Line */}
+                                        <div className="w-full bg-richblack-600 h-1.5 rounded-full overflow-hidden relative">
+                                            <div 
+                                                className="bg-yellow-50 h-full transition-all duration-100 ease-linear"
+                                                style={{ width: `${progress}%` }}
+                                            />
                                         </div>
 
-                                        <button 
-                                            onClick={handleFullscreen}
-                                            className="p-2 text-richblack-100 hover:text-yellow-50 hover:bg-richblack-700/50 rounded-lg transition-colors"
-                                        >
-                                            <MdFullscreen size={24} />
-                                        </button>
+                                        {/* Bottom Action Line Controls */}
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                {/* Play/Pause Button */}
+                                                <button 
+                                                    onClick={handlePlayPause}
+                                                    className="p-1.5 bg-yellow-100 text-richblack-900 rounded-full hover:scale-105 transition-transform"
+                                                >
+                                                    {isPlaying ? <MdPause size={20} /> : <MdPlayArrow size={20} />}
+                                                </button>
+
+                                                {/* Volume Control Elements */}
+                                                <div className="flex items-center gap-2 group/vol">
+                                                    <button onClick={handleToggleMute} className="text-richblack-100 hover:text-yellow-50">
+                                                        {isMuted ? <MdVolumeMute size={22} /> : <MdVolumeUp size={22} />}
+                                                    </button>
+                                                    <input 
+                                                        type="range" 
+                                                        min="0" 
+                                                        max="100" 
+                                                        value={isMuted ? 0 : volume} 
+                                                        onChange={handleVolumeChange}
+                                                        className="w-14 sm:w-20 h-1 bg-richblack-600 rounded-lg appearance-none cursor-pointer accent-yellow-50"
+                                                    />
+                                                </div>
+
+                                                {/* ADDED: Custom Speed Control Menu Wrapper */}
+                                                <div className="relative" ref={speedMenuRef}>
+                                                    <button 
+                                                        onClick={() => setShowSpeedMenu(!showSpeedMenu)}
+                                                        className="flex items-center gap-1 text-xs font-semibold bg-richblack-700/80 hover:bg-richblack-600 text-richblack-100 hover:text-yellow-50 px-2 py-1 rounded transition-colors"
+                                                    >
+                                                        <MdSpeed size={16} />
+                                                        <span>{playbackSpeed}x</span>
+                                                    </button>
+                                                    
+                                                    {showSpeedMenu && (
+                                                        <div className="absolute bottom-full left-0 mb-2 bg-richblack-800 border border-richblack-600 rounded-lg overflow-hidden shadow-xl flex flex-col min-w-[70px]">
+                                                            {[0.5, 1, 1.25, 1.5, 2].map((speed) => (
+                                                                <button
+                                                                    key={speed}
+                                                                    onClick={() => changeSpeed(speed)}
+                                                                    className={`text-xs px-3 py-1.5 text-left transition-colors font-medium
+                                                                        ${playbackSpeed === speed 
+                                                                            ? 'bg-yellow-100 text-richblack-900 font-bold' 
+                                                                            : 'text-richblack-100 hover:bg-richblack-700'}`}
+                                                                >
+                                                                    {speed}x
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <span className="text-xs sm:text-sm font-medium text-richblack-25 select-none truncate max-w-[100px] sm:max-w-xs">
+                                                    {selectedResource.name}
+                                                </span>
+                                            </div>
+
+                                            {/* Fullscreen Trigger */}
+                                            <button 
+                                                onClick={handleFullscreen}
+                                                className="p-1.5 text-richblack-100 hover:text-yellow-50 hover:bg-richblack-700/50 rounded-lg transition-colors"
+                                            >
+                                                <MdFullscreen size={22} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </>
                             ) : (
