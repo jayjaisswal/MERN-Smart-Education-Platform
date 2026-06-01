@@ -80,12 +80,14 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
     const [volume, setVolume] = useState(50);
     const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [videoDuration, setVideoDuration] = useState(0); // Added to store total video length in seconds
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const [showSpeedMenu, setShowSpeedMenu] = useState(false);
     
     const playerContainerRef = useRef(null);
     const iframeRef = useRef(null);
     const speedMenuRef = useRef(null);
+    const progressBarRef = useRef(null); // Added to target bounds for timeline navigation coordinates
 
     useEffect(() => {
         if (window.innerWidth >= 1024) setIsSidebarOpen(true);
@@ -108,7 +110,6 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         loadData();
     }, [courseId, token]);
 
-    // Close speed dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (speedMenuRef.current && !speedMenuRef.current.contains(event.target)) {
@@ -119,10 +120,11 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Reset player timeline indicators on lesson swap
+    // Reset player states on video switch
     useEffect(() => {
         setIsPlaying(true);
         setProgress(0);
+        setVideoDuration(0);
         setPlaybackSpeed(1);
         setShowSpeedMenu(false);
     }, [selectedResource]);
@@ -132,18 +134,28 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         const handlePlayerMessages = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                if (data.event === 'infoDelivery' && data.info?.currentTime && data.info?.duration) {
-                    const currentProgress = (data.info.currentTime / data.info.duration) * 100;
-                    setProgress(currentProgress);
+                if (data.event === 'infoDelivery' && data.info) {
+                    // Update total duration if received from the API stream
+                    if (data.info.duration) {
+                        setVideoDuration(data.info.duration);
+                    }
+                    // Update current live progress visual slider line
+                    if (data.info.currentTime && data.info.duration) {
+                        const currentProgress = (data.info.currentTime / data.info.duration) * 100;
+                        setProgress(currentProgress);
+                    } else if (data.info.currentTime && videoDuration) {
+                        const currentProgress = (data.info.currentTime / videoDuration) * 100;
+                        setProgress(currentProgress);
+                    }
                 }
             } catch (e) {
-                // Ignore noise
+                // Ignore safe noise
             }
         };
 
         window.addEventListener('message', handlePlayerMessages);
         return () => window.removeEventListener('message', handlePlayerMessages);
-    }, []);
+    }, [videoDuration]);
 
     const findFirstFile = (nodes) => {
         if (!nodes) return null;
@@ -158,24 +170,22 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
     };
 
     const getEmbedUrl = (resource) => {
-    if (!resource) return null;
-    const url = resource.videoUrl || resource.link || "";
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        const videoId = (match && match[2].length === 11) ? match[2] : null;
-        if (videoId) {
-            const origin = window.location.origin;
-            
-            // ADDED: &vq=hd1080 to hint the player to boot up directly into High Definition
-            return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&vq=hd1080&origin=${encodeURIComponent(origin)}`;
+        if (!resource) return null;
+        const url = resource.videoUrl || resource.link || "";
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            const videoId = (match && match[2].length === 11) ? match[2] : null;
+            if (videoId) {
+                const origin = window.location.origin;
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1&vq=hd1080&origin=${encodeURIComponent(origin)}`;
+            }
         }
-    }
-    if (url.includes('drive.google.com')) {
-        return url.replace(/\/view.*|\/edit.*/, '/preview');
-    }
-    return url;
-};
+        if (url.includes('drive.google.com')) {
+            return url.replace(/\/view.*|\/edit.*/, '/preview');
+        }
+        return url;
+    };
 
     const postToIframe = (command, args = []) => {
         if (iframeRef.current) {
@@ -218,6 +228,30 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
         setPlaybackSpeed(speed);
         postToIframe('setPlaybackRate', [speed]);
         setShowSpeedMenu(false);
+    };
+
+    // ADDED: Navigation click handler function to rewrite active timestamp on hidden player
+    const handleTimelineNavigation = (e) => {
+        if (!progressBarRef.current || !videoDuration) return;
+
+        // Get bounding geometry of custom tracking bar container
+        const rect = progressBarRef.current.getBoundingClientRect();
+        // Calculate dynamic horizontal distance coordinate from starting boundary point
+        const clickX = e.clientX - rect.left;
+        // Turn positional coordinate into percentage factor
+        const clickPercentage = Math.max(0, Math.min(1, clickX / rect.width));
+        // Compute corresponding timeline target match location point index
+        const seekToSeconds = clickPercentage * videoDuration;
+
+        // Instantly seek video frame to chosen location timestamp through background API
+        postToIframe('seekTo', [seekToSeconds, true]);
+        setProgress(clickPercentage * 100);
+        
+        // Force track layout back into absolute streaming pattern state automatically
+        if (!isPlaying) {
+            postToIframe('playVideo');
+            setIsPlaying(true);
+        }
     };
 
     const handleFullscreen = () => {
@@ -322,12 +356,19 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                                     {/* UI CUSTOM PANEL TOOLBAR OVERLAY */}
                                     <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/95 via-black/70 to-transparent p-4 pt-10 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
                                         
-                                        {/* Custom Progress Tracking Line */}
-                                        <div className="w-full bg-richblack-600 h-1.5 rounded-full overflow-hidden relative">
+                                        {/* CHANGED: Clickable Progress Tracking Timeline Wrapper Container bar */}
+                                        <div 
+                                            ref={progressBarRef}
+                                            onClick={handleTimelineNavigation}
+                                            className="w-full bg-richblack-600 h-2 hover:h-2.5 rounded-full relative cursor-pointer group/timeline transition-all"
+                                        >
                                             <div 
-                                                className="bg-yellow-50 h-full transition-all duration-100 ease-linear"
+                                                className="bg-yellow-50 h-full rounded-full transition-all duration-100 ease-linear relative"
                                                 style={{ width: `${progress}%` }}
-                                            />
+                                            >
+                                                {/* Visual scrubber handle indicator node tip circle */}
+                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white border border-yellow-50 rounded-full scale-0 group-hover/timeline:scale-100 transition-transform shadow-md" />
+                                            </div>
                                         </div>
 
                                         {/* Bottom Action Line Controls */}
@@ -356,7 +397,7 @@ const FreeCourseViewer = ({ courseId, onClose }) => {
                                                     />
                                                 </div>
 
-                                                {/* ADDED: Custom Speed Control Menu Wrapper */}
+                                                {/* Speed Menu */}
                                                 <div className="relative" ref={speedMenuRef}>
                                                     <button 
                                                         onClick={() => setShowSpeedMenu(!showSpeedMenu)}
