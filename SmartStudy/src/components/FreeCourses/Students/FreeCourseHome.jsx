@@ -14,6 +14,9 @@ const FreeCourseHome = () => {
     const [sortBy, setSortBy] = useState('recent');
     const [selectedCourse, setSelectedCourse] = useState(null);
 
+    // Default high-quality placeholder image for courses without a thumbnail
+    const defaultPlaceholder = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop";
+
     useEffect(() => {
         loadCourses();
     }, []);
@@ -22,7 +25,6 @@ const FreeCourseHome = () => {
     useEffect(() => {
         let filtered = [...courses];
 
-        // Search filter
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(
@@ -32,7 +34,6 @@ const FreeCourseHome = () => {
             );
         }
 
-        // Sort
         if (sortBy === 'recent') {
             filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         } else if (sortBy === 'oldest') {
@@ -47,21 +48,15 @@ const FreeCourseHome = () => {
     const loadCourses = async () => {
         try {
             setLoading(true);
-            console.log('Loading free courses...');
             const data = await fetchAllFreeCourses({}, token);
-            console.log('Courses data received:', data);
-
             if (data?.success && Array.isArray(data?.data)) {
                 setCourses(data.data);
             } else if (Array.isArray(data)) {
                 setCourses(data);
             } else {
-                console.warn('Invalid courses data format:', data);
                 setCourses([]);
-                toast.error('Failed to load courses - invalid data format');
             }
         } catch (error) {
-            console.error('Error loading courses:', error);
             toast.error('Failed to load courses');
             setCourses([]);
         } finally {
@@ -83,51 +78,40 @@ const FreeCourseHome = () => {
     return (
         <div className="min-h-screen bg-richblack-900 py-8 px-4 md:px-8">
             {/* Header */}
-            <div className="max-w-7xl mx-auto mb-12">
+            <div className="max-w-7xl mx-auto mb-10">
                 <div className="mb-8">
-                    <h1 className="text-4xl md:text-5xl font-bold text-richblack-5 mb-3">
+                    <h1 className="text-3xl md:text-4xl font-bold text-richblack-5 mb-2 tracking-tight">
                         🎓 Free Learning Courses
                     </h1>
-                    <p className="text-richblack-400 text-lg">
-                        Access premium video courses from expert instructors - completely free
+                    <p className="text-richblack-400 text-base">
+                        Access premium video training collections instantly.
                     </p>
                 </div>
 
                 {/* Search and Filters */}
-                <div className="space-y-4">
-                    {/* Search Bar */}
-                    <div className="relative max-w-2xl">
-                        <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-richblack-400 text-xl" />
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-richblack-800 pb-6">
+                    <div className="relative w-full md:max-w-md">
+                        <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-richblack-500 text-xl" />
                         <input
                             type="text"
-                            placeholder="Search courses..."
+                            placeholder="Search video courses..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-richblack-800 text-richblack-5 placeholder-richblack-500 pl-12 pr-4 py-3 rounded-lg border border-richblack-700 focus:border-yellow-400 focus:outline-none transition-colors"
+                            className="w-full bg-richblack-800 text-richblack-5 placeholder-richblack-500 pl-11 pr-4 py-2.5 rounded-lg border border-richblack-700/60 focus:border-yellow-400 focus:outline-none transition-colors text-sm"
                         />
                     </div>
 
-                    {/* Sort Controls */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-richblack-400 text-sm font-medium">Sort by:</span>
-                        <div className="flex flex-wrap gap-2">
-                            {[
-                                { value: 'recent', label: 'Most Recent' },
-                                { value: 'oldest', label: 'Oldest First' },
-                                { value: 'title', label: 'Title (A-Z)' },
-                            ].map((option) => (
-                                <button
-                                    key={option.value}
-                                    onClick={() => setSortBy(option.value)}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${sortBy === option.value
-                                            ? 'bg-yellow-400 text-richblack-900'
-                                            : 'bg-richblack-700 text-richblack-300 hover:bg-richblack-600'
-                                        }`}
-                                >
-                                    {option.label}
-                                </button>
-                            ))}
-                        </div>
+                    <div className="flex items-center gap-2 self-end md:self-auto">
+                        <span className="text-richblack-500 text-xs font-medium uppercase tracking-wider">Sort:</span>
+                        <select 
+                            value={sortBy} 
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="bg-richblack-800 text-richblack-200 border border-richblack-700/60 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-yellow-400 cursor-pointer"
+                        >
+                            <option value="recent">Most Recent</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="title">Title (A-Z)</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -136,86 +120,79 @@ const FreeCourseHome = () => {
             <div className="max-w-7xl mx-auto">
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-richblack-700 border-t-yellow-400" />
+                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-richblack-700 border-t-yellow-400" />
                     </div>
                 ) : filteredCourses.length === 0 ? (
                     <div className="text-center py-16">
-                        <h2 className="text-2xl font-semibold text-richblack-200 mb-3">
-                            {courses.length === 0 ? 'No courses available' : 'No courses match your search'}
+                        <h2 className="text-xl font-medium text-richblack-300">
+                            {courses.length === 0 ? 'No video courses published yet' : 'No matches found'}
                         </h2>
-                        <p className="text-richblack-400">
-                            {courses.length === 0
-                                ? 'Courses will be added soon'
-                                : 'Try adjusting your search criteria'}
-                        </p>
                     </div>
                 ) : (
-                    <div>
-                        {/* Results info */}
-                        <div className="mb-6 flex items-center justify-between">
-                            <p className="text-richblack-400">
-                                Showing <span className="font-semibold text-yellow-400">{filteredCourses.length}</span>{' '}
-                                {filteredCourses.length === 1 ? 'course' : 'courses'}
-                            </p>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-8">
+                        {filteredCourses.map((course) => (
+                            <div
+                                key={course._id}
+                                onClick={() => setSelectedCourse(course)}
+                                className="group cursor-pointer flex flex-col w-full"
+                            >
+                                {/* Video Thumbnail Canvas */}
+                                <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-richblack-800 border border-richblack-800/50">
+                                    {/* The Thumbnail Image */}
+                                    <img 
+                                        src={course.thumbnail || defaultPlaceholder} 
+                                        alt={course.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
+                                        loading="lazy"
+                                    />
 
-                        {/* Courses Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredCourses.map((course) => (
-                                <div
-                                    key={course._id}
-                                    onClick={() => setSelectedCourse(course)}
-                                    className="group bg-richblack-800 rounded-lg overflow-hidden border border-richblack-700 hover:border-yellow-400/50 hover:shadow-lg hover:shadow-yellow-400/20 transition-all cursor-pointer"
-                                >
-                                    {/* Placeholder Image */}
-                                    <div className="aspect-video bg-gradient-to-br from-richblack-700 to-richblack-800 flex items-center justify-center group-hover:from-richblack-600 group-hover:to-richblack-700 transition-all relative overflow-hidden">
-                                        <MdPlayCircle className="text-4xl text-yellow-400 group-hover:scale-110 transition-transform" />
-
-                                        {/* Video count badge */}
-                                        {course.structure && course.structure.length > 0 && (
-                                            <div className="absolute top-3 right-3 bg-yellow-400/20 backdrop-blur-sm text-yellow-400 px-2 py-1 rounded text-xs font-semibold border border-yellow-400/30">
-                                                {course.structure.length} videos
-                                            </div>
-                                        )}
+                                    {/* Dark film and Play Button Overlay on Hover */}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center z-10">
+                                        <div className="bg-yellow-400 text-richblack-900 p-3 rounded-full shadow-md transform scale-90 group-hover:scale-100 transition-transform duration-200">
+                                            <MdPlayCircle className="text-2xl" />
+                                        </div>
                                     </div>
 
-                                    {/* Content */}
-                                    <div className="p-4 space-y-3">
-                                        {/* Title */}
-                                        <h3 className="text-lg font-bold text-richblack-5 line-clamp-2 group-hover:text-yellow-400 transition-colors">
-                                            {course.title}
-                                        </h3>
+                                    {/* Video Count Badge Overlaid (Bottom Right) */}
+                                    {course.structure && course.structure.length > 0 && (
+                                        <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md text-white text-[11px] font-semibold px-2 py-0.5 rounded tracking-wide z-20">
+                                            {course.structure.length} EPISODES
+                                        </div>
+                                    )}
+                                </div>
 
-                                        {/* Description */}
-                                        <p className="text-richblack-400 text-sm line-clamp-2">{course.description}</p>
+                                {/* Video Info Metadata Block */}
+                                <div className="mt-2.5 flex flex-col space-y-1">
+                                    {/* Title */}
+                                    <h3 className="text-sm font-semibold text-richblack-5 line-clamp-2 group-hover:text-yellow-400 transition-colors duration-150 leading-tight">
+                                        {course.title}
+                                    </h3>
 
-                                        {/* Instructor */}
+                                    {/* Short Description */}
+                                    <p className="text-richblack-400 text-xs line-clamp-1 leading-normal">
+                                        {course.description}
+                                    </p>
+
+                                    {/* Instructor & Date Inline Row */}
+                                    <div className="flex items-center gap-1.5 text-[11px] text-richblack-500 font-medium pt-0.5">
                                         {course.instructor && (
-                                            <div className="flex items-center gap-2 text-richblack-300 text-sm">
-                                                <MdPerson className="text-yellow-400 flex-shrink-0" />
-                                                <span>
+                                            <>
+                                                <span className="text-richblack-300 truncate max-w-[140px]">
                                                     {course.instructor.firstName} {course.instructor.lastName}
                                                 </span>
-                                            </div>
+                                                <span className="text-richblack-700">•</span>
+                                            </>
                                         )}
-
-                                        {/* Date */}
-                                        <div className="text-richblack-500 text-xs">
+                                        <span>
                                             {new Date(course.createdAt).toLocaleDateString('en-US', {
                                                 month: 'short',
-                                                day: 'numeric',
                                                 year: 'numeric',
                                             })}
-                                        </div>
-
-                                        {/* View Button */}
-                                        <button className="w-full mt-3 bg-yellow-400 hover:bg-yellow-500 text-richblack-900 font-semibold py-2 rounded-lg transition-colors">
-                                            View Course
-                                        </button>
+                                        </span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
