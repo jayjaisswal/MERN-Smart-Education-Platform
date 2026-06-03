@@ -1,265 +1,331 @@
-const Arithmetic = require("../models/Arithmetic");
-const VerbalAbility = require("../models/VerbalAbility");
-const LogicalReasoning = require("../models/LogicalReasoning");
+const AptitudeQuestion = require("../models/AptitudeQuestion");
 const AptitudeProgress = require("../models/AptitudeProgress");
 
-// 1. Centralized Model Mapping to prevent mismatching
-const CATEGORY_MAP = {
-  arithmetic: {
-    model: Arithmetic,
-    displayName: "Arithmetic",
-  },
-  verbal_ability: {
-    model: VerbalAbility,
-    displayName: "Verbal Ability",
-  },
-  logical_reasoning: {
-    model: LogicalReasoning,
-    displayName: "Logical Reasoning",
-  },
-};
-
-const getModelByCategory = (category) => {
-  return CATEGORY_MAP[category]?.model || null;
-};
-
-// --- ADMIN CONTROLLERS ---
-
-// Create aptitude questions (admin)
+// ================================
+// CREATE QUESTIONS (ADMIN)
+// ================================
 exports.createAptitudeQuestions = async (req, res) => {
   try {
-    const { questions, category } = req.body;
-
-    const Model = getModelByCategory(category);
-    if (!Model) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid category. Must be arithmetic, verbal_ability, or logical_reasoning",
-      });
-    }
+    const { questions } = req.body;
 
     if (!Array.isArray(questions) || questions.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Questions array is required and cannot be empty",
+        message: "Questions array is required",
       });
     }
 
-    const createdQuestions = await Model.insertMany(questions);
+    const createdQuestions =
+      await AptitudeQuestion.insertMany(questions);
 
     return res.status(201).json({
       success: true,
-      message: `${createdQuestions.length} questions created in ${category}`,
+      message: `${createdQuestions.length} questions created successfully`,
       data: createdQuestions,
     });
   } catch (error) {
-    console.error("Error creating questions:", error);
-    return res.status(500).json({ success: false, error: error.message });
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
-// --- USER CONTROLLERS ---
-
-// Get all categories, total counts, and unique topics per category
+// ================================
+// GET ALL CATEGORIES
+// SAME RESPONSE AS OLD CONTROLLER
+// ================================
 exports.getAllCategories = async (req, res) => {
   try {
-    const categories = Object.keys(CATEGORY_MAP);
+    const questions = await AptitudeQuestion.find(
+      {},
+      { category: 1 }
+    ).lean();
 
-    const categoryDetails = await Promise.all(
-      categories.map(async (key) => {
-        const Model = CATEGORY_MAP[key].model;
-        const [count, topics] = await Promise.all([
-          Model.countDocuments(),
-          Model.distinct("topic"),
-        ]);
+    const categoryMap = {};
 
-        return {
-          name: key,
-          displayName: CATEGORY_MAP[key].displayName,
-          count,
-          topics: topics.filter(Boolean).sort(), // Removes nulls and sorts alphabetically
+    questions.forEach((q) => {
+      if (!q.category || q.category.length < 2) return;
+
+      const mainCategory = q.category[1];
+      const topic = q.category[2];
+
+      if (!categoryMap[mainCategory]) {
+        categoryMap[mainCategory] = {
+          name: mainCategory
+            .toLowerCase()
+            .replace(/\s+/g, "_"),
+          displayName: mainCategory,
+          count: 0,
+          topics: [],
         };
-      }),
-    );
+      }
+
+      categoryMap[mainCategory].count++;
+
+      if (
+        topic &&
+        !categoryMap[mainCategory].topics.includes(
+          topic
+        )
+      ) {
+        categoryMap[mainCategory].topics.push(topic);
+      }
+    });
 
     return res.status(200).json({
       success: true,
-      data: categoryDetails,
+      data: Object.values(categoryMap),
     });
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
-// Get questions by category/topic with strict filtering
+// ================================
+// GET QUESTIONS BY CATEGORY/TOPIC
+// ================================
 exports.getQuestionsByCategory = async (req, res) => {
   try {
-    const { category, page = 1, limit = 5, topic } = req.query;
-
-    const Model = getModelByCategory(category);
-    if (!Model) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Valid category is required" });
-    }
+    const {
+      category,
+      topic,
+      page = 1,
+      limit = 5,
+    } = req.query;
 
     const query = {};
+
     if (topic) {
-      query.topic = topic; // Restricts search to only this specific topic
+      query.category = topic;
+    } else if (category) {
+      query.category = category;
     }
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const skip =
+      (parseInt(page) - 1) * parseInt(limit);
 
-    const [questions, totalCount] = await Promise.all([
-      Model.find(query)
-        .skip(skip)
-        .limit(parseInt(limit))
-        .select("-correctOption") // Security: Do not send answer to client
-        .lean(),
-      Model.countDocuments(query),
-    ]);
+    const [questions, totalCount] =
+      await Promise.all([
+        AptitudeQuestion.find(query)
+          .skip(skip)
+          .limit(parseInt(limit))
+          .select("-correct_option")
+          .lean(),
+
+        AptitudeQuestion.countDocuments(query),
+      ]);
 
     return res.status(200).json({
       success: true,
-      category,
+      category: category || "all",
       topic: topic || "all",
       data: questions,
       pagination: {
         totalQuestions: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
+        totalPages: Math.ceil(
+          totalCount / parseInt(limit)
+        ),
         currentPage: parseInt(page),
         questionsPerPage: parseInt(limit),
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
-// Submit answer and save progress
+// ================================
+// SUBMIT ANSWER
+// ================================
 exports.submitAnswer = async (req, res) => {
   try {
-    const { questionId, userAnswer, timeTaken, category } = req.body;
+    const {
+      questionId,
+      userAnswer,
+      timeTaken,
+    } = req.body;
+
     const userId = req.user.id;
 
-    if (!questionId || userAnswer === undefined || !category) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
+    if (!questionId || userAnswer === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
     }
 
-    const Model = getModelByCategory(category);
-    if (!Model) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid category" });
-    }
+    const question =
+      await AptitudeQuestion.findById(questionId);
 
-    const question = await Model.findById(questionId);
     if (!question) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Question not found in this category",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Question not found",
+      });
     }
 
-    const isCorrect = question.correctOption === parseInt(userAnswer);
+    const isCorrect =
+      question.correct_option === userAnswer;
 
-    const progress = await AptitudeProgress.create({
-      userId,
-      questionId,
-      userAnswer: parseInt(userAnswer),
-      isCorrect,
-      timeTaken: parseInt(timeTaken) || 0,
-      category,
-    });
+    const progress =
+      await AptitudeProgress.create({
+        userId,
+        questionId,
+        userAnswer,
+        isCorrect,
+        timeTaken: Number(timeTaken) || 0,
+        category:
+          question.category?.[1] || "Unknown",
+        topic:
+          question.category?.[2] || "Unknown",
+      });
 
     return res.status(201).json({
       success: true,
       data: {
         isCorrect,
-        correctOption: question.correctOption,
-        explanation: question.explanation,
-        topic: question.topic,
+        correctOption:
+          question.correct_option,
+        explanation:
+          question.explanation,
         progress,
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
-// Get user performance with category breakdown
-exports.getUserPerformance = async (req, res) => {
+// ================================
+// USER PERFORMANCE
+// ================================
+exports.getUserPerformance = async (
+  req,
+  res
+) => {
   try {
     const userId = req.user.id;
-    const allProgress = await AptitudeProgress.find({ userId }).lean();
+
+    const allProgress =
+      await AptitudeProgress.find({
+        userId,
+      }).lean();
 
     if (!allProgress.length) {
       return res.status(200).json({
         success: true,
         message: "No attempts yet",
-        data: { totalAttempts: 0, accuracy: 0, categoryStats: [] },
+        data: {
+          totalAttempts: 0,
+          accuracy: 0,
+          categoryStats: [],
+        },
       });
     }
 
-    const stats = Object.keys(CATEGORY_MAP).map((catKey) => {
-      const catData = allProgress.filter((p) => p.category === catKey);
-      const correct = catData.filter((p) => p.isCorrect).length;
-      return {
-        category: catKey,
-        displayName: CATEGORY_MAP[catKey].displayName,
-        attempts: catData.length,
-        correct,
-        accuracy: catData.length
-          ? ((correct / catData.length) * 100).toFixed(2)
-          : 0,
-      };
+    const statsMap = {};
+
+    allProgress.forEach((attempt) => {
+      const cat = attempt.category;
+
+      if (!statsMap[cat]) {
+        statsMap[cat] = {
+          category: cat,
+          displayName: cat,
+          attempts: 0,
+          correct: 0,
+        };
+      }
+
+      statsMap[cat].attempts++;
+
+      if (attempt.isCorrect) {
+        statsMap[cat].correct++;
+      }
     });
 
-    const totalAttempts = allProgress.length;
-    const totalCorrect = allProgress.filter((p) => p.isCorrect).length;
+    const categoryStats =
+      Object.values(statsMap).map((item) => ({
+        ...item,
+        accuracy:
+          item.attempts > 0
+            ? (
+                (item.correct /
+                  item.attempts) *
+                100
+              ).toFixed(2)
+            : 0,
+      }));
+
+    const totalAttempts =
+      allProgress.length;
+
+    const totalCorrect =
+      allProgress.filter(
+        (item) => item.isCorrect
+      ).length;
 
     return res.status(200).json({
       success: true,
       data: {
         totalAttempts,
         totalCorrect,
-        overallAccuracy: ((totalCorrect / totalAttempts) * 100).toFixed(2),
-        categoryStats: stats,
+        overallAccuracy: (
+          (totalCorrect /
+            totalAttempts) *
+          100
+        ).toFixed(2),
+        categoryStats,
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
-// Get specific question (Admin) - Requires category to prevent mismatch
-exports.getQuestionDetails = async (req, res) => {
+// ================================
+// GET QUESTION DETAILS
+// ================================
+exports.getQuestionDetails = async (
+  req,
+  res
+) => {
   try {
     const { id } = req.params;
-    const { category } = req.query;
 
-    if (!category) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category query param is required" });
-    }
-
-    const Model = getModelByCategory(category);
-    const question = await Model?.findById(id);
+    const question =
+      await AptitudeQuestion.findById(id);
 
     if (!question) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Question not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Question not found",
+      });
     }
 
-    return res.status(200).json({ success: true, data: question });
+    return res.status(200).json({
+      success: true,
+      data: question,
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
