@@ -39,11 +39,16 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    handleLinkClick();
+  }, [location]);
+
+  useEffect(() => {
     if (!menuOpen) return;
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
         setMenuOpen(false);
         setCatalogOpen(false);
+        setInterviewOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -52,10 +57,16 @@ const Navbar = () => {
 
   const matchRoute = (route) => route && matchPath({ path: route }, location.pathname);
 
-  const handleCatalogClick = (e) => {
+  const handleDropdownToggle = (title, e) => {
     if (window.innerWidth < 768) {
       e.preventDefault();
-      setCatalogOpen((prev) => !prev);
+      if (title === "Catalog") {
+        setCatalogOpen((prev) => !prev);
+        setInterviewOpen(false);
+      } else if (title === "Exam & Career Prep") {
+        setInterviewOpen((prev) => !prev);
+        setCatalogOpen(false);
+      }
     }
   };
 
@@ -65,211 +76,226 @@ const Navbar = () => {
     setInterviewOpen(false);
   };
 
-  const handleLoginClick = () => {
-    handleLinkClick();
-    navigate("/login");
-  };
-
-  const handleSignupClick = () => {
-    handleLinkClick();
-    navigate("/signup");
-  };
-
   if (profileLoading || authLoading) {
     return (
-      <div className="mt-10">
+      <div className="fixed top-0 left-0 w-full h-16 bg-gray-900 border-b border-gray-700 flex items-center justify-center z-50">
         {/* <Spinner /> */}
       </div>
     );
   }
 
   return (
-    // Line 70: Change this div's className
-    <div className="fixed top-0 left-0 w-full z-50 flex h-16 items-center justify-center border-b border-b-gray-700  bg-gray-900 transition-colors shadow-sm">
-      <div className="flex w-11/12 max-w-max-content items-center justify-between mx-auto gap-6">
-
+    <div className="fixed top-0 left-0 w-full z-50 h-16 border-b border-gray-700 bg-gray-900 shadow-sm transition-colors" ref={navRef}>
+      <div className="flex w-11/12 max-w-max-content h-full items-center justify-between mx-auto gap-4">
+        
         {/* Left: Logo */}
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="flex items-center flex-shrink-0" onClick={handleLinkClick}>
           <img
             src={Logo}
             alt="Logo"
-            width={150}
-            height={40}
+            width={130}
+            height={35}
             loading="lazy"
-            className="drop-shadow-md"
+            className="drop-shadow-md md:w-[150px]"
           />
         </Link>
 
-        {/* Center: Search Box (Desktop) */}
-        <SearchBox />
+        {/* Center: Search Box - Desktop Only */}
+        <div className="hidden md:block flex-1 max-w-sm mx-4">
+          <SearchBox />
+        </div>
 
-        {/* Right: Hamburger and Cart for Mobile */}
-        <div className="flex items-center gap-4 md:hidden">
+        {/* Right Actions for MOBILE (Matches exactly what you liked) */}
+        <div className="flex items-center gap-3 md:hidden">
           {user && user?.accountType !== "Instructor" && (
-            <Link to="/dashboard/cart" className="relative text-white">
-              <FaShoppingCart className="text-xl hover:text-sky-500 transition-colors" />
+            <Link to="/dashboard/cart" className="relative text-white p-1.5 hover:text-sky-500 transition-colors" onClick={handleLinkClick}>
+              <FaShoppingCart className="text-xl" />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full px-1">
+                <span className="absolute top-0 right-0 bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
                   {totalItems}
                 </span>
               )}
             </Link>
           )}
 
+          {token && (
+            <div className="flex items-center justify-center">
+              <ProfileDropDown />
+            </div>
+          )}
+
           <button
-            className="text-2xl text-white"
+            className="text-xl text-white p-2 focus:outline-none transition-transform"
             onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Toggle Menu"
           >
             {menuOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
 
-        {/* Nav Links */}
+        {/* Navigation Wrapper - Forces alignment layouts dynamically */}
         <nav
-          ref={navRef}
-          className={`${menuOpen ? "flex" : "hidden"
-            } absolute top-16 left-0 w-full flex-col bg-gray-900 md:static md:flex md:flex-row md:w-auto md:bg-transparent z-50 transition-all duration-300`}
+          className={`
+            fixed top-16 left-0 w-full h-[calc(100vh-64px)] bg-gray-900 border-t border-gray-800 flex flex-col justify-between overflow-y-auto p-6 transition-all duration-300 ease-in-out z-40
+            ${menuOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 md:opacity-100"}
+            md:static md:h-auto md:w-auto md:border-none md:p-0 md:flex md:flex-row md:translate-x-0 md:overflow-visible md:bg-transparent md:flex-1 md:justify-end md:gap-8
+          `}
         >
-          <ul className="flex flex-col md:flex-row gap-4 md:gap-6 text-base font-semibold p-4 md:p-0">
-            {NavbarLinks.map((link, index) => (
-              <li key={index} className="relative group">
-                {link.title === "Catalog" || link.title === "Exam & Career Prep" ? (
-                  <div
-                    className="flex items-center gap-1 cursor-pointer select-none"
-                    onClick={handleCatalogClick}
-                    onMouseLeave={() =>
-                      window.innerWidth < 768 && setCatalogOpen(false)
-                    }
-                  >
-                    <span
-                      className={`transition-colors duration-200 ${matchRoute(link?.path)
-                        ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
-                        : " text-white"
-                        }`}
-                    >
-                      {link.title}
-                    </span>
-                    <IoIosArrowDown
-                      className={`text-lg transition-transform duration-300 text-white ${catalogOpen ? "rotate-180" : ""
-                        }`}
-                    />
-                    {/* Dropdown */}
-                    <div
-                      className={`
-                        absolute left-0 top-8 min-w-[200px] rounded-xl bg-gray-900/95 backdrop-blur-md shadow-2xl z-20 transition-all duration-300 border border-gray-700
-                        ${catalogOpen || interviewOpen ? "visible opacity-100 scale-100" : "invisible opacity-0 scale-95"}
-                        md:group-hover:visible md:group-hover:opacity-100 md:group-hover:scale-100
-                      `}
-                    >
+          {/* Main Navigation Links */}
+          <ul className="flex flex-col md:flex-row gap-5 md:gap-6 text-base w-full md:w-auto items-start md:items-center">
+            {NavbarLinks.map((link, index) => {
+              const isCatalog = link.title === "Catalog";
+              const isInterview = link.title === "Exam & Career Prep";
+              const isDropdown = isCatalog || isInterview;
+              const isOpen = isCatalog ? catalogOpen : interviewOpen;
 
-                      {/* Catalog Dropdown */}
-                      {link.title === "Catalog" && (
-                        Array.isArray(sublinks) && sublinks.length > 0 ? (
-                          sublinks.map((tag, idx) => (
-                            <Link
-                              key={idx}
-                              to={`/catalog/${tag.name.split(" ").join("-").toLowerCase()}`}
-                              className="block px-4 py-2 text-white hover:bg-gray-700 rounded transition-all"
-                              onClick={handleLinkClick}
-                            >
-                              {tag.name}
-                            </Link>
-                          ))
-                        ) : (
-                          <span className="block px-4 py-2 text-gray-400">
-                            No Categories
-                          </span>
-                        )
-                      )}
+              return (
+                <li key={index} className="relative group w-full md:w-auto">
+                  {isDropdown ? (
+                    <div className="w-full md:w-auto">
+                      <div
+                        className="flex items-center justify-between md:justify-start gap-1 cursor-pointer select-none py-2 md:py-0"
+                        onClick={(e) => handleDropdownToggle(link.title, e)}
+                      >
+                        <span
+                          className={`transition-colors duration-200 ${matchRoute(link?.path)
+                            ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text font-medium"
+                            : "text-white hover:text-sky-400"
+                            }`}
+                        >
+                          {link.title}
+                        </span>
+                        <IoIosArrowDown
+                          className={`text-base transition-transform duration-300 text-white group-hover:text-sky-400 ${isOpen ? "rotate-180" : ""
+                            } md:group-hover:rotate-180`}
+                        />
+                      </div>
 
-                      {/* Interview Dropdown */}
-                      {link.title === "Exam & Career Prep" && (
-                        Array.isArray(InterviewLinks) && InterviewLinks.length > 0 ? (
-                          InterviewLinks.map((item, idx) => (
-                            <Link
-                              key={idx}
-                              to={item.path}
-                              className="block px-4 py-2 text-white hover:bg-gray-700 rounded transition-all"
-                              onClick={handleLinkClick}
-                            >
-                              {item.title}
-                            </Link>
-                          ))
-                        ) : (
-                          <span className="block px-4 py-2 text-gray-400">
-                            No Subjects
-                          </span>
-                        )
-                      )}
+                      {/* Dropdown Items Menu */}
+                      <div
+                        className={`
+                          w-full md:absolute md:left-1/2 md:-translate-x-1/2 md:top-full md:mt-2 md:min-w-[220px] rounded-xl bg-gray-800 md:bg-gray-900/95 md:backdrop-blur-md shadow-2xl z-50 border border-gray-700 transition-all duration-200
+                          ${isOpen ? "block mt-2 opacity-100 visible" : "hidden opacity-0 invisible"}
+                          md:group-hover:block md:group-hover:opacity-100 md:group-hover:visible
+                        `}
+                      >
+                        {isCatalog && (
+                          <div className="p-1.5 space-y-1">
+                            {Array.isArray(sublinks) && sublinks.length > 0 ? (
+                              sublinks.map((tag, idx) => (
+                                <Link
+                                  key={idx}
+                                  to={`/catalog/${tag.name.split(" ").join("-").toLowerCase()}`}
+                                  className="block px-4 py-2.5 text-sm text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-all"
+                                  onClick={handleLinkClick}
+                                >
+                                  {tag.name}
+                                </Link>
+                              ))
+                            ) : (
+                              <span className="block px-4 py-2 text-sm text-gray-400">No Categories</span>
+                            )}
+                          </div>
+                        )}
 
+                        {isInterview && (
+                          <div className="p-1.5 space-y-1">
+                            {Array.isArray(InterviewLinks) && InterviewLinks.length > 0 ? (
+                              InterviewLinks.map((item, idx) => (
+                                <Link
+                                  key={idx}
+                                  to={item.path}
+                                  className="block px-4 py-2.5 text-sm text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-all"
+                                  onClick={handleLinkClick}
+                                >
+                                  {item.title}
+                                </Link>
+                              ))
+                            ) : (
+                              <span className="block px-4 py-2 text-sm text-gray-400">No Subjects</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <Link to={link?.path} onClick={handleLinkClick}>
-                    <span
-                      className={`transition-colors duration-200 ${matchRoute(link?.path)
-                        ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text"
-                        : "text-white"
-                        }`}
-                    >
-                      {link.title}
-                    </span>
-                  </Link>
-                )}
-              </li>
-            ))}
+                  ) : (
+                    <Link to={link?.path} className="block py-2 md:py-0" onClick={handleLinkClick}>
+                      <span
+                        className={`transition-colors duration-200 ${matchRoute(link?.path)
+                          ? "bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 text-transparent bg-clip-text font-medium"
+                          : "text-white hover:text-sky-400"
+                          }`}
+                      >
+                        {link.title}
+                      </span>
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
 
-          {/* Auth Buttons (Mobile) */}
-          <div className="flex flex-col gap-2 mt-0 md:hidden">
-            {!token ? (
-              <>
-                <Link to="/login" onClick={handleLoginClick}>
-                  <button className="w-1/4 border border-richblack-400 bg-richblack-700 text-white px-1 py-1.5 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4 ml-3">
+          {/* Desktop Auth Actions Container (Pushed entirely to the Right Edge) */}
+          <div className="hidden md:flex items-center gap-4">
+            {/* Desktop Cart */}
+            {user && user?.accountType !== "Instructor" && (
+              <Link to="/dashboard/cart" className="relative text-white p-1.5 hover:text-sky-500 transition-colors" onClick={handleLinkClick}>
+                <FaShoppingCart className="text-xl" />
+                {totalItems > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            {/* Desktop Login / Signup */}
+            {!token && (
+              <div className="flex gap-3 items-center">
+                <Link to="/login">
+                  <button className="border border-richblack-400 bg-richblack-700 text-white px-4 py-1.5 rounded-lg font-semibold text-sm transition-all hover:bg-richblack-800">
                     Login
                   </button>
                 </Link>
-                <Link to="/signup" onClick={handleSignupClick}>
-                  <button className="w-1/4 border border-richblack-400 bg-richblack-700 text-white px-1 py-1.5 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4 ml-3 mb-3">
+                <Link to="/signup">
+                  <button className="border border-richblack-400 bg-richblack-700 text-white px-4 py-1.5 rounded-lg font-semibold text-sm transition-all hover:bg-richblack-800">
                     Sign up
                   </button>
                 </Link>
-              </>
-            ) : (
-              <ProfileDropDown onAction={handleLinkClick} />
+              </div>
+            )}
+
+            {/* Desktop Profile Dropdown */}
+            {token && (
+              <div className="flex items-center justify-center z-50">
+                <ProfileDropDown />
+              </div>
+            )}
+          </div>
+
+          {/* Drawer Footer Container (Mobile Only) */}
+          <div className="mt-auto pt-6 border-t border-gray-800 flex flex-col gap-4 md:hidden w-full">
+            <div className="w-full">
+              <SearchBox />
+            </div>
+
+            {!token && (
+              <div className="grid grid-cols-2 gap-3 w-full">
+                <Link to="/login" className="w-full" onClick={handleLinkClick}>
+                  <button className="w-full text-center border border-richblack-400 bg-richblack-700 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-richblack-800">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/signup" className="w-full" onClick={handleLinkClick}>
+                  <button className="w-full text-center border border-richblack-400 bg-richblack-700 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-richblack-800">
+                    Sign up
+                  </button>
+                </Link>
+              </div>
             )}
           </div>
         </nav>
 
-        {/* Auth (Desktop) */}
-        <div className="hidden md:flex gap-4 items-center">
-          {user && user?.accountType !== "Instructor" && (
-            <Link to="/dashboard/cart" className="relative text-white">
-              <FaShoppingCart className="text-xl hover:text-sky-500 transition-colors" />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-xs rounded-full px-1">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
-          )}
-          {!token ? (
-            <>
-              <Link to="/login">
-                <button className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-blue-600 hover:to-cyan-500 transition-all mr-4">
-                  Login
-                </button>
-              </Link>
-              <Link to="/signup">
-                <button className="w-full border border-richblack-400 bg-richblack-700 text-white px-4 py-2 rounded-lg font-semibold shadow hover:from-green-500 hover:to-blue-600 transition-all mr-4">
-                  Sign up
-                </button>
-              </Link>
-            </>
-          ) : (
-            <ProfileDropDown />
-          )}
-        </div>
       </div>
     </div>
   );
